@@ -1,0 +1,30 @@
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 🟢 Dev Cluster ▾   |  🔍 Global Search (Cmd+K)...               |  ⚙️ App │
+├──────────────┬──────────────────────────────────────────────────────────────┤
+│ 📌 MENU      │  SCHEMA REGISTRY                                             │
+│ 📊 Overview  │ ──────────────────────────────────────────────────────────── │
+│ 📄 Topics    │  SUBJECTS (12)    🔍 Filter...                                │
+│ 👥 Consumers │ ────────────────┬─────────────────────────────────────────── │
+│ 📜 Schemas ◀ │  user.signup     │  SCHEMA: user.signup                       │
+│              │  ────────────── │  Version: [ v3 (latest) ▾ ]                 │
+│              │  order.created  │  Compatibility: [ 🟢 BACKWARD ]             │
+│              │  order.updated  │  Type: AVRO  |  ID: 42                      │
+│              │  payment.events │ ──────────────────────────────────────────── │
+│              │  inventory.sync │  {                                           │
+│              │  user.profile   │    "type": "record",                         │
+│              │  ────────────── │    "name": "UserSignup",                     │
+│              │ > audit.logs    │    "namespace": "com.example.events",        │
+│              │   email.notif   │    "fields": [                               │
+│              │   search.index  │      { "name": "userId", "type": "string" }, │
+│              │   metrics.agg   │      { "name": "email",  "type": "string" }, │
+│              │   dlq.events    │      { "name": "timestamp", "type": "long" } │
+│              │                 │    ]                                          │
+│              │                 │  }                                            │
+│              │                 │ ──────────────────────────────────────────── │
+│              │                 │  VERSIONS HISTORY                             │
+│              │                 │  v3 │ 2026-03-01 │ Added "timestamp" field    │
+│              │                 │  v2 │ 2026-02-15 │ Added "email" field        │
+│              │                 │  v1 │ 2026-01-10 │ Initial schema             │
+│              │                 │ ──────────────────────────────────────────── │
+│              │                 │  [ Compare Versions ]   [ 📋 Copy Schema ]   │
+└──────────────┴─────────────────┴──────────────────────────────────────────────┘

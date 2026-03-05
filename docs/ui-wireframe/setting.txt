@@ -1,0 +1,52 @@
+View 1: Cluster Configuration
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ⚙️ Preferences                                                          [✕] │
+├──────────────┬──────────────────────────────────────────────────────────────┤
+│  SETTINGS    │  🌐 CLUSTER CONNECTIONS                                [ ➕ ]│
+│ 🌐 Clusters ◀│ ──────────────────────────────────────────────────────────── │
+│ 🎨 Appearance│  Saved Profiles                                              │
+│ 💻 System    │  [🟢] Local Docker             [ Edit ] [ Duplicate ] [ 🗑️ ]│
+│              │  [🟡] Staging AWS              [ Edit ] [ Duplicate ] [ 🗑️ ]│
+│              │  [🔴] Production (Read-Only)   [ Edit ] [ Duplicate ] [ 🗑️ ]│
+│              │ ──────────────────────────────────────────────────────────── │
+│              │  EDIT CLUSTER: Staging AWS                                   │
+│              │  Name:               [ Staging AWS                 ]         │
+│              │  Bootstrap Servers:  [ b1.aws.com:9092, b2.aws...  ]         │
+│              │  Label Color:        [ 🟡 Yellow ▼ ]                         │
+│              │                                                              │
+│              │  Security Protocol:  [ SASL_SSL ▼ ]                          │
+│              │  SASL Mechanism:     [ PLAIN    ▼ ]                          │
+│              │  Username:           [ staging_admin               ]         │
+│              │  Password:           [ ••••••••••••••••••          ]         │
+│              │                                                              │
+│              │  [☑] Enable Read-Only Mode (Disable write operations)        │
+│              │                                                              │
+│              │                            [ Test Connection ]  [ Save ]     │
+└──────────────┴──────────────────────────────────────────────────────────────┘
+
+View 2: Appearance & System
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ⚙️ Preferences                                                          [✕] │
+├──────────────┬──────────────────────────────────────────────────────────────┤
+│  SETTINGS    │  🎨 APPEARANCE                                               │
+│ 🌐 Clusters  │ ──────────────────────────────────────────────────────────── │
+│ 🎨 Appearance◀  Theme:         [ Dark ▼ ]                                   │
+│ 💻 System    │  UI Density:    [ Compact ▼ ] (Rows will be smaller)         │
+│              │  Code Font:     [ JetBrains Mono ▼ ]                         │
+│              │  Font Size:     [ 13px ▼ ]                                   │
+│              │                                                              │
+│              │  Preview:                                                    │
+│              │  ┌──────────────────────────────────────────────────┐        │
+│              │  │ { "user": "test", "status": "active" }           │        │
+│              │  └──────────────────────────────────────────────────┘        │
+│              │                                                              │
+│              │  💻 SYSTEM & WORKSPACE                                       │
+│              │ ──────────────────────────────────────────────────────────── │
+│              │  [☑] Start application when computer starts                  │
+│              │  [☑] Minimize to system tray when closed                     │
+│              │                                                              │
+│              │  Share cluster configurations with your team.                │
+│              │  [ 📥 Import Config (.json) ]   [ 📤 Export Config (.json) ] │
+└──────────────┴──────────────────────────────────────────────────────────────┘
