@@ -108,9 +108,9 @@ export function DataTable<T>({
             Showing {table.getState().pagination.pageIndex * pageSize + 1}-
             {Math.min(
               (table.getState().pagination.pageIndex + 1) * pageSize,
-              data.length
+              table.getFilteredRowModel().rows.length
             )}{" "}
-            of {data.length}
+            of {table.getFilteredRowModel().rows.length}
           </span>
           <div className="flex gap-2">
             <button

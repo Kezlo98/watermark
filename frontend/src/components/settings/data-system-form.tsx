@@ -58,8 +58,8 @@ export function DataSystemForm() {
             id="include-passwords"
             className="size-4 rounded border-white/20 bg-white/5 text-primary focus:ring-primary/50"
           />
-          <label htmlFor="include-passwords" className="text-xs text-slate-400">
-            Include passwords in export (⚠️ will be stored in plaintext)
+          <label htmlFor="include-passwords" className="text-xs text-semantic-red">
+            Include passwords in export — <strong>⚠️ stored as plaintext, keep file secure</strong>
           </label>
         </div>
       </section>

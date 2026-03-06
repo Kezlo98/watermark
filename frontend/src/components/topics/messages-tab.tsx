@@ -22,6 +22,26 @@ const MOCK_MESSAGES: MockMessage[] = [
   { partition: 3, offset: 45905, timestamp: "21:42:15.333", key: '"u_14"', value: '{"name": "Lisa", "action": "PASSWORD_RESET", "email": "lisa@example.com"}' },
 ];
 
+/** Formats a raw message value string for Monaco display.
+ * Respects the selected format and gracefully handles non-JSON values.
+ */
+function formatMessageValue(
+  raw: string,
+  format: MessageFormat
+): { content: string; language: string } {
+  // Plaintext-only formats — skip JSON parse
+  if (format === "String" || format === "Hex") {
+    return { content: raw, language: "plaintext" };
+  }
+  // Try to pretty-print as JSON (Auto / JSON format)
+  try {
+    return { content: JSON.stringify(JSON.parse(raw), null, 2), language: "json" };
+  } catch {
+    // Fall back gracefully for non-JSON payloads
+    return { content: raw, language: "plaintext" };
+  }
+}
+
 interface MessagesTabProps {
   topicName: string;
 }
@@ -30,6 +50,10 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
   const [isLiveTail, setIsLiveTail] = useState(false);
   const [format, setFormat] = useState<MessageFormat>("Auto");
   const [selectedMessage, setSelectedMessage] = useState<MockMessage | null>(null);
+
+  // topicName used as query key — will drive real data fetching once API is wired
+  // e.g. useKafkaQuery(["messages", topicName], () => fetchMessages(topicName))
+  void topicName;
 
   return (
     <div className="space-y-4">
@@ -132,23 +156,28 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
             </div>
             <div className="flex-1 min-h-[300px]">
               <Suspense fallback={<div className="p-4 text-sm text-slate-500">Loading editor...</div>}>
-                <MonacoEditor
-                  height="300px"
-                  language="json"
-                  theme="vs-dark"
-                  value={JSON.stringify(JSON.parse(selectedMessage.value), null, 2)}
-                  options={{
-                    readOnly: true,
-                    minimap: { enabled: false },
-                    scrollBeyondLastLine: false,
-                    fontSize: 13,
-                    fontFamily: "JetBrains Mono",
-                    lineNumbers: "off",
-                    folding: true,
-                    renderLineHighlight: "none",
-                    padding: { top: 12 },
-                  }}
-                />
+                {(() => {
+                  const { content, language } = formatMessageValue(selectedMessage.value, format);
+                  return (
+                    <MonacoEditor
+                      height="300px"
+                      language={language}
+                      theme="vs-dark"
+                      value={content}
+                      options={{
+                        readOnly: true,
+                        minimap: { enabled: false },
+                        scrollBeyondLastLine: false,
+                        fontSize: 13,
+                        fontFamily: "JetBrains Mono",
+                        lineNumbers: "off",
+                        folding: true,
+                        renderLineHighlight: "none",
+                        padding: { top: 12 },
+                      }}
+                    />
+                  );
+                })()}
               </Suspense>
             </div>
           </div>

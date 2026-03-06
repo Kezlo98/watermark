@@ -7,13 +7,17 @@ interface ClusterFormProps {
 }
 
 export function ClusterForm({ clusterId, clusterName, onClose }: ClusterFormProps) {
+  // TODO: load initial values from cluster store by clusterId once persisted state is wired
+  // e.g. const cluster = useClusterStore(state => state.clusters.find(c => c.id === clusterId))
+  void clusterId;
+
   const [form, setForm] = useState({
     name: clusterName,
-    bootstrapServers: "b1.aws.com:9092, b2.aws.com:9092",
-    labelColor: "orange",
-    securityProtocol: "SASL_SSL",
+    bootstrapServers: "",
+    labelColor: "green",
+    securityProtocol: "NONE",
     saslMechanism: "PLAIN",
-    username: "staging_admin",
+    username: "",
     password: "",
     readOnly: false,
     schemaRegistryUrl: "",

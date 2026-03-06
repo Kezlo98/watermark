@@ -10,7 +10,7 @@ export interface ClusterProfile {
   bootstrapServers: string;
   color: ClusterColor;
   readOnly: boolean;
-  securityProtocol: "NONE" | "SASL_PLAIN" | "SASL_SCRAM" | "SSL";
+  securityProtocol: "NONE" | "SASL_PLAIN" | "SASL_SCRAM" | "SASL_SSL" | "SSL";
   saslMechanism?: string;
   username?: string;
   schemaRegistryUrl?: string;

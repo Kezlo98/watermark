@@ -14,7 +14,7 @@ const SAMPLE_JSON = `{
 }`;
 
 export function AppearanceForm() {
-  const { density, setDensity, codeFont, setCodeFont, codeFontSize, setCodeFontSize } =
+  const { theme, setTheme, density, setDensity, codeFont, setCodeFont, codeFontSize, setCodeFontSize } =
     useSettingsStore();
 
   return (
@@ -29,7 +29,8 @@ export function AppearanceForm() {
           <div>
             <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">Theme</label>
             <select
-              defaultValue="dark"
+              value={theme}
+              onChange={(e) => setTheme(e.target.value as "dark" | "light" | "system")}
               className="w-48 h-9 px-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/50"
             >
               <option value="dark">Dark</option>

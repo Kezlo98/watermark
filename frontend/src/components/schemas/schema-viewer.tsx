@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useState, useEffect } from "react";
 import { Copy } from "lucide-react";
 import { CompatibilityBadge } from "./compatibility-badge";
 import type { SchemaVersion, CompatibilityLevel, SchemaType } from "@/types/kafka";
@@ -65,6 +65,11 @@ interface SchemaViewerProps {
 export function SchemaViewer({ subjectName }: SchemaViewerProps) {
   const schema = MOCK_SCHEMAS[subjectName];
   const [selectedVersion, setSelectedVersion] = useState(schema?.versions[0]?.version ?? 1);
+
+  // Reset version selection when subject changes so stale version isn't applied to new subject
+  useEffect(() => {
+    setSelectedVersion(schema?.versions[0]?.version ?? 1);
+  }, [subjectName]);
 
   if (!schema) {
     return (

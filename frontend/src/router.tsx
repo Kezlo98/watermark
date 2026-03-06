@@ -39,7 +39,7 @@ import { VersionHistory } from "@/components/schemas/version-history";
 /* ========================================================================= */
 const rootRoute = createRootRoute({
   component: () => (
-    <div className="flex h-screen bg-background text-foreground dark">
+    <div className="flex h-screen bg-background text-foreground">
       <Sidebar />
       <div className="flex flex-col flex-1 overflow-hidden">
         <AppHeader />

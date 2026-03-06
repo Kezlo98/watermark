@@ -11,6 +11,15 @@ const STATE_MAP = {
   Unknown: "empty",
 } as const;
 
+/** Pre-declared static classes so Tailwind JIT can scan and include them in production bundle */
+const ICON_COLOR_MAP: Record<keyof typeof STATE_MAP, string> = {
+  Stable: "text-status-healthy",
+  Rebalancing: "text-status-rebalancing",
+  Dead: "text-status-dead",
+  Empty: "text-status-empty",
+  Unknown: "text-status-empty",
+};
+
 interface GroupDetailHeaderProps {
   groupId: string;
   state: ConsumerGroupState;
@@ -38,7 +47,7 @@ export function GroupDetailHeader({ groupId, state, coordinator, totalLag }: Gro
           label="State"
           value={state}
           icon={Server}
-          iconColor={`text-${STATE_MAP[state] === "healthy" ? "status-healthy" : STATE_MAP[state] === "rebalancing" ? "status-rebalancing" : "status-dead"}`}
+          iconColor={ICON_COLOR_MAP[state]}
         />
         <MetricCard
           label="Coordinator"
