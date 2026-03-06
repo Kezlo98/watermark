@@ -3,15 +3,8 @@ import { DataTable } from "@/components/shared/data-table";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils";
 import type { Partition } from "@/types/kafka";
-
-const MOCK_PARTITIONS: Partition[] = [
-  { id: 0, leader: 1, replicas: [1, 2, 3], isr: [1, 2, 3], lowWatermark: 0, highWatermark: 45902 },
-  { id: 1, leader: 2, replicas: [2, 3, 1], isr: [2, 3, 1], lowWatermark: 0, highWatermark: 30000 },
-  { id: 2, leader: 3, replicas: [3, 1, 2], isr: [3, 1], lowWatermark: 0, highWatermark: 28500 },
-  { id: 3, leader: 1, replicas: [1, 2, 3], isr: [1, 2, 3], lowWatermark: 0, highWatermark: 12000 },
-  { id: 4, leader: 2, replicas: [2, 3, 1], isr: [2, 3, 1], lowWatermark: 0, highWatermark: 9800 },
-  { id: 5, leader: 3, replicas: [3, 1, 2], isr: [3, 1, 2], lowWatermark: 0, highWatermark: 15200 },
-];
+import { useKafkaQuery } from "@/hooks/use-kafka-query";
+import { GetTopicPartitions } from "@/lib/wails-client";
 
 const isIsrMismatch = (p: Partition) => p.isr.length !== p.replicas.length;
 
@@ -49,9 +42,14 @@ interface PartitionsTabProps {
 }
 
 export function PartitionsTab({ topicName }: PartitionsTabProps) {
+  const { data: partitions = [] } = useKafkaQuery(
+    ["topic-partitions", topicName],
+    () => GetTopicPartitions(topicName),
+  );
+
   return (
     <DataTable
-      data={MOCK_PARTITIONS}
+      data={partitions}
       columns={columns}
       highlightRow={(row) =>
         isIsrMismatch(row) ? "bg-semantic-red/10" : undefined

@@ -1,16 +1,18 @@
 import type { SchemaVersion } from "@/types/kafka";
-
-const MOCK_HISTORY: SchemaVersion[] = [
-  { version: 3, id: 42, type: "AVRO", date: "2026-03-01", description: 'Added "timestamp" field', schema: "" },
-  { version: 2, id: 28, type: "AVRO", date: "2026-02-15", description: 'Added "email" field', schema: "" },
-  { version: 1, id: 12, type: "AVRO", date: "2026-01-10", description: "Initial schema", schema: "" },
-];
+import { useKafkaQuery } from "@/hooks/use-kafka-query";
+import { GetSchemaVersions } from "@/lib/wails-client";
 
 interface VersionHistoryProps {
   subjectName: string;
 }
 
 export function VersionHistory({ subjectName }: VersionHistoryProps) {
+  const { data: versions = [] } = useKafkaQuery(
+    ["schema-versions", subjectName],
+    () => GetSchemaVersions(subjectName),
+    { refetchInterval: 30_000 },
+  );
+
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
@@ -31,16 +33,16 @@ export function VersionHistory({ subjectName }: VersionHistoryProps) {
           <thead>
             <tr className="bg-white/5">
               <th className="px-4 py-2.5 text-left text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wider">Version</th>
-              <th className="px-4 py-2.5 text-left text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wider">Date</th>
-              <th className="px-4 py-2.5 text-left text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wider">Changes</th>
+              <th className="px-4 py-2.5 text-left text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wider">Schema ID</th>
+              <th className="px-4 py-2.5 text-left text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wider">Type</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
-            {MOCK_HISTORY.map((v) => (
+            {versions.map((v) => (
               <tr key={v.version} className="hover:bg-white/5 transition-colors">
                 <td className="px-4 py-2.5 text-sm font-mono text-primary">v{v.version}</td>
-                <td className="px-4 py-2.5 text-sm font-mono text-slate-400">{v.date}</td>
-                <td className="px-4 py-2.5 text-sm text-slate-300">{v.description}</td>
+                <td className="px-4 py-2.5 text-sm font-mono text-slate-400">{v.id}</td>
+                <td className="px-4 py-2.5 text-sm text-slate-300">{v.type}</td>
               </tr>
             ))}
           </tbody>

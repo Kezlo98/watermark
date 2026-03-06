@@ -1,0 +1,100 @@
+package kafka
+
+// ClusterHealth represents overall cluster status metrics for the Dashboard.
+type ClusterHealth struct {
+	Status        string `json:"status"` // "healthy", "degraded", "offline"
+	BrokersOnline int    `json:"brokersOnline"`
+	BrokersTotal  int    `json:"brokersTotal"`
+	TopicCount    int    `json:"topicCount"`
+	TotalSize     int64  `json:"totalSize"`
+}
+
+// Broker represents a Kafka broker node.
+type Broker struct {
+	ID           int32  `json:"id"`
+	Host         string `json:"host"`
+	Port         int32  `json:"port"`
+	Partitions   int    `json:"partitions"`
+	Size         int64  `json:"size"`
+	IsController bool   `json:"isController"`
+}
+
+// Topic represents a Kafka topic with metadata.
+type Topic struct {
+	Name       string `json:"name"`
+	Partitions int    `json:"partitions"`
+	Replicas   int    `json:"replicas"`
+	Size       int64  `json:"size"`
+	Retention  string `json:"retention"`
+	IsInternal bool   `json:"isInternal"`
+}
+
+// Partition represents a single partition of a topic.
+type Partition struct {
+	ID            int32   `json:"id"`
+	Leader        int32   `json:"leader"`
+	Replicas      []int32 `json:"replicas"`
+	ISR           []int32 `json:"isr"`
+	LowWatermark  int64   `json:"lowWatermark"`
+	HighWatermark int64   `json:"highWatermark"`
+}
+
+// Message represents a Kafka message.
+type Message struct {
+	Partition int32             `json:"partition"`
+	Offset    int64             `json:"offset"`
+	Timestamp string            `json:"timestamp"`
+	Key       string            `json:"key"`
+	Value     string            `json:"value"`
+	Headers   map[string]string `json:"headers,omitempty"`
+}
+
+// ConsumerGroup represents a consumer group summary.
+type ConsumerGroup struct {
+	GroupID  string `json:"groupId"`
+	State    string `json:"state"`
+	Members  int    `json:"members"`
+	TotalLag int64  `json:"totalLag"`
+}
+
+// ConsumerGroupDetail represents full consumer group info.
+type ConsumerGroupDetail struct {
+	GroupID     string                `json:"groupId"`
+	State       string                `json:"state"`
+	Coordinator int32                 `json:"coordinator"`
+	Members     []ConsumerGroupMember `json:"members"`
+	Offsets     []ConsumerGroupOffset `json:"offsets"`
+}
+
+// ConsumerGroupMember represents a member of a consumer group.
+type ConsumerGroupMember struct {
+	ClientID           string  `json:"clientId"`
+	Host               string  `json:"host"`
+	AssignedPartitions []int32 `json:"assignedPartitions"`
+}
+
+// ConsumerGroupOffset represents offset and lag for a partition.
+type ConsumerGroupOffset struct {
+	Topic         string `json:"topic"`
+	Partition     int32  `json:"partition"`
+	CurrentOffset int64  `json:"currentOffset"`
+	EndOffset     int64  `json:"endOffset"`
+	Lag           int64  `json:"lag"`
+}
+
+// TopicConfig represents a topic configuration entry.
+type TopicConfig struct {
+	Name         string `json:"name"`
+	Value        string `json:"value"`
+	DefaultValue string `json:"defaultValue"`
+	IsOverridden bool   `json:"isOverridden"`
+	Description  string `json:"description"`
+}
+
+// AclEntry represents a Kafka ACL entry.
+type AclEntry struct {
+	Principal      string `json:"principal"`
+	Operation      string `json:"operation"`
+	PermissionType string `json:"permissionType"` // "Allow" or "Deny"
+	Host           string `json:"host"`
+}

@@ -1,29 +1,18 @@
-/* App Configuration Types */
+/**
+ * App Configuration Types
+ *
+ * Re-exports Wails-generated model classes as the canonical types.
+ */
 
+import { config } from "../../wailsjs/go/models";
+
+export type ClusterProfile = config.ClusterProfile;
+export type AppSettings = config.AppSettings;
+
+/* Convenience aliases — Wails generates `color: string` etc. */
 export type ThemeMode = "dark" | "light" | "system";
 export type UIDensity = "compact" | "comfortable" | "spacious";
 export type ClusterColor = "red" | "orange" | "green" | "purple";
-
-export interface ClusterProfile {
-  id: string;
-  name: string;
-  bootstrapServers: string;
-  color: ClusterColor;
-  readOnly: boolean;
-  securityProtocol: "NONE" | "SASL_PLAIN" | "SASL_SCRAM" | "SASL_SSL" | "SSL";
-  saslMechanism?: string;
-  username?: string;
-  schemaRegistryUrl?: string;
-}
-
-export interface AppSettings {
-  theme: ThemeMode;
-  density: UIDensity;
-  codeFont: string;
-  codeFontSize: number;
-  launchOnStartup: boolean;
-  minimizeToTray: boolean;
-}
 
 /** Row height and padding per density mode */
 export const DENSITY_CONFIG: Record<UIDensity, { rowHeight: string; padding: string }> = {

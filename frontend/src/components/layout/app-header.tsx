@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Search, Settings, Bell, Plus, ChevronDown } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Search, Settings, Bell, Plus } from "lucide-react";
 import { useSettingsStore } from "@/store/settings";
+import { ClusterDropdown } from "./cluster-dropdown";
 
 export function AppHeader() {
   const { openSettings } = useSettingsStore();
@@ -23,12 +23,8 @@ export function AppHeader() {
     <header className="h-16 flex items-center justify-between px-6 border-b border-white/5 bg-background/80 backdrop-blur-sm sticky top-0 z-40">
       {/* Left: Cluster selector + search */}
       <div className="flex items-center gap-4">
-        {/* Cluster selector */}
-        <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:border-white/20 transition-colors">
-          <span className="size-2 rounded-full bg-status-healthy animate-pulse" />
-          <span className="text-sm font-medium text-white">Dev Cluster</span>
-          <ChevronDown className="size-3 text-slate-400" />
-        </button>
+        {/* Cluster selector dropdown */}
+        <ClusterDropdown />
 
         {/* Search trigger */}
         <button

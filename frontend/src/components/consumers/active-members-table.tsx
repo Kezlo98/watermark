@@ -2,11 +2,6 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/shared/data-table";
 import type { ConsumerGroupMember } from "@/types/kafka";
 
-const MOCK_MEMBERS: ConsumerGroupMember[] = [
-  { clientId: "email-svc-pod-1", host: "10.0.1.5", assignedPartitions: [0] },
-  { clientId: "email-svc-pod-2", host: "10.0.1.8", assignedPartitions: [1] },
-];
-
 const columns: ColumnDef<ConsumerGroupMember, unknown>[] = [
   {
     accessorKey: "clientId",
@@ -40,13 +35,17 @@ const columns: ColumnDef<ConsumerGroupMember, unknown>[] = [
   },
 ];
 
-export function ActiveMembersTable() {
+interface ActiveMembersTableProps {
+  members: ConsumerGroupMember[];
+}
+
+export function ActiveMembersTable({ members }: ActiveMembersTableProps) {
   return (
     <div>
       <h3 className="text-sm font-display font-bold text-white mb-3 uppercase tracking-wider">
-        Active Members ({MOCK_MEMBERS.length})
+        Active Members ({members.length})
       </h3>
-      <DataTable data={MOCK_MEMBERS} columns={columns} />
+      <DataTable data={members} columns={columns} />
     </div>
   );
 }

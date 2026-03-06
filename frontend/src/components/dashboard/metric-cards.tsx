@@ -1,39 +1,46 @@
 import { CheckCircle, Server, Layers, HardDrive } from "lucide-react";
 import { MetricCard } from "@/components/shared/metric-card";
-
-const DASHBOARD_METRICS = [
-  {
-    label: "Cluster Status",
-    value: "3/3 Online",
-    icon: CheckCircle,
-    iconColor: "text-status-healthy",
-    trend: { value: "All Healthy", positive: true },
-  },
-  {
-    label: "Brokers",
-    value: "3",
-    icon: Server,
-    iconColor: "text-primary",
-  },
-  {
-    label: "Topics",
-    value: "142",
-    icon: Layers,
-    iconColor: "text-semantic-cyan",
-    trend: { value: "+3 this week", positive: true },
-  },
-  {
-    label: "Total Size",
-    value: "1.2 TB",
-    icon: HardDrive,
-    iconColor: "text-semantic-orange",
-  },
-];
+import { useKafkaQuery } from "@/hooks/use-kafka-query";
+import { GetClusterHealth } from "@/lib/wails-client";
+import { formatBytes } from "@/lib/utils";
 
 export function DashboardMetricCards() {
+  const { data: health } = useKafkaQuery(
+    ["cluster-health"],
+    GetClusterHealth,
+  );
+
+  const metrics = [
+    {
+      label: "Cluster Status",
+      value: health ? `${health.brokersOnline}/${health.brokersTotal} Online` : "—",
+      icon: CheckCircle,
+      iconColor: "text-status-healthy",
+      trend: health?.status === "healthy" ? { value: "All Healthy", positive: true } : undefined,
+    },
+    {
+      label: "Brokers",
+      value: health?.brokersOnline.toString() ?? "—",
+      icon: Server,
+      iconColor: "text-primary",
+    },
+    {
+      label: "Topics",
+      value: health?.topicCount.toString() ?? "—",
+      icon: Layers,
+      iconColor: "text-semantic-cyan",
+    },
+    {
+      label: "Total Size",
+      value: health ? formatBytes(health.totalSize) : "—",
+      icon: HardDrive,
+      iconColor: "text-semantic-orange",
+    },
+  ];
+
   return (
     <div className="grid grid-cols-4 gap-4">
-      {DASHBOARD_METRICS.map((metric) => (
+      {metrics.map((metric) => (
         <MetricCard key={metric.label} {...metric} />
       ))}
     </div>

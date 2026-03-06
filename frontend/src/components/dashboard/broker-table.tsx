@@ -4,12 +4,8 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import { cn } from "@/lib/utils";
 import { formatBytes, formatNumber } from "@/lib/utils";
 import type { Broker } from "@/types/kafka";
-
-const MOCK_BROKERS: Broker[] = [
-  { id: 1, host: "192.168.1.10", port: 9092, partitions: 420, size: 450 * 1024 ** 3, isController: true },
-  { id: 2, host: "192.168.1.11", port: 9092, partitions: 418, size: 410 * 1024 ** 3, isController: false },
-  { id: 3, host: "192.168.1.12", port: 9092, partitions: 422, size: 440 * 1024 ** 3, isController: false },
-];
+import { useKafkaQuery } from "@/hooks/use-kafka-query";
+import { GetBrokers } from "@/lib/wails-client";
 
 const columns: ColumnDef<Broker, unknown>[] = [
   {
@@ -41,13 +37,15 @@ const columns: ColumnDef<Broker, unknown>[] = [
 ];
 
 export function BrokerTable() {
+  const { data: brokers = [] } = useKafkaQuery(["brokers"], GetBrokers);
+
   return (
     <div>
       <h2 className="text-lg font-display font-bold text-white mb-4 uppercase tracking-wider">
         Brokers
       </h2>
       <DataTable
-        data={MOCK_BROKERS}
+        data={brokers}
         columns={columns}
         highlightRow={(row) =>
           row.isController ? "bg-primary/10 border-l-2 border-primary" : undefined

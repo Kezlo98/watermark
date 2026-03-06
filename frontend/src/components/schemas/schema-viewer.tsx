@@ -1,56 +1,11 @@
 import { lazy, Suspense, useState, useEffect } from "react";
 import { Copy } from "lucide-react";
 import { CompatibilityBadge } from "./compatibility-badge";
-import type { SchemaVersion, CompatibilityLevel, SchemaType } from "@/types/kafka";
+import type { SchemaType, CompatibilityLevel } from "@/types/kafka";
+import { useKafkaQuery } from "@/hooks/use-kafka-query";
+import { GetSchemaVersions, GetCompatibility } from "@/lib/wails-client";
 
 const MonacoEditor = lazy(() => import("@monaco-editor/react"));
-
-interface SchemaData {
-  name: string;
-  type: SchemaType;
-  compatibility: CompatibilityLevel;
-  versions: SchemaVersion[];
-}
-
-const MOCK_SCHEMAS: Record<string, SchemaData> = {
-  "user.signup": {
-    name: "user.signup",
-    type: "AVRO",
-    compatibility: "BACKWARD",
-    versions: [
-      { version: 3, id: 42, type: "AVRO", date: "2026-03-01", description: 'Added "timestamp" field',
-        schema: `{
-  "type": "record",
-  "name": "UserSignup",
-  "namespace": "com.example.events",
-  "fields": [
-    { "name": "userId", "type": "string" },
-    { "name": "email", "type": "string" },
-    { "name": "timestamp", "type": "long" }
-  ]
-}` },
-      { version: 2, id: 28, type: "AVRO", date: "2026-02-15", description: 'Added "email" field',
-        schema: `{
-  "type": "record",
-  "name": "UserSignup",
-  "namespace": "com.example.events",
-  "fields": [
-    { "name": "userId", "type": "string" },
-    { "name": "email", "type": "string" }
-  ]
-}` },
-      { version: 1, id: 12, type: "AVRO", date: "2026-01-10", description: "Initial schema",
-        schema: `{
-  "type": "record",
-  "name": "UserSignup",
-  "namespace": "com.example.events",
-  "fields": [
-    { "name": "userId", "type": "string" }
-  ]
-}` },
-    ],
-  },
-};
 
 const LANGUAGE_MAP: Record<SchemaType, string> = {
   AVRO: "json",
@@ -63,15 +18,28 @@ interface SchemaViewerProps {
 }
 
 export function SchemaViewer({ subjectName }: SchemaViewerProps) {
-  const schema = MOCK_SCHEMAS[subjectName];
-  const [selectedVersion, setSelectedVersion] = useState(schema?.versions[0]?.version ?? 1);
+  const { data: versions = [] } = useKafkaQuery(
+    ["schema-versions", subjectName],
+    () => GetSchemaVersions(subjectName),
+    { refetchInterval: 30_000 },
+  );
 
-  // Reset version selection when subject changes so stale version isn't applied to new subject
+  const { data: compatibility } = useKafkaQuery(
+    ["schema-compatibility", subjectName],
+    () => GetCompatibility(subjectName),
+    { refetchInterval: 60_000 },
+  );
+
+  const [selectedVersion, setSelectedVersion] = useState(versions[0]?.version ?? 1);
+
+  // Reset version selection when subject changes
   useEffect(() => {
-    setSelectedVersion(schema?.versions[0]?.version ?? 1);
-  }, [subjectName]);
+    if (versions.length > 0) {
+      setSelectedVersion(versions[0].version);
+    }
+  }, [subjectName, versions]);
 
-  if (!schema) {
+  if (versions.length === 0) {
     return (
       <div className="flex items-center justify-center h-full text-slate-500 text-sm">
         Select a subject to view its schema
@@ -79,7 +47,8 @@ export function SchemaViewer({ subjectName }: SchemaViewerProps) {
     );
   }
 
-  const currentVersion = schema.versions.find((v) => v.version === selectedVersion) ?? schema.versions[0];
+  const currentVersion = versions.find((v) => v.version === selectedVersion) ?? versions[0];
+  const schemaType = (currentVersion?.type ?? "AVRO") as SchemaType;
 
   const copySchema = () => {
     navigator.clipboard.writeText(currentVersion.schema);
@@ -91,24 +60,26 @@ export function SchemaViewer({ subjectName }: SchemaViewerProps) {
       <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
         <div className="flex items-center gap-4">
           <h3 className="text-sm font-display font-bold text-white uppercase tracking-wider">
-            {schema.name}
+            {subjectName}
           </h3>
           <select
             value={selectedVersion}
             onChange={(e) => setSelectedVersion(Number(e.target.value))}
             className="h-8 px-2 bg-white/5 border border-white/10 rounded text-xs text-white font-mono focus:outline-none focus:ring-1 focus:ring-primary/50"
           >
-            {schema.versions.map((v) => (
+            {versions.map((v) => (
               <option key={v.version} value={v.version}>
-                v{v.version} {v.version === schema.versions[0].version ? "(latest)" : ""}
+                v{v.version} {v.version === versions[0].version ? "(latest)" : ""}
               </option>
             ))}
           </select>
-          <CompatibilityBadge level={schema.compatibility} />
+          {compatibility && (
+            <CompatibilityBadge level={compatibility as CompatibilityLevel} />
+          )}
         </div>
         <div className="flex items-center gap-3">
           <span className="text-xs font-mono text-slate-500">
-            {schema.type} | ID: {currentVersion.id}
+            {schemaType} | ID: {currentVersion.id}
           </span>
           <button
             onClick={copySchema}
@@ -124,7 +95,7 @@ export function SchemaViewer({ subjectName }: SchemaViewerProps) {
         <Suspense fallback={<div className="p-4 text-sm text-slate-500">Loading editor...</div>}>
           <MonacoEditor
             height="100%"
-            language={LANGUAGE_MAP[schema.type]}
+            language={LANGUAGE_MAP[schemaType]}
             theme="vs-dark"
             value={currentVersion.schema}
             options={{

@@ -4,11 +4,6 @@ import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils";
 import type { ConsumerGroupOffset } from "@/types/kafka";
 
-const MOCK_OFFSETS: ConsumerGroupOffset[] = [
-  { topic: "user.signup", partition: 0, currentOffset: 44500, endOffset: 45902, lag: 1402 },
-  { topic: "user.signup", partition: 1, currentOffset: 30000, endOffset: 30000, lag: 0 },
-];
-
 const columns: ColumnDef<ConsumerGroupOffset, unknown>[] = [
   {
     accessorKey: "topic",
@@ -38,13 +33,17 @@ const columns: ColumnDef<ConsumerGroupOffset, unknown>[] = [
   },
 ];
 
-export function OffsetsLagTable() {
+interface OffsetsLagTableProps {
+  offsets: ConsumerGroupOffset[];
+}
+
+export function OffsetsLagTable({ offsets }: OffsetsLagTableProps) {
   return (
     <div>
       <h3 className="text-sm font-display font-bold text-white mb-3 uppercase tracking-wider">
         Offsets & Lag
       </h3>
-      <DataTable data={MOCK_OFFSETS} columns={columns} />
+      <DataTable data={offsets} columns={columns} />
     </div>
   );
 }

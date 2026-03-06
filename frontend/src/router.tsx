@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   createRootRoute,
   createRoute,
@@ -11,6 +11,8 @@ import { Plus, Send } from "lucide-react";
 import { Sidebar } from "@/components/layout/sidebar";
 import { AppHeader } from "@/components/layout/app-header";
 import { SettingsOverlay } from "@/components/settings/settings-overlay";
+import { useSettingsStore } from "@/store/settings";
+import { GetClusters } from "@/lib/wails-client";
 
 /* ====== Dashboard imports ====== */
 import { DashboardMetricCards } from "@/components/dashboard/metric-cards";
@@ -28,6 +30,9 @@ import { ConsumerGroupTable } from "@/components/consumers/consumer-group-table"
 import { GroupDetailHeader } from "@/components/consumers/group-detail-header";
 import { ActiveMembersTable } from "@/components/consumers/active-members-table";
 import { OffsetsLagTable } from "@/components/consumers/offsets-lag-table";
+import { useKafkaQuery } from "@/hooks/use-kafka-query";
+import { GetConsumerGroupDetail } from "@/lib/wails-client";
+import type { ConsumerGroupState } from "@/types/kafka";
 
 /* ====== Schemas imports ====== */
 import { SubjectList } from "@/components/schemas/subject-list";
@@ -37,8 +42,25 @@ import { VersionHistory } from "@/components/schemas/version-history";
 /* ========================================================================= */
 /*  Root layout — App Shell                                                  */
 /* ========================================================================= */
-const rootRoute = createRootRoute({
-  component: () => (
+
+function AppShell() {
+  const { initializeConnection, openSettings } = useSettingsStore();
+
+  useEffect(() => {
+    // Auto-connect to saved active cluster on app mount
+    initializeConnection();
+
+    // Auto-open settings if no clusters configured (first-run)
+    GetClusters().then((clusters) => {
+      if (!clusters || clusters.length === 0) {
+        openSettings();
+      }
+    }).catch(() => {
+      // ignore — backend may not be ready yet
+    });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return (
     <div className="flex h-screen bg-background text-foreground">
       <Sidebar />
       <div className="flex flex-col flex-1 overflow-hidden">
@@ -51,7 +73,11 @@ const rootRoute = createRootRoute({
       </div>
       <SettingsOverlay />
     </div>
-  ),
+  );
+}
+
+const rootRoute = createRootRoute({
+  component: AppShell,
 });
 
 /* ========================================================================= */
@@ -212,6 +238,10 @@ const consumersRoute = createRoute({
 /* ========================================================================= */
 function ConsumerDetailPage() {
   const { groupId } = useParams({ from: "/consumers/$groupId" });
+  const { data: detail } = useKafkaQuery(
+    ["consumer-group-detail", groupId],
+    () => GetConsumerGroupDetail(groupId),
+  );
 
   return (
     <div className="space-y-6">
@@ -235,14 +265,14 @@ function ConsumerDetailPage() {
 
       <GroupDetailHeader
         groupId={groupId}
-        state="Stable"
-        coordinator={1}
-        totalLag={1402}
+        state={(detail?.state ?? "Unknown") as ConsumerGroupState}
+        coordinator={detail?.coordinator ?? 0}
+        totalLag={detail?.offsets.reduce((sum, o) => sum + o.lag, 0) ?? 0}
       />
 
       <div className="space-y-6">
-        <OffsetsLagTable />
-        <ActiveMembersTable />
+        <OffsetsLagTable offsets={detail?.offsets ?? []} />
+        <ActiveMembersTable members={detail?.members ?? []} />
       </div>
     </div>
   );
@@ -258,7 +288,7 @@ const consumerDetailRoute = createRoute({
 /*  Phase 06 — Schema Registry                                               */
 /* ========================================================================= */
 function SchemasPage() {
-  const [selectedSubject, setSelectedSubject] = useState<string | null>("user.signup");
+  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
 
   return (
     <div className="space-y-6">

@@ -2,13 +2,8 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/shared/data-table";
 import type { AclEntry } from "@/types/kafka";
 import { cn } from "@/lib/utils";
-
-const MOCK_ACLS: AclEntry[] = [
-  { principal: "User:admin", operation: "All", permissionType: "Allow", host: "*" },
-  { principal: "User:producer-svc", operation: "Write", permissionType: "Allow", host: "10.0.1.0/24" },
-  { principal: "User:consumer-svc", operation: "Read", permissionType: "Allow", host: "10.0.2.0/24" },
-  { principal: "User:external", operation: "Write", permissionType: "Deny", host: "*" },
-];
+import { useKafkaQuery } from "@/hooks/use-kafka-query";
+import { GetTopicACLs } from "@/lib/wails-client";
 
 const columns: ColumnDef<AclEntry, unknown>[] = [
   {
@@ -51,12 +46,17 @@ interface AclsTabProps {
 }
 
 export function AclsTab({ topicName }: AclsTabProps) {
+  const { data: acls = [] } = useKafkaQuery(
+    ["topic-acls", topicName],
+    () => GetTopicACLs(topicName),
+  );
+
   return (
     <div>
       <p className="text-xs text-slate-500 mb-4">
         Read-only view of ACL entries for this topic.
       </p>
-      <DataTable data={MOCK_ACLS} columns={columns} />
+      <DataTable data={acls} columns={columns} />
     </div>
   );
 }
