@@ -4,6 +4,8 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils";
 import type { ConsumerGroup, ConsumerGroupState } from "@/types/kafka";
+import { useKafkaQuery } from "@/hooks/use-kafka-query";
+import { GetConsumerGroups } from "@/lib/wails-client";
 
 const STATE_MAP: Record<ConsumerGroupState, "healthy" | "rebalancing" | "dead" | "empty"> = {
   Stable: "healthy",
@@ -12,20 +14,6 @@ const STATE_MAP: Record<ConsumerGroupState, "healthy" | "rebalancing" | "dead" |
   Empty: "empty",
   Unknown: "empty",
 };
-
-const MOCK_GROUPS: ConsumerGroup[] = [
-  { groupId: "email-sender-service", state: "Stable", members: 2, totalLag: 1402 },
-  { groupId: "analytics-pipeline", state: "Stable", members: 4, totalLag: 0 },
-  { groupId: "audit-logger", state: "Rebalancing", members: 1, totalLag: 250 },
-  { groupId: "payment-processor", state: "Stable", members: 3, totalLag: 0 },
-  { groupId: "old-consumer", state: "Dead", members: 0, totalLag: 5200 },
-  { groupId: "test-group", state: "Empty", members: 0, totalLag: 0 },
-];
-
-interface ConsumerGroupTableProps {
-  onGroupClick: (groupId: string) => void;
-  searchFilter: string;
-}
 
 const columns: ColumnDef<ConsumerGroup, unknown>[] = [
   {
@@ -38,7 +26,7 @@ const columns: ColumnDef<ConsumerGroup, unknown>[] = [
     header: "State",
     cell: ({ row }) => (
       <StatusBadge
-        status={STATE_MAP[row.original.state]}
+        status={STATE_MAP[row.original.state as ConsumerGroupState]}
         label={row.original.state}
       />
     ),
@@ -55,10 +43,17 @@ const columns: ColumnDef<ConsumerGroup, unknown>[] = [
   },
 ];
 
+interface ConsumerGroupTableProps {
+  onGroupClick: (groupId: string) => void;
+  searchFilter: string;
+}
+
 export function ConsumerGroupTable({ onGroupClick, searchFilter }: ConsumerGroupTableProps) {
+  const { data: groups = [] } = useKafkaQuery(["consumer-groups"], GetConsumerGroups);
+
   return (
     <DataTable
-      data={MOCK_GROUPS}
+      data={groups}
       columns={columns}
       onRowClick={(row) => onGroupClick(row.groupId)}
       globalFilter={searchFilter}

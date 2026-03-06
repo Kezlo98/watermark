@@ -2,15 +2,8 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/shared/data-table";
 import { cn } from "@/lib/utils";
 import type { TopicConfig } from "@/types/kafka";
-
-const MOCK_CONFIGS: TopicConfig[] = [
-  { name: "cleanup.policy", value: "delete", defaultValue: "delete", isOverridden: false, description: "A string that is either delete or compact or both" },
-  { name: "compression.type", value: "snappy", defaultValue: "producer", isOverridden: true, description: "Compression codec for the topic" },
-  { name: "max.message.bytes", value: "2097152", defaultValue: "1048588", isOverridden: true, description: "Maximum size of a message in bytes" },
-  { name: "retention.ms", value: "604800000", defaultValue: "604800000", isOverridden: false, description: "Time to retain messages in ms" },
-  { name: "segment.bytes", value: "1073741824", defaultValue: "1073741824", isOverridden: false, description: "Segment file size in bytes" },
-  { name: "min.insync.replicas", value: "2", defaultValue: "1", isOverridden: true, description: "Minimum ISR required to write" },
-];
+import { useKafkaQuery } from "@/hooks/use-kafka-query";
+import { GetTopicConfigs } from "@/lib/wails-client";
 
 const columns: ColumnDef<TopicConfig, unknown>[] = [
   {
@@ -53,9 +46,14 @@ interface ConfigurationTabProps {
 }
 
 export function ConfigurationTab({ topicName }: ConfigurationTabProps) {
+  const { data: configs = [] } = useKafkaQuery(
+    ["topic-configs", topicName],
+    () => GetTopicConfigs(topicName),
+  );
+
   return (
     <DataTable
-      data={MOCK_CONFIGS}
+      data={configs}
       columns={columns}
       highlightRow={(row) =>
         row.isOverridden ? "bg-primary/5 border-l-2 border-primary" : undefined

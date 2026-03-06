@@ -1,43 +1,25 @@
 import { useState, lazy, Suspense } from "react";
 import { Play, Pause } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { Message } from "@/types/kafka";
+import { useKafkaQuery } from "@/hooks/use-kafka-query";
+import { ConsumeMessages } from "@/lib/wails-client";
 
 const MonacoEditor = lazy(() => import("@monaco-editor/react"));
 
 type MessageFormat = "Auto" | "String" | "JSON" | "Avro" | "Protobuf" | "Hex";
 
-interface MockMessage {
-  partition: number;
-  offset: number;
-  timestamp: string;
-  key: string;
-  value: string;
-}
-
-const MOCK_MESSAGES: MockMessage[] = [
-  { partition: 0, offset: 45901, timestamp: "21:42:01.001", key: '"u_10"', value: '{"name": "Alex", "action": "SIGN_UP", "email": "alex@example.com"}' },
-  { partition: 2, offset: 45902, timestamp: "21:42:05.420", key: '"u_11"', value: '{"name": "John", "action": "SIGN_UP", "email": "john@example.com"}' },
-  { partition: 1, offset: 45903, timestamp: "21:42:08.112", key: '"u_12"', value: '{"name": "Sara", "action": "LOGIN", "email": "sara@example.com"}' },
-  { partition: 0, offset: 45904, timestamp: "21:42:12.650", key: '"u_13"', value: '{"name": "Mike", "action": "SIGN_UP", "email": "mike@example.com"}' },
-  { partition: 3, offset: 45905, timestamp: "21:42:15.333", key: '"u_14"', value: '{"name": "Lisa", "action": "PASSWORD_RESET", "email": "lisa@example.com"}' },
-];
-
-/** Formats a raw message value string for Monaco display.
- * Respects the selected format and gracefully handles non-JSON values.
- */
+/** Formats a raw message value string for Monaco display. */
 function formatMessageValue(
   raw: string,
   format: MessageFormat
 ): { content: string; language: string } {
-  // Plaintext-only formats — skip JSON parse
   if (format === "String" || format === "Hex") {
     return { content: raw, language: "plaintext" };
   }
-  // Try to pretty-print as JSON (Auto / JSON format)
   try {
     return { content: JSON.stringify(JSON.parse(raw), null, 2), language: "json" };
   } catch {
-    // Fall back gracefully for non-JSON payloads
     return { content: raw, language: "plaintext" };
   }
 }
@@ -49,11 +31,13 @@ interface MessagesTabProps {
 export function MessagesTab({ topicName }: MessagesTabProps) {
   const [isLiveTail, setIsLiveTail] = useState(false);
   const [format, setFormat] = useState<MessageFormat>("Auto");
-  const [selectedMessage, setSelectedMessage] = useState<MockMessage | null>(null);
+  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
 
-  // topicName used as query key — will drive real data fetching once API is wired
-  // e.g. useKafkaQuery(["messages", topicName], () => fetchMessages(topicName))
-  void topicName;
+  const { data: messages = [] } = useKafkaQuery(
+    ["messages", topicName],
+    () => ConsumeMessages(topicName, 0, -1, 50),
+    { refetchInterval: isLiveTail ? 3_000 : false },
+  );
 
   return (
     <div className="space-y-4">
@@ -110,7 +94,7 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
-              {MOCK_MESSAGES.map((msg) => (
+              {messages.map((msg) => (
                 <tr
                   key={`${msg.partition}-${msg.offset}`}
                   onClick={() => setSelectedMessage(msg)}

@@ -1,24 +1,8 @@
 import { useState } from "react";
 import { SearchInput } from "@/components/shared/search-input";
 import { cn } from "@/lib/utils";
-
-interface Subject {
-  name: string;
-}
-
-const MOCK_SUBJECTS: Subject[] = [
-  { name: "user.signup" },
-  { name: "order.created" },
-  { name: "order.updated" },
-  { name: "payment.events" },
-  { name: "inventory.sync" },
-  { name: "user.profile" },
-  { name: "audit.logs" },
-  { name: "email.notif" },
-  { name: "search.index" },
-  { name: "metrics.agg" },
-  { name: "dlq.events" },
-];
+import { useKafkaQuery } from "@/hooks/use-kafka-query";
+import { GetSubjects } from "@/lib/wails-client";
 
 interface SubjectListProps {
   selectedSubject: string | null;
@@ -28,7 +12,13 @@ interface SubjectListProps {
 export function SubjectList({ selectedSubject, onSelect }: SubjectListProps) {
   const [search, setSearch] = useState("");
 
-  const filtered = MOCK_SUBJECTS.filter((s) =>
+  const { data: subjects = [] } = useKafkaQuery(
+    ["schema-subjects"],
+    GetSubjects,
+    { refetchInterval: 30_000 },
+  );
+
+  const filtered = subjects.filter((s) =>
     s.name.toLowerCase().includes(search.toLowerCase())
   );
 

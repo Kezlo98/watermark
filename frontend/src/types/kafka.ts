@@ -1,76 +1,37 @@
-/* Kafka Domain Types — matches Go backend struct shapes */
+/**
+ * Kafka Domain Types
+ *
+ * Re-exports Wails-generated model classes as the canonical types.
+ * This ensures frontend components and Wails bindings use the same types.
+ */
 
-export interface Broker {
-  id: number;
-  host: string;
-  port: number;
-  partitions: number;
-  size: number;
-  isController: boolean;
-}
+import { kafka, schema } from "../../wailsjs/go/models";
 
-export interface Topic {
-  name: string;
-  partitions: number;
-  replicas: number;
-  size: number;
-  retention: string;
-  isInternal: boolean;
-}
+// Re-export kafka namespace types as top-level
+export type Broker = kafka.Broker;
+export type Topic = kafka.Topic;
+export type Partition = kafka.Partition;
+export type Message = kafka.Message;
+export type ConsumerGroup = kafka.ConsumerGroup;
+export type ConsumerGroupDetail = kafka.ConsumerGroupDetail;
+export type ConsumerGroupMember = kafka.ConsumerGroupMember;
+export type ConsumerGroupOffset = kafka.ConsumerGroupOffset;
+export type ClusterHealth = kafka.ClusterHealth;
+export type TopicConfig = kafka.TopicConfig;
+export type AclEntry = kafka.AclEntry;
 
-export interface Partition {
-  id: number;
-  leader: number;
-  replicas: number[];
-  isr: number[];
-  lowWatermark: number;
-  highWatermark: number;
-}
+// Re-export schema namespace types as top-level
+export type SchemaSubject = schema.SchemaSubject;
+export type SchemaVersion = schema.SchemaVersion;
 
-export interface Message {
-  partition: number;
-  offset: number;
-  timestamp: string;
-  key: string;
-  value: string;
-  headers?: Record<string, string>;
-}
-
+/* Convenience aliases — Wails generates `state: string`, so we keep
+   a union type for components that need exhaustive switch matching. */
 export type ConsumerGroupState =
   | "Stable"
   | "Rebalancing"
   | "Dead"
   | "Empty"
   | "Unknown";
-
-export interface ConsumerGroup {
-  groupId: string;
-  state: ConsumerGroupState;
-  members: number;
-  totalLag: number;
-}
-
-export interface ConsumerGroupDetail {
-  groupId: string;
-  state: ConsumerGroupState;
-  coordinator: number;
-  members: ConsumerGroupMember[];
-  offsets: ConsumerGroupOffset[];
-}
-
-export interface ConsumerGroupMember {
-  clientId: string;
-  host: string;
-  assignedPartitions: number[];
-}
-
-export interface ConsumerGroupOffset {
-  topic: string;
-  partition: number;
-  currentOffset: number;
-  endOffset: number;
-  lag: number;
-}
 
 export type SchemaType = "AVRO" | "JSON" | "PROTOBUF";
 
@@ -79,42 +40,3 @@ export type CompatibilityLevel =
   | "FORWARD"
   | "FULL"
   | "NONE";
-
-export interface SchemaSubject {
-  name: string;
-  latestVersion: number;
-  type: SchemaType;
-  compatibility: CompatibilityLevel;
-}
-
-export interface SchemaVersion {
-  version: number;
-  id: number;
-  schema: string;
-  type: SchemaType;
-  date: string;
-  description?: string;
-}
-
-export interface TopicConfig {
-  name: string;
-  value: string;
-  defaultValue: string;
-  isOverridden: boolean;
-  description: string;
-}
-
-export interface AclEntry {
-  principal: string;
-  operation: string;
-  permissionType: "Allow" | "Deny";
-  host: string;
-}
-
-export interface ClusterHealth {
-  status: "healthy" | "degraded" | "offline";
-  brokersOnline: number;
-  brokersTotal: number;
-  topicCount: number;
-  totalSize: number;
-}

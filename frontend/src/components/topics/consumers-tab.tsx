@@ -3,28 +3,19 @@ import { DataTable } from "@/components/shared/data-table";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils";
+import type { ConsumerGroup, ConsumerGroupState } from "@/types/kafka";
+import { useKafkaQuery } from "@/hooks/use-kafka-query";
+import { GetTopicConsumers } from "@/lib/wails-client";
 
-interface TopicConsumer {
-  groupId: string;
-  state: "Stable" | "Rebalancing" | "Dead" | "Empty";
-  members: number;
-  lag: number;
-}
-
-const MOCK_CONSUMERS: TopicConsumer[] = [
-  { groupId: "email-sender-service", state: "Stable", members: 2, lag: 1402 },
-  { groupId: "analytics-pipeline", state: "Stable", members: 4, lag: 0 },
-  { groupId: "audit-logger", state: "Rebalancing", members: 1, lag: 250 },
-];
-
-const STATE_MAP = {
+const STATE_MAP: Record<ConsumerGroupState, "healthy" | "rebalancing" | "dead" | "empty"> = {
   Stable: "healthy",
   Rebalancing: "rebalancing",
   Dead: "dead",
   Empty: "empty",
-} as const;
+  Unknown: "empty",
+};
 
-const columns: ColumnDef<TopicConsumer, unknown>[] = [
+const columns: ColumnDef<ConsumerGroup, unknown>[] = [
   {
     accessorKey: "groupId",
     header: "Group ID",
@@ -35,18 +26,18 @@ const columns: ColumnDef<TopicConsumer, unknown>[] = [
     header: "State",
     cell: ({ row }) => (
       <StatusBadge
-        status={STATE_MAP[row.original.state]}
+        status={STATE_MAP[row.original.state as ConsumerGroupState]}
         label={row.original.state}
       />
     ),
   },
   { accessorKey: "members", header: "Members" },
   {
-    accessorKey: "lag",
+    accessorKey: "totalLag",
     header: "Total Lag",
     cell: ({ row }) => (
-      <span className={cn("font-mono", row.original.lag > 0 && "text-semantic-red font-bold")}>
-        {formatNumber(row.original.lag)}
+      <span className={cn("font-mono", row.original.totalLag > 0 && "text-semantic-red font-bold")}>
+        {formatNumber(row.original.totalLag)}
       </span>
     ),
   },
@@ -57,9 +48,14 @@ interface ConsumersTabProps {
 }
 
 export function ConsumersTab({ topicName }: ConsumersTabProps) {
+  const { data: consumers = [] } = useKafkaQuery(
+    ["topic-consumers", topicName],
+    () => GetTopicConsumers(topicName),
+  );
+
   return (
     <DataTable
-      data={MOCK_CONSUMERS}
+      data={consumers}
       columns={columns}
     />
   );
