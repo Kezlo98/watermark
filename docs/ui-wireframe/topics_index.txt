@@ -1,0 +1,33 @@
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 🟢 Dev Cluster ▾   |  🔍 Global Search (Cmd+K)...               |  ⚙️ App │
+├──────────────┬──────────────────────────────────────────────────────────────┤
+│ 📌 MENU      │  TOPICS (142)                                                │
+│ 📊 Overview  │  🔍 Search topics...     [☐ Hide Internal]     [ ➕ Create ] │
+│ 📄 Topics  ◀ │ ──────────────────────────────────────────────────────────── │
+│ 👥 Consumers │  Name ▾            │ Partitions │ Replicas │ Size    │ Retain │
+│ 📜 Schemas   │ ───────────────────┼────────────┼──────────┼─────────┼─────── │
+│              │  user.signup.events│ 6          │ 3        │ 2.4 GB  │ 7d     │
+│              │  order.created     │ 12         │ 3        │ 8.1 GB  │ 30d    │
+│              │  payment.processed │ 3          │ 3        │ 1.2 GB  │ 14d    │
+│              │  inventory.updates │ 6          │ 2        │ 4.5 GB  │ 7d     │
+│              │  audit.log.events  │ 1          │ 3        │ 12.3 GB │ 365d   │
+│              │  user.profile.chg  │ 3          │ 3        │ 890 MB  │ 7d     │
+│              │  notif.email.send  │ 6          │ 2        │ 3.1 GB  │ 14d    │
+│              │  ··· (135 more)    │            │          │         │        │
+│              │ ──────────────────────────────────────────────────────────── │
+│              │  Showing 1-50 of 142          [ ◀ Prev ]  [ Next ▶ ]         │
+└──────────────┴──────────────────────────────────────────────────────────────┘
+
+Create Topic Modal:
+
+┌───────────────────────────────────────────┐
+│  CREATE NEW TOPIC                     [✕] │
+│ ─────────────────────────────────────── │
+│  Topic Name:       [ my.new.topic       ] │
+│  Partitions:       [ 6           ▾ ]      │
+│  Replication Factor: [ 3         ▾ ]      │
+│  Retention (ms):   [ 604800000   ]  (7d)  │
+│  Cleanup Policy:   [ delete      ▾ ]      │
+│                                           │
+│              [ Cancel ]    [ Create Topic] │
+└───────────────────────────────────────────┘
