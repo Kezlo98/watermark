@@ -1,6 +1,7 @@
 package kafka
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -8,7 +9,7 @@ import (
 )
 
 // ConsumeMessages fetches N messages from a topic starting at given offset.
-// Use startOffset=-1 for latest (will compute latest-limit), -2 for earliest.
+// partition=-1 reads from all partitions; startOffset=-1 for latest, -2 for earliest.
 func (k *KafkaService) ConsumeMessages(topicName string, partition int32, startOffset int64, limit int) ([]Message, error) {
 	k.mu.RLock()
 	defer k.mu.RUnlock()
@@ -23,36 +24,26 @@ func (k *KafkaService) ConsumeMessages(topicName string, partition int32, startO
 
 	ctx := k.getCtx()
 
-	// Determine the actual start offset
-	actualOffset := startOffset
-	if startOffset == -1 {
-		// Latest: get end offset and subtract limit
-		endOffsets, err := k.admin.ListEndOffsets(ctx, topicName)
+	// Resolve which partitions to consume
+	partitions, err := k.resolvePartitions(ctx, topicName, partition)
+	if err != nil {
+		return nil, err
+	}
+
+	// Build per-partition offset map
+	partOffsets := make(map[int32]kgo.Offset, len(partitions))
+	for _, p := range partitions {
+		offset, err := k.resolveStartOffset(ctx, topicName, p, startOffset, limit)
 		if err != nil {
-			return nil, fmt.Errorf("consume: list end offsets: %w", err)
+			return nil, err
 		}
-		if eo, ok := endOffsets.Lookup(topicName, partition); ok {
-			actualOffset = eo.Offset - int64(limit)
-			if actualOffset < 0 {
-				actualOffset = 0
-			}
-		}
-	} else if startOffset == -2 {
-		actualOffset = 0
+		partOffsets[p] = kgo.NewOffset().At(offset)
 	}
 
-	// Build consumer-specific offset map
-	offsets := map[string]map[int32]kgo.Offset{
-		topicName: {
-			partition: kgo.NewOffset().At(actualOffset),
-		},
-	}
+	offsets := map[string]map[int32]kgo.Offset{topicName: partOffsets}
 
-	// Create a temporary consumer client
-	consumerOpts := []kgo.Opt{
-		kgo.SeedBrokers(k.client.OptValue(kgo.SeedBrokers).([]string)...),
-		kgo.ConsumePartitions(offsets),
-	}
+	// Reuse stored base opts (includes broker seeds + SASL/TLS) for the temp consumer
+	consumerOpts := append(append([]kgo.Opt{}, k.baseOpts...), kgo.ConsumePartitions(offsets))
 
 	consumer, err := kgo.NewClient(consumerOpts...)
 	if err != nil {
@@ -72,8 +63,8 @@ func (k *KafkaService) ConsumeMessages(topicName string, partition int32, startO
 
 		fetches := consumer.PollFetches(ctx)
 		if errs := fetches.Errors(); len(errs) > 0 {
-			// Return what we have so far
-			return messages, nil
+			// Return what we have so far plus the first error
+			return messages, fmt.Errorf("consume: poll: %v", errs[0].Err)
 		}
 
 		fetches.EachRecord(func(r *kgo.Record) {
@@ -98,6 +89,53 @@ func (k *KafkaService) ConsumeMessages(topicName string, partition int32, startO
 	}
 
 	return messages, nil
+}
+
+// resolvePartitions returns partition IDs to consume.
+// partition=-1 means all partitions for the topic.
+func (k *KafkaService) resolvePartitions(ctx context.Context, topicName string, partition int32) ([]int32, error) {
+	if partition >= 0 {
+		return []int32{partition}, nil
+	}
+
+	topics, err := k.admin.ListTopics(ctx, topicName)
+	if err != nil {
+		return nil, fmt.Errorf("consume: list partitions: %w", err)
+	}
+	td, ok := topics[topicName]
+	if !ok {
+		return nil, ErrTopicNotFound
+	}
+
+	ids := make([]int32, len(td.Partitions))
+	for i, p := range td.Partitions.Sorted() {
+		ids[i] = p.Partition
+	}
+	return ids, nil
+}
+
+// resolveStartOffset computes the actual start offset for a partition.
+func (k *KafkaService) resolveStartOffset(ctx context.Context, topicName string, partition int32, startOffset int64, limit int) (int64, error) {
+	if startOffset == -2 {
+		return 0, nil
+	}
+	if startOffset >= 0 {
+		return startOffset, nil
+	}
+
+	// startOffset == -1: latest → read last N messages
+	endOffsets, err := k.admin.ListEndOffsets(ctx, topicName)
+	if err != nil {
+		return 0, fmt.Errorf("consume: list end offsets: %w", err)
+	}
+	if eo, ok := endOffsets.Lookup(topicName, partition); ok {
+		actual := eo.Offset - int64(limit)
+		if actual < 0 {
+			actual = 0
+		}
+		return actual, nil
+	}
+	return 0, nil
 }
 
 // ProduceMessage sends a single message to a topic.

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+	"time"
 
 	"watermark-01/internal/config"
 
@@ -14,6 +15,9 @@ import (
 	"github.com/twmb/franz-go/pkg/sasl/plain"
 	"github.com/twmb/franz-go/pkg/sasl/scram"
 )
+
+// connectionTimeout is the maximum duration for a cluster connection attempt.
+const connectionTimeout = 10 * time.Second
 
 // KafkaService manages the Kafka connection lifecycle and all Kafka operations.
 // All public methods are exposed to the frontend via Wails bindings.
@@ -25,6 +29,7 @@ type KafkaService struct {
 	connected     bool
 	activeProfile string
 	ctx           context.Context
+	baseOpts      []kgo.Opt // broker + auth/TLS opts, reused for temp consumers
 }
 
 // NewKafkaService creates a new KafkaService.
@@ -38,6 +43,7 @@ func (k *KafkaService) SetContext(ctx context.Context) {
 }
 
 // Connect establishes a connection to the Kafka cluster identified by profileID.
+// Uses a 10-second timeout to prevent hanging on unreachable clusters.
 func (k *KafkaService) Connect(profileID string) error {
 	k.mu.Lock()
 	defer k.mu.Unlock()
@@ -66,14 +72,21 @@ func (k *KafkaService) Connect(profileID string) error {
 		return fmt.Errorf("connect: new client: %w", err)
 	}
 
-	// Ping to verify connectivity
-	if err := client.Ping(k.getCtx()); err != nil {
+	// Ping with timeout to verify connectivity — prevents hanging on unreachable brokers
+	connectCtx, cancel := context.WithTimeout(k.getCtx(), connectionTimeout)
+	defer cancel()
+
+	if err := client.Ping(connectCtx); err != nil {
 		client.Close()
+		if connectCtx.Err() == context.DeadlineExceeded {
+			return fmt.Errorf("connection timed out after %s — cluster unreachable", connectionTimeout)
+		}
 		return fmt.Errorf("connect: ping failed: %w", err)
 	}
 
 	k.client = client
 	k.admin = kadm.NewClient(client)
+	k.baseOpts = opts
 	k.connected = true
 	k.activeProfile = profileID
 
@@ -92,6 +105,7 @@ func (k *KafkaService) Disconnect() error {
 	k.admin = nil
 	k.client.Close()
 	k.client = nil
+	k.baseOpts = nil
 	k.connected = false
 	k.activeProfile = ""
 
