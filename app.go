@@ -2,26 +2,42 @@ package main
 
 import (
 	"context"
-	"fmt"
+
+	"watermark-01/internal/config"
+	"watermark-01/internal/kafka"
+	"watermark-01/internal/schema"
 )
 
-// App struct.
+// App struct holds references to all services and the Wails runtime context.
 type App struct {
-	ctx context.Context
+	ctx       context.Context
+	configSvc *config.ConfigService
+	kafkaSvc  *kafka.KafkaService
+	schemaSvc *schema.SchemaService
 }
 
-// NewApp creates a new App application struct.
-func NewApp() *App {
-	return &App{}
+// NewApp creates a new App application struct with all services.
+func NewApp(c *config.ConfigService, k *kafka.KafkaService, s *schema.SchemaService) *App {
+	return &App{configSvc: c, kafkaSvc: k, schemaSvc: s}
 }
 
-// Greet returns a greeting for the given name.
-func (a *App) Greet(name string) string {
-	return fmt.Sprintf("Hello %s, It's show time!", name)
-}
-
-// startup is called when the app starts. The context is saved
-// so we can call the runtime methods.
+// startup is called when the Wails app starts. Passes context to services.
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
+	a.kafkaSvc.SetContext(ctx)
+	a.schemaSvc.SetContext(ctx)
+
+	// Auto-connect to last active cluster (non-blocking)
+	if id := a.configSvc.GetActiveClusterID(); id != "" {
+		go func() {
+			if err := a.kafkaSvc.Connect(id); err == nil {
+				a.schemaSvc.Configure(id)
+			}
+		}()
+	}
+}
+
+// shutdown is called when the Wails app is closing. Cleans up connections.
+func (a *App) shutdown(ctx context.Context) {
+	a.kafkaSvc.Disconnect()
 }
