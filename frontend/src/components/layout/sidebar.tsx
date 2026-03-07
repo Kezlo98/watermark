@@ -4,8 +4,8 @@ import {
   Layers,
   Users,
   FileCode2,
-  Droplets,
 } from "lucide-react";
+import logoImg from "@/assets/images/logo-universal.png";
 import { cn } from "@/lib/utils";
 
 interface NavItem {
@@ -35,8 +35,8 @@ export function Sidebar() {
     <aside className="glass-sidebar w-[264px] h-screen flex flex-col shrink-0">
       {/* Logo */}
       <div className="flex items-center gap-3 px-6 py-5 border-b border-white/5">
-        <div className="flex items-center justify-center size-9 rounded-xl bg-primary/20">
-          <Droplets className="size-5 text-primary" />
+        <div className="flex items-center justify-center shrink-0">
+          <img src={logoImg} alt="Watermark" className="size-10 object-contain rounded-lg" />
         </div>
         <div>
           <h1 className="text-base font-display font-bold text-white tracking-tight">
