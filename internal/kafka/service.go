@@ -29,12 +29,16 @@ type KafkaService struct {
 	connected     bool
 	activeProfile string
 	ctx           context.Context
-	baseOpts      []kgo.Opt // broker + auth/TLS opts, reused for temp consumers
+	baseOpts      []kgo.Opt   // broker + auth/TLS opts, reused for temp consumers
+	cache         *adminCache // short-TTL cache for expensive admin calls
 }
 
 // NewKafkaService creates a new KafkaService.
 func NewKafkaService(configSvc *config.ConfigService) *KafkaService {
-	return &KafkaService{configSvc: configSvc}
+	return &KafkaService{
+		configSvc: configSvc,
+		cache:     newAdminCache(defaultCacheTTL),
+	}
 }
 
 // SetContext sets the Wails runtime context for cancellation support.
@@ -108,6 +112,7 @@ func (k *KafkaService) Disconnect() error {
 	k.baseOpts = nil
 	k.connected = false
 	k.activeProfile = ""
+	k.cache.invalidate()
 
 	return nil
 }

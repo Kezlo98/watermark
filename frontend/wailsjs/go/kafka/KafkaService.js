@@ -42,6 +42,10 @@ export function GetConsumerGroups() {
   return window['go']['kafka']['KafkaService']['GetConsumerGroups']();
 }
 
+export function GetDashboardData() {
+  return window['go']['kafka']['KafkaService']['GetDashboardData']();
+}
+
 export function GetTopic(arg1) {
   return window['go']['kafka']['KafkaService']['GetTopic'](arg1);
 }
@@ -80,4 +84,12 @@ export function ResetConsumerGroupOffsets(arg1, arg2) {
 
 export function SetContext(arg1) {
   return window['go']['kafka']['KafkaService']['SetContext'](arg1);
+}
+
+export function StartLiveTail(arg1) {
+  return window['go']['kafka']['KafkaService']['StartLiveTail'](arg1);
+}
+
+export function StopLiveTail() {
+  return window['go']['kafka']['KafkaService']['StopLiveTail']();
 }

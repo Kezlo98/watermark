@@ -5,10 +5,12 @@ import { TabNavigation } from "@/components/shared/tab-navigation";
 import { ClusterList } from "./cluster-list";
 import { AppearanceForm } from "./appearance-form";
 import { DataSystemForm } from "./data-system-form";
+import { AnnotationSettingsPanel } from "@/components/annotations/annotation-settings-panel";
 
 const SETTINGS_TABS = [
   { id: "clusters", label: "🌐 Clusters" },
   { id: "appearance", label: "🎨 Appearance" },
+  { id: "annotations", label: "🏷️ Annotations" },
   { id: "system", label: "💻 System" },
 ];
 
@@ -59,6 +61,7 @@ export function SettingsOverlay() {
           <div className="flex-1 overflow-y-auto p-6">
             {activeTab === "clusters" && <ClusterList />}
             {activeTab === "appearance" && <AppearanceForm />}
+            {activeTab === "annotations" && <AnnotationSettingsPanel />}
             {activeTab === "system" && <DataSystemForm />}
           </div>
         </div>
@@ -66,3 +69,4 @@ export function SettingsOverlay() {
     </div>
   );
 }
+

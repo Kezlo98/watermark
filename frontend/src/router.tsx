@@ -12,11 +12,11 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { AppHeader } from "@/components/layout/app-header";
 import { SettingsOverlay } from "@/components/settings/settings-overlay";
 import { useSettingsStore } from "@/store/settings";
+import { usePrefetchOnConnect } from "@/hooks/use-prefetch-on-connect";
 import { GetClusters } from "@/lib/wails-client";
 
 /* ====== Dashboard imports ====== */
-import { DashboardMetricCards } from "@/components/dashboard/metric-cards";
-import { BrokerTable } from "@/components/dashboard/broker-table";
+import { DashboardMetricCards, BrokerTable } from "@/components/dashboard/dashboard-widgets";
 
 /* ====== Topics imports ====== */
 import { TopicListTable } from "@/components/topics/topic-list-table";
@@ -24,6 +24,10 @@ import { CreateTopicModal } from "@/components/topics/create-topic-modal";
 import { TopicTabs } from "@/components/topics/topic-tabs";
 import { ProduceMessageModal } from "@/components/topics/produce-message-modal";
 import { SearchInput } from "@/components/shared/search-input";
+
+/* ====== Annotations imports ====== */
+import { TopicOwnershipHeader } from "@/components/annotations/topic-ownership-header";
+import { AnnotationEditorModal } from "@/components/annotations/annotation-editor-modal";
 
 /* ====== Consumers imports ====== */
 import { ConsumerGroupTable } from "@/components/consumers/consumer-group-table";
@@ -45,6 +49,7 @@ import { VersionHistory } from "@/components/schemas/version-history";
 
 function AppShell() {
   const { initializeConnection, openSettings } = useSettingsStore();
+  usePrefetchOnConnect();
 
   useEffect(() => {
     // Auto-connect to saved active cluster on app mount
@@ -166,13 +171,20 @@ const topicsRoute = createRoute({
 function TopicDetailPage() {
   const { topicId } = useParams({ from: "/topics/$topicId" });
   const [produceOpen, setProduceOpen] = useState(false);
+  const [editorOpen, setEditorOpen] = useState(false);
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-mono font-bold uppercase tracking-wider">
-          Topic: <span className="text-primary">{topicId}</span>
-        </h1>
+        <div className="space-y-1">
+          <h1 className="text-3xl font-mono font-bold uppercase tracking-wider">
+            Topic: <span className="text-primary">{topicId}</span>
+          </h1>
+          <TopicOwnershipHeader
+            topicName={topicId}
+            onEdit={() => setEditorOpen(true)}
+          />
+        </div>
         <button
           onClick={() => setProduceOpen(true)}
           className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors"
@@ -188,6 +200,12 @@ function TopicDetailPage() {
         isOpen={produceOpen}
         onClose={() => setProduceOpen(false)}
         topicName={topicId}
+      />
+
+      <AnnotationEditorModal
+        topicName={topicId}
+        open={editorOpen}
+        onClose={() => setEditorOpen(false)}
       />
     </div>
   );

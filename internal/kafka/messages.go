@@ -52,18 +52,37 @@ func (k *KafkaService) ConsumeMessages(topicName string, partition int32, startO
 	defer consumer.Close()
 
 	messages := make([]Message, 0, limit)
-	deadline := time.After(10 * time.Second)
+
+	// Resolve end offsets so we know exactly when each partition is exhausted.
+	// This prevents PollFetches from blocking indefinitely on topics with
+	// fewer messages than the requested limit.
+	endOffsets, err := k.admin.ListEndOffsets(ctx, topicName)
+	if err != nil {
+		return nil, fmt.Errorf("consume: list end offsets: %w", err)
+	}
+	partEndOffsets := make(map[int32]int64, len(partitions))
+	for _, p := range partitions {
+		if eo, ok := endOffsets.Lookup(topicName, p); ok {
+			partEndOffsets[p] = eo.Offset
+		}
+	}
+
+	// Safety timeout — should rarely be hit with end-offset tracking
+	pollCtx, pollCancel := context.WithTimeout(ctx, 5*time.Second)
+	defer pollCancel()
+
+	// Track the highest consumed offset per partition
+	consumed := make(map[int32]int64, len(partitions))
 
 	for len(messages) < limit {
-		select {
-		case <-deadline:
-			return messages, nil
-		default:
+		fetches := consumer.PollFetches(pollCtx)
+
+		// Context expired — return what we have
+		if pollCtx.Err() != nil {
+			break
 		}
 
-		fetches := consumer.PollFetches(ctx)
 		if errs := fetches.Errors(); len(errs) > 0 {
-			// Return what we have so far plus the first error
 			return messages, fmt.Errorf("consume: poll: %v", errs[0].Err)
 		}
 
@@ -85,7 +104,24 @@ func (k *KafkaService) ConsumeMessages(topicName string, partition int32, startO
 				Value:     string(r.Value),
 				Headers:   headers,
 			})
+
+			// Track the highest offset consumed per partition
+			if r.Offset+1 > consumed[r.Partition] {
+				consumed[r.Partition] = r.Offset + 1
+			}
 		})
+
+		// Check if all partitions have been consumed up to their end offsets
+		allExhausted := true
+		for _, p := range partitions {
+			if consumed[p] < partEndOffsets[p] {
+				allExhausted = false
+				break
+			}
+		}
+		if allExhausted {
+			break
+		}
 	}
 
 	return messages, nil

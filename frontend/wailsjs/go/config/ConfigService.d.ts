@@ -14,6 +14,8 @@ export function GetCluster(arg1:string):Promise<config.ClusterProfile>;
 
 export function GetClusters():Promise<Array<config.ClusterProfile>>;
 
+export function GetConfigDir():Promise<string>;
+
 export function GetDecryptedPassword(arg1:string):Promise<string>;
 
 export function GetDecryptedSchemaRegistryPassword(arg1:string):Promise<string>;
