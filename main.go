@@ -3,6 +3,7 @@ package main
 import (
 	"embed"
 
+	"watermark-01/internal/annotations"
 	"watermark-01/internal/config"
 	"watermark-01/internal/kafka"
 	"watermark-01/internal/schema"
@@ -25,7 +26,14 @@ func main() {
 
 	kafkaSvc := kafka.NewKafkaService(configSvc)
 	schemaSvc := schema.NewSchemaService(configSvc)
-	app := NewApp(configSvc, kafkaSvc, schemaSvc)
+
+	annotationSvc, err := annotations.NewAnnotationService(configSvc.GetConfigDir())
+	if err != nil {
+		println("Annotations error:", err.Error())
+		return
+	}
+
+	app := NewApp(configSvc, kafkaSvc, schemaSvc, annotationSvc)
 
 	err = wails.Run(&options.App{
 		Title:  "Watermark",
@@ -42,6 +50,7 @@ func main() {
 			configSvc,
 			kafkaSvc,
 			schemaSvc,
+			annotationSvc,
 		},
 	})
 

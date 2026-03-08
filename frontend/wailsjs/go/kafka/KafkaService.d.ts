@@ -3,6 +3,8 @@
 import {kafka} from '../models';
 import {context} from '../models';
 
+export function ClearCache():Promise<void>;
+
 export function Connect(arg1:string):Promise<void>;
 
 export function ConsumeMessages(arg1:string,arg2:number,arg3:number,arg4:number):Promise<Array<kafka.Message>>;
@@ -23,6 +25,8 @@ export function GetConsumerGroupDetail(arg1:string):Promise<kafka.ConsumerGroupD
 
 export function GetConsumerGroups():Promise<Array<kafka.ConsumerGroup>>;
 
+export function GetDashboardData():Promise<kafka.DashboardData>;
+
 export function GetTopic(arg1:string):Promise<kafka.Topic>;
 
 export function GetTopicACLs(arg1:string):Promise<Array<kafka.AclEntry>>;
@@ -42,3 +46,7 @@ export function ProduceMessage(arg1:string,arg2:number,arg3:string,arg4:string,a
 export function ResetConsumerGroupOffsets(arg1:string,arg2:string):Promise<void>;
 
 export function SetContext(arg1:context.Context):Promise<void>;
+
+export function StartLiveTail(arg1:string):Promise<void>;
+
+export function StopLiveTail():Promise<void>;

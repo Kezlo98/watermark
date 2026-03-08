@@ -1,4 +1,5 @@
 import { type ColumnDef } from "@tanstack/react-table";
+import { Link } from "@tanstack/react-router";
 import { DataTable } from "@/components/shared/data-table";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { cn } from "@/lib/utils";
@@ -19,7 +20,16 @@ const columns: ColumnDef<ConsumerGroup, unknown>[] = [
   {
     accessorKey: "groupId",
     header: "Group ID",
-    cell: ({ row }) => <span className="text-white font-medium">{row.original.groupId}</span>,
+    cell: ({ row }) => (
+      <Link
+        to="/consumers/$groupId"
+        params={{ groupId: row.original.groupId }}
+        className="text-primary font-medium hover:underline hover:text-primary/80 transition-colors"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {row.original.groupId}
+      </Link>
+    ),
   },
   {
     accessorKey: "state",

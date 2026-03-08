@@ -7,9 +7,17 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-// GetClusterHealth returns cluster overview metrics for the Dashboard.
-// Parallelizes Metadata + DescribeAllLogDirs for faster response.
-func (k *KafkaService) GetClusterHealth() (*ClusterHealth, error) {
+// DashboardData is a combined response for the Dashboard page,
+// avoiding duplicate Metadata + LogDirs calls from separate endpoints.
+type DashboardData struct {
+	Health  *ClusterHealth `json:"health"`
+	Brokers []Broker       `json:"brokers"`
+}
+
+// GetDashboardData returns both cluster health and brokers in a single call.
+// This eliminates the duplicate Metadata + LogDirs calls that happen when
+// the frontend queries GetClusterHealth and GetBrokers independently.
+func (k *KafkaService) GetDashboardData() (*DashboardData, error) {
 	k.mu.RLock()
 	defer k.mu.RUnlock()
 
@@ -19,7 +27,7 @@ func (k *KafkaService) GetClusterHealth() (*ClusterHealth, error) {
 
 	ctx := k.getCtx()
 
-	// Parallel: Metadata + LogDirs are independent
+	// Parallel: Metadata + LogDirs — only called ONCE
 	var metadata kadm.Metadata
 	var logDirs kadm.DescribedAllLogDirs
 	var logDirsErr error
@@ -29,20 +37,21 @@ func (k *KafkaService) GetClusterHealth() (*ClusterHealth, error) {
 		var err error
 		metadata, err = k.cache.getMetadata(gCtx, k.admin)
 		if err != nil {
-			return fmt.Errorf("cluster health: %w", err)
+			return fmt.Errorf("dashboard: metadata: %w", err)
 		}
 		return nil
 	})
 	g.Go(func() error {
 		var err error
 		logDirs, err = k.cache.getLogDirs(gCtx, k.admin)
-		logDirsErr = err // graceful fallback
+		logDirsErr = err
 		return nil
 	})
 	if err := g.Wait(); err != nil {
 		return nil, err
 	}
 
+	// --- Build health ---
 	brokersOnline := len(metadata.Brokers)
 	topicCount := 0
 	for _, t := range metadata.Topics {
@@ -50,80 +59,30 @@ func (k *KafkaService) GetClusterHealth() (*ClusterHealth, error) {
 			topicCount++
 		}
 	}
-
 	var totalSize int64
 	if logDirsErr == nil {
 		logDirs.Each(func(d kadm.DescribedLogDir) {
 			totalSize += d.Topics.Size()
 		})
 	}
-
 	status := "healthy"
 	if brokersOnline == 0 {
 		status = "offline"
 	}
 
-	return &ClusterHealth{
-		Status:        status,
-		BrokersOnline: brokersOnline,
-		BrokersTotal:  brokersOnline,
-		TopicCount:    topicCount,
-		TotalSize:     totalSize,
-	}, nil
-}
-
-// GetBrokers returns all broker details.
-// Parallelizes Metadata + DescribeAllLogDirs for faster response.
-func (k *KafkaService) GetBrokers() ([]Broker, error) {
-	k.mu.RLock()
-	defer k.mu.RUnlock()
-
-	if err := k.ensureConnected(); err != nil {
-		return nil, err
-	}
-
-	ctx := k.getCtx()
-
-	// Parallel: Metadata + LogDirs are independent
-	var metadata kadm.Metadata
-	var logDirs kadm.DescribedAllLogDirs
-	var logDirsErr error
-
-	g, gCtx := errgroup.WithContext(ctx)
-	g.Go(func() error {
-		var err error
-		metadata, err = k.cache.getMetadata(gCtx, k.admin)
-		if err != nil {
-			return fmt.Errorf("brokers: %w", err)
-		}
-		return nil
-	})
-	g.Go(func() error {
-		var err error
-		logDirs, err = k.cache.getLogDirs(gCtx, k.admin)
-		logDirsErr = err // graceful fallback
-		return nil
-	})
-	if err := g.Wait(); err != nil {
-		return nil, err
-	}
-
-	// Count partitions per broker (leader partitions)
+	// --- Build brokers ---
 	partitionCounts := make(map[int32]int)
 	for _, t := range metadata.Topics {
 		for _, p := range t.Partitions {
 			partitionCounts[p.Leader]++
 		}
 	}
-
-	// Sizes per broker from log dirs
 	brokerSizes := make(map[int32]int64)
 	if logDirsErr == nil {
 		logDirs.Each(func(d kadm.DescribedLogDir) {
 			brokerSizes[d.Broker] += d.Topics.Size()
 		})
 	}
-
 	brokers := make([]Broker, 0, len(metadata.Brokers))
 	for _, b := range metadata.Brokers {
 		brokers = append(brokers, Broker{
@@ -136,5 +95,14 @@ func (k *KafkaService) GetBrokers() ([]Broker, error) {
 		})
 	}
 
-	return brokers, nil
+	return &DashboardData{
+		Health: &ClusterHealth{
+			Status:        status,
+			BrokersOnline: brokersOnline,
+			BrokersTotal:  brokersOnline,
+			TopicCount:    topicCount,
+			TotalSize:     totalSize,
+		},
+		Brokers: brokers,
+	}, nil
 }

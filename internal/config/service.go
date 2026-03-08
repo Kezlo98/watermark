@@ -159,3 +159,8 @@ func (s *ConfigService) DuplicateCluster(id string) (*ClusterProfile, error) {
 
 	return &dup, nil
 }
+
+// GetConfigDir returns the config directory path.
+func (s *ConfigService) GetConfigDir() string {
+	return s.configDir
+}

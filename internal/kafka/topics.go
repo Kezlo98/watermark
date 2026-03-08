@@ -5,9 +5,11 @@ import (
 	"strconv"
 
 	"github.com/twmb/franz-go/pkg/kadm"
+	"golang.org/x/sync/errgroup"
 )
 
 // GetTopics returns all topics with metadata.
+// Parallelizes ListTopics + DescribeAllLogDirs for faster response.
 func (k *KafkaService) GetTopics() ([]Topic, error) {
 	k.mu.RLock()
 	defer k.mu.RUnlock()
@@ -17,15 +19,34 @@ func (k *KafkaService) GetTopics() ([]Topic, error) {
 	}
 
 	ctx := k.getCtx()
-	topics, err := k.admin.ListTopicsWithInternal(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("list topics: %w", err)
+
+	// Parallel: ListTopics + LogDirs are independent
+	var topics kadm.TopicDetails
+	var logDirs kadm.DescribedAllLogDirs
+	var logDirsErr error
+
+	g, gCtx := errgroup.WithContext(ctx)
+	g.Go(func() error {
+		var err error
+		topics, err = k.admin.ListTopicsWithInternal(gCtx)
+		if err != nil {
+			return fmt.Errorf("list topics: %w", err)
+		}
+		return nil
+	})
+	g.Go(func() error {
+		var err error
+		logDirs, err = k.cache.getLogDirs(gCtx, k.admin)
+		logDirsErr = err // graceful fallback — don't fail the group
+		return nil
+	})
+	if err := g.Wait(); err != nil {
+		return nil, err
 	}
 
-	// Get topic sizes from log dirs (graceful fallback)
+	// Build topic size map from log dirs (graceful fallback)
 	topicSizes := make(map[string]int64)
-	logDirs, err := k.admin.DescribeAllLogDirs(ctx, nil)
-	if err == nil {
+	if logDirsErr == nil {
 		logDirs.Each(func(d kadm.DescribedLogDir) {
 			d.Topics.Each(func(p kadm.DescribedLogDirPartition) {
 				topicSizes[p.Topic] += p.Size
@@ -50,7 +71,7 @@ func (k *KafkaService) GetTopics() ([]Topic, error) {
 		})
 	}
 
-	// Batch fetch retention configs for all topics
+	// Serial: needs topic names from above
 	topicNames := make([]string, len(result))
 	for i, t := range result {
 		topicNames[i] = t.Name

@@ -8,6 +8,19 @@ import {
   SetActiveCluster,
 } from "@/lib/wails-client";
 
+/** Frontend timeout (slightly longer than backend's 10s to let backend timeout trigger first) */
+const CONNECTION_TIMEOUT_MS = 15_000;
+
+/** Wraps a promise with a timeout — rejects if it doesn't resolve in time */
+function withTimeout<T>(promise: Promise<T>, ms: number, label = "Operation"): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(`${label} timed out after ${ms / 1000}s`)), ms)
+    ),
+  ]);
+}
+
 export type ConnectionStatus = "disconnected" | "connecting" | "connected" | "error";
 
 interface SettingsState {
@@ -70,7 +83,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
 
     try {
       await SetActiveCluster(id);
-      await Connect(id);
+      await withTimeout(Connect(id), CONNECTION_TIMEOUT_MS, "Connection");
       set({ connectionStatus: "connected", connectionError: null });
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
@@ -105,7 +118,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
 
       // Try to auto-connect to the saved active cluster
       set({ connectionStatus: "connecting", activeClusterId: activeId });
-      await Connect(activeId);
+      await withTimeout(Connect(activeId), CONNECTION_TIMEOUT_MS, "Auto-connect");
       set({ connectionStatus: "connected" });
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);

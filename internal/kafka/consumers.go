@@ -4,9 +4,11 @@ import (
 	"fmt"
 
 	"github.com/twmb/franz-go/pkg/kadm"
+	"golang.org/x/sync/errgroup"
 )
 
 // GetConsumerGroups returns all consumer groups with state and lag summary.
+// Parallelizes Lag + DescribeGroups calls for faster response.
 func (k *KafkaService) GetConsumerGroups() ([]ConsumerGroup, error) {
 	k.mu.RLock()
 	defer k.mu.RUnlock()
@@ -30,27 +32,42 @@ func (k *KafkaService) GetConsumerGroups() ([]ConsumerGroup, error) {
 		groupIDs = append(groupIDs, g.Group)
 	}
 
-	// Get lag for all groups
-	lags, err := k.admin.Lag(ctx, groupIDs...)
-	if err != nil {
-		// Fallback: return groups without lag info
+	// Parallel: Lag + DescribeGroups are independent (both only need groupIDs)
+	var lags kadm.DescribedGroupLags
+	var described kadm.DescribedGroups
+	var lagsErr error
+
+	g2, gCtx := errgroup.WithContext(ctx)
+	g2.Go(func() error {
+		var err error
+		lags, err = k.admin.Lag(gCtx, groupIDs...)
+		lagsErr = err
+		return nil // graceful fallback
+	})
+	g2.Go(func() error {
+		described, _ = k.admin.DescribeGroups(gCtx, groupIDs...)
+		return nil
+	})
+	_ = g2.Wait()
+
+	// Build member counts from described groups
+	memberCounts := make(map[string]int)
+	for _, dg := range described {
+		memberCounts[dg.Group] = len(dg.Members)
+	}
+
+	// Fallback: return groups without lag info if Lag() failed
+	if lagsErr != nil {
 		result := make([]ConsumerGroup, 0, len(groups))
 		for _, g := range groups {
 			result = append(result, ConsumerGroup{
 				GroupID:  g.Group,
 				State:    mapGroupState(g.State),
-				Members:  0,
+				Members:  memberCounts[g.Group],
 				TotalLag: 0,
 			})
 		}
 		return result, nil
-	}
-
-	// Describe groups to get member count
-	described, _ := k.admin.DescribeGroups(ctx, groupIDs...)
-	memberCounts := make(map[string]int)
-	for _, dg := range described {
-		memberCounts[dg.Group] = len(dg.Members)
 	}
 
 	result := make([]ConsumerGroup, 0, len(groups))
@@ -144,7 +161,6 @@ func (k *KafkaService) GetConsumerGroupDetail(groupID string) (*ConsumerGroupDet
 		Offsets:     offsets,
 	}, nil
 }
-
 
 // mapGroupState normalizes Kafka group state strings for frontend display.
 func mapGroupState(state string) string {

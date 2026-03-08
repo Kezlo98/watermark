@@ -26,6 +26,10 @@ export function GetClusters() {
   return window['go']['config']['ConfigService']['GetClusters']();
 }
 
+export function GetConfigDir() {
+  return window['go']['config']['ConfigService']['GetConfigDir']();
+}
+
 export function GetDecryptedPassword(arg1) {
   return window['go']['config']['ConfigService']['GetDecryptedPassword'](arg1);
 }

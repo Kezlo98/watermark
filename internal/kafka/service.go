@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+	"time"
 
 	"watermark-01/internal/config"
 
@@ -14,6 +15,9 @@ import (
 	"github.com/twmb/franz-go/pkg/sasl/plain"
 	"github.com/twmb/franz-go/pkg/sasl/scram"
 )
+
+// connectionTimeout is the maximum duration for a cluster connection attempt.
+const connectionTimeout = 10 * time.Second
 
 // KafkaService manages the Kafka connection lifecycle and all Kafka operations.
 // All public methods are exposed to the frontend via Wails bindings.
@@ -25,11 +29,18 @@ type KafkaService struct {
 	connected     bool
 	activeProfile string
 	ctx           context.Context
+	baseOpts      []kgo.Opt      // broker + auth/TLS opts, reused for temp consumers
+	cache         *adminCache    // short-TTL cache for expensive admin calls
+	activeTail    *liveTailState // current live-tail session (at most one)
+	activeTailMu  sync.Mutex     // guards activeTail
 }
 
 // NewKafkaService creates a new KafkaService.
 func NewKafkaService(configSvc *config.ConfigService) *KafkaService {
-	return &KafkaService{configSvc: configSvc}
+	return &KafkaService{
+		configSvc: configSvc,
+		cache:     newAdminCache(defaultCacheTTL),
+	}
 }
 
 // SetContext sets the Wails runtime context for cancellation support.
@@ -38,6 +49,7 @@ func (k *KafkaService) SetContext(ctx context.Context) {
 }
 
 // Connect establishes a connection to the Kafka cluster identified by profileID.
+// Uses a 10-second timeout to prevent hanging on unreachable clusters.
 func (k *KafkaService) Connect(profileID string) error {
 	k.mu.Lock()
 	defer k.mu.Unlock()
@@ -66,14 +78,21 @@ func (k *KafkaService) Connect(profileID string) error {
 		return fmt.Errorf("connect: new client: %w", err)
 	}
 
-	// Ping to verify connectivity
-	if err := client.Ping(k.getCtx()); err != nil {
+	// Ping with timeout to verify connectivity — prevents hanging on unreachable brokers
+	connectCtx, cancel := context.WithTimeout(k.getCtx(), connectionTimeout)
+	defer cancel()
+
+	if err := client.Ping(connectCtx); err != nil {
 		client.Close()
+		if connectCtx.Err() == context.DeadlineExceeded {
+			return fmt.Errorf("connection timed out after %s — cluster unreachable", connectionTimeout)
+		}
 		return fmt.Errorf("connect: ping failed: %w", err)
 	}
 
 	k.client = client
 	k.admin = kadm.NewClient(client)
+	k.baseOpts = opts
 	k.connected = true
 	k.activeProfile = profileID
 
@@ -92,8 +111,10 @@ func (k *KafkaService) Disconnect() error {
 	k.admin = nil
 	k.client.Close()
 	k.client = nil
+	k.baseOpts = nil
 	k.connected = false
 	k.activeProfile = ""
+	k.cache.invalidate()
 
 	return nil
 }
@@ -110,6 +131,13 @@ func (k *KafkaService) GetActiveCluster() string {
 	k.mu.RLock()
 	defer k.mu.RUnlock()
 	return k.activeProfile
+}
+
+// ClearCache invalidates the in-memory metadata cache so the next
+// API call fetches fresh data from the Kafka cluster.
+// Exposed to the frontend via Wails binding for manual refresh.
+func (k *KafkaService) ClearCache() {
+	k.cache.Invalidate()
 }
 
 // ensureConnected returns ErrNotConnected if not connected.

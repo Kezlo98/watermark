@@ -19,6 +19,7 @@ export type ConsumerGroupOffset = kafka.ConsumerGroupOffset;
 export type ClusterHealth = kafka.ClusterHealth;
 export type TopicConfig = kafka.TopicConfig;
 export type AclEntry = kafka.AclEntry;
+export type DashboardData = kafka.DashboardData;
 
 // Re-export schema namespace types as top-level
 export type SchemaSubject = schema.SchemaSubject;

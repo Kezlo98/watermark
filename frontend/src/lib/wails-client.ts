@@ -10,6 +10,7 @@ export {
   IsConnected,
   GetClusterHealth,
   GetBrokers,
+  GetDashboardData,
   GetTopics,
   GetTopic,
   GetTopicPartitions,
@@ -20,9 +21,12 @@ export {
   DeleteTopic,
   ConsumeMessages,
   ProduceMessage,
+  StartLiveTail,
+  StopLiveTail,
   GetConsumerGroups,
   GetConsumerGroupDetail,
   ResetConsumerGroupOffsets,
+  ClearCache,
 } from "../../wailsjs/go/kafka/KafkaService";
 
 // --- Config Service ---
@@ -50,3 +54,20 @@ export {
   GetCompatibility,
   Configure as ConfigureSchemaRegistry,
 } from "../../wailsjs/go/schema/SchemaService";
+
+// --- Annotation Service ---
+export {
+  GetAnnotations,
+  GetAnnotation,
+  SetAnnotation,
+  BatchSetAnnotation,
+  DeleteAnnotation,
+  GetServiceNames,
+  ExportAnnotations,
+  ExportAllAnnotations,
+  ImportAnnotations,
+  ExportToFile,
+  ExportAllToFile,
+  ImportFromFile,
+} from "../../wailsjs/go/annotations/AnnotationService";
+

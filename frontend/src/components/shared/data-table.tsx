@@ -47,11 +47,12 @@ export function DataTable<T>({
 
   return (
     <div className={cn("glass-panel overflow-hidden", className)}>
-      <div className="overflow-x-auto">
+      {/* max-h keeps horizontal scrollbar visible without scrolling to bottom */}
+      <div className="overflow-auto max-h-[calc(100vh-320px)]">
         <table className="w-full">
-          <thead>
+          <thead className="sticky top-0 z-10">
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="bg-white/5">
+              <tr key={headerGroup.id} className="bg-[var(--glass-bg,rgba(255,255,255,0.03))] backdrop-blur">
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
