@@ -30,13 +30,22 @@ func (k *KafkaService) ConsumeMessages(topicName string, partition int32, startO
 		return nil, err
 	}
 
-	// Build per-partition offset map
+	// Fetch end offsets once — reused for both start-offset resolution and
+	// end-of-partition tracking (eliminates N+1 redundant broker round-trips).
+	endOffsets, err := k.admin.ListEndOffsets(ctx, topicName)
+	if err != nil {
+		return nil, fmt.Errorf("consume: list end offsets: %w", err)
+	}
+
+	// Build per-partition offset map + end-offset map in a single pass
 	partOffsets := make(map[int32]kgo.Offset, len(partitions))
+	partEndOffsets := make(map[int32]int64, len(partitions))
 	for _, p := range partitions {
-		offset, err := k.resolveStartOffset(ctx, topicName, p, startOffset, limit)
-		if err != nil {
-			return nil, err
+		if eo, ok := endOffsets.Lookup(topicName, p); ok {
+			partEndOffsets[p] = eo.Offset
 		}
+
+		offset := resolveStartOffsetFromEndOffsets(partEndOffsets[p], startOffset, limit)
 		partOffsets[p] = kgo.NewOffset().At(offset)
 	}
 
@@ -52,20 +61,6 @@ func (k *KafkaService) ConsumeMessages(topicName string, partition int32, startO
 	defer consumer.Close()
 
 	messages := make([]Message, 0, limit)
-
-	// Resolve end offsets so we know exactly when each partition is exhausted.
-	// This prevents PollFetches from blocking indefinitely on topics with
-	// fewer messages than the requested limit.
-	endOffsets, err := k.admin.ListEndOffsets(ctx, topicName)
-	if err != nil {
-		return nil, fmt.Errorf("consume: list end offsets: %w", err)
-	}
-	partEndOffsets := make(map[int32]int64, len(partitions))
-	for _, p := range partitions {
-		if eo, ok := endOffsets.Lookup(topicName, p); ok {
-			partEndOffsets[p] = eo.Offset
-		}
-	}
 
 	// Safety timeout — should rarely be hit with end-offset tracking
 	pollCtx, pollCancel := context.WithTimeout(ctx, 5*time.Second)
@@ -150,28 +145,21 @@ func (k *KafkaService) resolvePartitions(ctx context.Context, topicName string, 
 	return ids, nil
 }
 
-// resolveStartOffset computes the actual start offset for a partition.
-func (k *KafkaService) resolveStartOffset(ctx context.Context, topicName string, partition int32, startOffset int64, limit int) (int64, error) {
+// resolveStartOffsetFromEndOffsets computes the actual start offset for a partition
+// using pre-fetched end offsets. No additional broker calls needed.
+func resolveStartOffsetFromEndOffsets(endOffset int64, startOffset int64, limit int) int64 {
 	if startOffset == -2 {
-		return 0, nil
+		return 0 // earliest
 	}
 	if startOffset >= 0 {
-		return startOffset, nil
+		return startOffset // explicit offset
 	}
-
 	// startOffset == -1: latest → read last N messages
-	endOffsets, err := k.admin.ListEndOffsets(ctx, topicName)
-	if err != nil {
-		return 0, fmt.Errorf("consume: list end offsets: %w", err)
+	actual := endOffset - int64(limit)
+	if actual < 0 {
+		actual = 0
 	}
-	if eo, ok := endOffsets.Lookup(topicName, partition); ok {
-		actual := eo.Offset - int64(limit)
-		if actual < 0 {
-			actual = 0
-		}
-		return actual, nil
-	}
-	return 0, nil
+	return actual
 }
 
 // ProduceMessage sends a single message to a topic.

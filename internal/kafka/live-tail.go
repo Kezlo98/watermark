@@ -3,7 +3,6 @@ package kafka
 import (
 	"context"
 	"fmt"
-	"sync"
 	"time"
 
 	wailsRuntime "github.com/wailsapp/wails/v2/pkg/runtime"
@@ -17,36 +16,32 @@ type liveTailState struct {
 	topic  string
 }
 
-var (
-	activeTail   *liveTailState
-	activeTailMu sync.Mutex
-)
-
 // StartLiveTail begins streaming new messages from a topic to the frontend
 // via Wails events ("liveTail:message" and "liveTail:error").
 // Only one live-tail session can be active at a time.
 func (k *KafkaService) StartLiveTail(topicName string) error {
-	activeTailMu.Lock()
-	defer activeTailMu.Unlock()
+	k.activeTailMu.Lock()
+	defer k.activeTailMu.Unlock()
 
 	// Stop any existing live-tail
-	if activeTail != nil {
-		activeTail.cancel()
-		activeTail = nil
+	if k.activeTail != nil {
+		k.activeTail.cancel()
+		k.activeTail = nil
 	}
 
+	// Hold RLock across resolvePartitions to prevent data race with Disconnect()
 	k.mu.RLock()
 	if err := k.ensureConnected(); err != nil {
 		k.mu.RUnlock()
 		return err
 	}
 	baseOpts := append([]kgo.Opt{}, k.baseOpts...)
-	k.mu.RUnlock()
 
 	ctx := k.getCtx()
 
-	// Resolve partitions
+	// Resolve partitions while still holding the read lock (uses k.admin)
 	partitions, err := k.resolvePartitions(ctx, topicName, -1)
+	k.mu.RUnlock()
 	if err != nil {
 		return fmt.Errorf("live tail: resolve partitions: %w", err)
 	}
@@ -65,7 +60,7 @@ func (k *KafkaService) StartLiveTail(topicName string) error {
 	}
 
 	tailCtx, cancel := context.WithCancel(ctx)
-	activeTail = &liveTailState{cancel: cancel, topic: topicName}
+	k.activeTail = &liveTailState{cancel: cancel, topic: topicName}
 
 	// Streaming goroutine — polls and emits events
 	go func() {
@@ -111,11 +106,11 @@ func (k *KafkaService) StartLiveTail(topicName string) error {
 
 // StopLiveTail stops the current live-tail session if one is active.
 func (k *KafkaService) StopLiveTail() {
-	activeTailMu.Lock()
-	defer activeTailMu.Unlock()
+	k.activeTailMu.Lock()
+	defer k.activeTailMu.Unlock()
 
-	if activeTail != nil {
-		activeTail.cancel()
-		activeTail = nil
+	if k.activeTail != nil {
+		k.activeTail.cancel()
+		k.activeTail = nil
 	}
 }

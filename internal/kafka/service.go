@@ -29,8 +29,10 @@ type KafkaService struct {
 	connected     bool
 	activeProfile string
 	ctx           context.Context
-	baseOpts      []kgo.Opt   // broker + auth/TLS opts, reused for temp consumers
-	cache         *adminCache // short-TTL cache for expensive admin calls
+	baseOpts      []kgo.Opt      // broker + auth/TLS opts, reused for temp consumers
+	cache         *adminCache    // short-TTL cache for expensive admin calls
+	activeTail    *liveTailState // current live-tail session (at most one)
+	activeTailMu  sync.Mutex     // guards activeTail
 }
 
 // NewKafkaService creates a new KafkaService.
