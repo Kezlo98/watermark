@@ -1,0 +1,17 @@
+{
+  "source": ["./build/bin/Watermark.app"],
+  "bundle_id": "com.wails.Watermark",
+  "apple_id": {
+    "username": "@env:APPLE_ID",
+    "password": "@env:AC_PASSWORD",
+    "provider": "@env:AC_PROVIDER"
+  },
+  "sign": {
+    "application_identity": "Developer ID Application: Son Thai",
+    "entitlements_file": "./build/darwin/entitlements.plist"
+  },
+  "dmg": {
+    "output_path": "./build/bin/Watermark.dmg",
+    "volume_name": "Watermark"
+  }
+}
