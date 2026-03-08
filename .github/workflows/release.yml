@@ -21,17 +21,9 @@ env:
   APP_NAME: "Watermark"
 
 jobs:
-  # ─── macOS Build (Apple Silicon + Intel) ──────────────
+  # ─── macOS Build (Universal: Apple Silicon + Intel) ─────
   build-macos:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - runner: macos-14       # Apple Silicon (M1+)
-            arch: arm64
-          - runner: macos-13       # Intel
-            arch: amd64
-    runs-on: ${{ matrix.runner }}
+    runs-on: macos-14
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -54,8 +46,8 @@ jobs:
       - name: Install frontend dependencies
         run: cd frontend && npm ci
 
-      - name: Build Wails app
-        run: wails build -clean
+      - name: Build Wails app (universal binary)
+        run: wails build -clean -platform darwin/universal
 
       - name: Ad-hoc sign (no Developer ID)
         run: codesign --force --deep --sign - "./build/bin/${{ env.APP_NAME }}.app"
@@ -81,7 +73,7 @@ jobs:
       #     codesign --deep --force --verbose \
       #       --options runtime \
       #       --entitlements ./build/darwin/entitlements.plist \
-      #       --sign "Developer ID Application: Son Thai (${{ secrets.APPLE_TEAM_ID }})" \
+      #       --sign "Developer ID Application: Kezlo98 (${{ secrets.APPLE_TEAM_ID }})" \
       #       "./build/bin/${{ env.APP_NAME }}.app"
       #
       # - name: Notarize
@@ -111,14 +103,14 @@ jobs:
             --icon "${{ env.APP_NAME }}.app" 180 170 \
             --hide-extension "${{ env.APP_NAME }}.app" \
             --app-drop-link 480 170 \
-            "./build/bin/${{ env.APP_NAME }}-darwin-${{ matrix.arch }}.dmg" \
+            "./build/bin/${{ env.APP_NAME }}-darwin-universal.dmg" \
             "./build/bin/${{ env.APP_NAME }}.app"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.APP_NAME }}-darwin-${{ matrix.arch }}
-          path: ./build/bin/${{ env.APP_NAME }}-darwin-${{ matrix.arch }}.dmg
+          name: ${{ env.APP_NAME }}-darwin-universal
+          path: ./build/bin/${{ env.APP_NAME }}-darwin-universal.dmg
 
   # ─── Windows Build (disabled for now) ─────────────────
   # build-windows:
