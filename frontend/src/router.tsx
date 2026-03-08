@@ -24,6 +24,7 @@ import { CreateTopicModal } from "@/components/topics/create-topic-modal";
 import { TopicTabs } from "@/components/topics/topic-tabs";
 import { ProduceMessageModal } from "@/components/topics/produce-message-modal";
 import { SearchInput } from "@/components/shared/search-input";
+import { RefreshButton } from "@/components/shared/refresh-button";
 
 /* ====== Annotations imports ====== */
 import { TopicOwnershipHeader } from "@/components/annotations/topic-ownership-header";
@@ -91,9 +92,12 @@ const rootRoute = createRootRoute({
 function DashboardPage() {
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-mono font-bold uppercase tracking-wider">
-        Cluster Overview
-      </h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-mono font-bold uppercase tracking-wider">
+          Cluster Overview
+        </h1>
+        <RefreshButton queryKeys={[["dashboard"]]} />
+      </div>
       <DashboardMetricCards />
       <BrokerTable />
     </div>
@@ -137,6 +141,7 @@ function TopicsPage() {
           placeholder="Search topics..."
           className="w-80"
         />
+        <RefreshButton queryKeys={[["topics"]]} />
         <label className="flex items-center gap-2 text-sm text-slate-400 cursor-pointer">
           <input
             type="checkbox"
@@ -185,13 +190,16 @@ function TopicDetailPage() {
             onEdit={() => setEditorOpen(true)}
           />
         </div>
-        <button
-          onClick={() => setProduceOpen(true)}
-          className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors"
-        >
-          <Send className="size-3.5" />
-          Produce Message
-        </button>
+        <div className="flex items-center gap-2">
+          <RefreshButton queryKeys={[["topic-config", topicId], ["topic-partitions", topicId]]} />
+          <button
+            onClick={() => setProduceOpen(true)}
+            className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors"
+          >
+            <Send className="size-3.5" />
+            Produce Message
+          </button>
+        </div>
       </div>
 
       <TopicTabs topicName={topicId} />
@@ -229,12 +237,15 @@ function ConsumersPage() {
       <h1 className="text-3xl font-mono font-bold uppercase tracking-wider">
         Consumer Groups
       </h1>
-      <SearchInput
-        value={search}
-        onChange={setSearch}
-        placeholder="Search consumer groups..."
-        className="w-80"
-      />
+      <div className="flex items-center gap-4">
+        <SearchInput
+          value={search}
+          onChange={setSearch}
+          placeholder="Search consumer groups..."
+          className="w-80"
+        />
+        <RefreshButton queryKeys={[["consumer-groups"]]} />
+      </div>
       <ConsumerGroupTable
         onGroupClick={(id) =>
           navigate({ to: "/consumers/$groupId", params: { groupId: id } })
@@ -268,6 +279,7 @@ function ConsumerDetailPage() {
           Consumer Group: <span className="text-primary">{groupId}</span>
         </h1>
         <div className="flex gap-2">
+          <RefreshButton queryKeys={[["consumer-group-detail", groupId]]} />
           <button
             disabled
             className="px-4 py-2 text-sm text-slate-400 bg-white/5 rounded-lg border border-white/10 opacity-50 cursor-not-allowed"
@@ -310,9 +322,12 @@ function SchemasPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-mono font-bold uppercase tracking-wider">
-        Schema Registry
-      </h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-mono font-bold uppercase tracking-wider">
+          Schema Registry
+        </h1>
+        <RefreshButton queryKeys={[["schema-subjects"]]} />
+      </div>
 
       <div className="grid grid-cols-[280px_1fr] gap-4 h-[calc(100vh-240px)]">
         <div className="glass-panel overflow-hidden">

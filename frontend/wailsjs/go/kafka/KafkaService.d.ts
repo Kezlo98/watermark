@@ -3,6 +3,8 @@
 import {kafka} from '../models';
 import {context} from '../models';
 
+export function ClearCache():Promise<void>;
+
 export function Connect(arg1:string):Promise<void>;
 
 export function ConsumeMessages(arg1:string,arg2:number,arg3:number,arg4:number):Promise<Array<kafka.Message>>;

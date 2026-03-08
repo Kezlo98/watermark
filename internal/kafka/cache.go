@@ -91,3 +91,9 @@ func (c *adminCache) invalidate() {
 	c.logDirs = nil
 	c.metadata = nil
 }
+
+// Invalidate is the public alias for invalidate — used by KafkaService.ClearCache()
+// to let the frontend force-refresh stale metadata on demand.
+func (c *adminCache) Invalidate() {
+	c.invalidate()
+}

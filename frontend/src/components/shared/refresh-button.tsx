@@ -1,0 +1,152 @@
+/**
+ * Per-page refresh button with 10s cooldown.
+ * Invalidates both the Go backend metadata cache (ClearCache)
+ * and TanStack Query cache (invalidateQueries) for the given query keys.
+ *
+ * Supports Cmd+R / Ctrl+R keyboard shortcut when mounted.
+ */
+
+import { useState, useEffect, useRef, useCallback } from "react";
+import { RefreshCw, Check } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { cn } from "@/lib/utils";
+import { ClearCache } from "@/lib/wails-client";
+
+const DEFAULT_COOLDOWN_MS = 10_000;
+
+interface RefreshButtonProps {
+  /** Query keys to invalidate, e.g. [["topics"], ["dashboard"]] */
+  queryKeys: string[][];
+  /** Cooldown duration in ms (default: 10_000) */
+  cooldownMs?: number;
+  /** Enable Cmd+R / Ctrl+R keyboard shortcut (default: true) */
+  enableShortcut?: boolean;
+  className?: string;
+}
+
+type ButtonState = "idle" | "refreshing" | "success" | "cooldown";
+
+export function RefreshButton({
+  queryKeys,
+  cooldownMs = DEFAULT_COOLDOWN_MS,
+  enableShortcut = true,
+  className,
+}: RefreshButtonProps) {
+  const queryClient = useQueryClient();
+  const [state, setState] = useState<ButtonState>("idle");
+  const [countdown, setCountdown] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const clearTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  }, []);
+
+  const handleRefresh = useCallback(async () => {
+    if (state !== "idle") return;
+
+    setState("refreshing");
+
+    try {
+      // Step 1: Clear Go backend cache
+      await ClearCache();
+
+      // Step 2: Invalidate TanStack Query cache for all specified keys
+      await Promise.all(
+        queryKeys.map((key) =>
+          queryClient.invalidateQueries({ queryKey: key })
+        )
+      );
+
+      // Brief success flash
+      setState("success");
+      setTimeout(() => {
+        setState("cooldown");
+        const totalSeconds = Math.ceil(cooldownMs / 1000);
+        setCountdown(totalSeconds);
+
+        timerRef.current = setInterval(() => {
+          setCountdown((prev) => {
+            if (prev <= 1) {
+              clearTimer();
+              setState("idle");
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      }, 600);
+    } catch {
+      // On error, go back to idle so user can retry
+      setState("idle");
+    }
+  }, [state, queryKeys, queryClient, cooldownMs, clearTimer]);
+
+  // Keyboard shortcut: Cmd+R / Ctrl+R
+  useEffect(() => {
+    if (!enableShortcut) return;
+
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "r") {
+        e.preventDefault();
+        handleRefresh();
+      }
+    };
+
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [enableShortcut, handleRefresh]);
+
+  // Cleanup on unmount
+  useEffect(() => () => clearTimer(), [clearTimer]);
+
+  const isDisabled = state !== "idle";
+  const tooltipText =
+    state === "cooldown"
+      ? `Refresh available in ${countdown}s`
+      : state === "refreshing"
+        ? "Refreshing…"
+        : enableShortcut
+          ? "Refresh data (⌘R)"
+          : "Refresh data";
+
+  return (
+    <button
+      onClick={handleRefresh}
+      disabled={isDisabled}
+      title={tooltipText}
+      className={cn(
+        "relative flex items-center justify-center size-9 rounded-lg border transition-all duration-200",
+        state === "idle" &&
+          "border-white/10 bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 hover:border-white/20 cursor-pointer",
+        state === "refreshing" &&
+          "border-primary/30 bg-primary/10 text-primary cursor-wait",
+        state === "success" &&
+          "border-emerald-500/30 bg-emerald-500/10 text-emerald-400",
+        state === "cooldown" &&
+          "border-white/5 bg-white/[0.02] text-slate-600 cursor-not-allowed",
+        className
+      )}
+    >
+      {state === "success" ? (
+        <Check className="size-4" />
+      ) : (
+        <RefreshCw
+          className={cn(
+            "size-4 transition-transform",
+            state === "refreshing" && "animate-spin"
+          )}
+        />
+      )}
+
+      {/* Countdown badge */}
+      {state === "cooldown" && countdown > 0 && (
+        <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-mono font-semibold text-slate-500 bg-slate-800 border border-white/10 rounded-full px-1">
+          {countdown}
+        </span>
+      )}
+    </button>
+  );
+}

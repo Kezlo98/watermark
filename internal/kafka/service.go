@@ -131,6 +131,13 @@ func (k *KafkaService) GetActiveCluster() string {
 	return k.activeProfile
 }
 
+// ClearCache invalidates the in-memory metadata cache so the next
+// API call fetches fresh data from the Kafka cluster.
+// Exposed to the frontend via Wails binding for manual refresh.
+func (k *KafkaService) ClearCache() {
+	k.cache.Invalidate()
+}
+
 // ensureConnected returns ErrNotConnected if not connected.
 func (k *KafkaService) ensureConnected() error {
 	if !k.connected {
