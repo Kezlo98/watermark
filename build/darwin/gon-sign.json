@@ -7,7 +7,7 @@
     "provider": "@env:AC_PROVIDER"
   },
   "sign": {
-    "application_identity": "Developer ID Application: Son Thai",
+    "application_identity": "Developer ID Application: Kezlo98",
     "entitlements_file": "./build/darwin/entitlements.plist"
   },
   "dmg": {

@@ -28,7 +28,7 @@ DMG_PATH="./build/bin/Watermark.dmg"
 ENTITLEMENTS="./build/darwin/entitlements.plist"
 GON_CONFIG="./build/darwin/gon-sign.json"
 ICON_PATH="./build/darwin/iconfile.icns"
-SIGNING_IDENTITY="Developer ID Application: Son Thai"
+SIGNING_IDENTITY="Developer ID Application: Kezlo98"
 
 SKIP_NOTARIZE=false
 UNSIGNED=false

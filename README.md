@@ -128,7 +128,7 @@ wails build
 
 ## Author
 
-**Son Thai** — son19101998@gmail.com
+**Kezlo98** — [github.com/Kezlo98](https://github.com/Kezlo98)
 
 ## License
 
