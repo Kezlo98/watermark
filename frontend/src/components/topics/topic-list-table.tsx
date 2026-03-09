@@ -9,7 +9,7 @@ import { useAnnotationUIStore } from "@/store/annotations";
 import { OwnershipBadges } from "@/components/annotations/ownership-badges";
 import { AnnotationEditorModal } from "@/components/annotations/annotation-editor-modal";
 import { BatchTagModal } from "@/components/annotations/batch-tag-modal";
-import { Tag } from "lucide-react";
+import { Pencil, Tag } from "lucide-react";
 
 interface TopicListTableProps {
   onTopicClick: (topicName: string) => void;
@@ -76,39 +76,53 @@ export function TopicListTable({ onTopicClick, searchFilter, hideInternal }: Top
     {
       accessorKey: "name",
       header: "Name",
-      cell: ({ row }) => (
-        <span className="text-white font-medium">{row.original.name}</span>
-      ),
-    },
-    {
-      id: "producers",
-      header: "Producers",
       cell: ({ row }) => {
         const ann = annotations[row.original.name];
+        const producers = ann?.producers ?? [];
+        const consumers = ann?.consumers ?? [];
+        const hasOwnership = producers.length > 0 || consumers.length > 0;
+
         return (
-          <OwnershipBadges
-            producers={ann?.producers ?? []}
-            consumers={[]}
-            onEdit={() => openEditor(row.original.name)}
-          />
+          <div className="flex flex-col gap-1">
+            <span className="text-white font-medium">{row.original.name}</span>
+            {hasOwnership && (
+              <div
+                className="flex items-center gap-1 cursor-pointer group"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openEditor(row.original.name);
+                }}
+              >
+                <OwnershipBadges
+                  producers={producers}
+                  consumers={[]}
+                  maxVisible={3}
+                />
+                <span className="text-[10px] text-slate-500 mx-0.5">→</span>
+                <OwnershipBadges
+                  producers={[]}
+                  consumers={consumers}
+                  maxVisible={3}
+                />
+                <Pencil className="size-3 text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity ml-0.5" />
+              </div>
+            )}
+            {!hasOwnership && (
+              <div
+                className="cursor-pointer group"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openEditor(row.original.name);
+                }}
+              >
+                <span className="text-[10px] text-slate-500 group-hover:text-slate-400 transition-colors italic">
+                  + tag
+                </span>
+              </div>
+            )}
+          </div>
         );
       },
-      enableSorting: false,
-    },
-    {
-      id: "consumers",
-      header: "Consumers",
-      cell: ({ row }) => {
-        const ann = annotations[row.original.name];
-        return (
-          <OwnershipBadges
-            producers={[]}
-            consumers={ann?.consumers ?? []}
-            onEdit={() => openEditor(row.original.name)}
-          />
-        );
-      },
-      enableSorting: false,
     },
     { accessorKey: "partitions", header: "Partitions" },
     { accessorKey: "replicas", header: "Replicas" },
