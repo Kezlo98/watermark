@@ -40,12 +40,20 @@ export function useKafkaQuery<T>(
     enabled: isConnected && callerEnabled,
   });
 
-  // When not connected, force data to undefined so components show
-  // empty/loading state instead of stale data from the previous cluster.
-  return {
-    ...query,
-    data: isConnected ? query.data : undefined,
-  };
+  // When not connected, force data + status flags to "pending" so
+  // components show empty/loading state instead of stale data from
+  // the previous cluster. Keeps TanStack Query's discriminated union intact.
+  if (!isConnected) {
+    return {
+      ...query,
+      data: undefined,
+      status: "pending" as const,
+      isSuccess: false,
+      isPending: true,
+    };
+  }
+
+  return query;
 }
 
 /**
