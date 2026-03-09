@@ -28,7 +28,7 @@ export function AnnotationSummaryTable({
   return (
     <div className="max-h-64 overflow-y-auto rounded-lg border border-white/10">
       <table className="w-full text-xs">
-        <thead className="sticky top-0 bg-[hsl(var(--surface-secondary))]">
+        <thead className="sticky top-0 bg-[hsl(var(--surface-secondary))] [backface-visibility:hidden] [transform:translateZ(0)]">
           <tr className="text-left text-slate-400 uppercase tracking-wider text-[10px]">
             <th className="px-3 py-2">Topic</th>
             <th className="px-3 py-2">Producers</th>

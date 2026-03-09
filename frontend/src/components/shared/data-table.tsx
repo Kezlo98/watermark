@@ -50,7 +50,7 @@ export function DataTable<T>({
       {/* max-h keeps horizontal scrollbar visible without scrolling to bottom */}
       <div className="overflow-auto max-h-[calc(100vh-320px)]">
         <table className="w-full">
-          <thead className="sticky top-0 z-10">
+          <thead className="sticky top-0 z-10 [backface-visibility:hidden] [transform:translateZ(0)]">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id} className="bg-[#141414]">
                 {headerGroup.headers.map((header) => (
