@@ -31,7 +31,7 @@ export function useKafkaQuery<T>(
   const isConnected = connectionStatus === "connected" && !!clusterId;
   const callerEnabled = options?.enabled ?? true;
 
-  return useQuery<T>({
+  const query = useQuery<T>({
     queryKey: clusterId ? [clusterId, ...key] : key,
     queryFn: fetcher,
     refetchInterval: 30_000,
@@ -39,6 +39,13 @@ export function useKafkaQuery<T>(
     ...options,
     enabled: isConnected && callerEnabled,
   });
+
+  // When not connected, force data to undefined so components show
+  // empty/loading state instead of stale data from the previous cluster.
+  return {
+    ...query,
+    data: isConnected ? query.data : undefined,
+  };
 }
 
 /**
