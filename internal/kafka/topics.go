@@ -26,7 +26,7 @@ func (k *KafkaService) GetTopics() ([]Topic, error) {
 	var logDirsErr error
 
 	g, gCtx := errgroup.WithContext(ctx)
-	g.Go(func() error {
+	safeGo(g, func() error {
 		var err error
 		topics, err = k.admin.ListTopicsWithInternal(gCtx)
 		if err != nil {
@@ -34,7 +34,7 @@ func (k *KafkaService) GetTopics() ([]Topic, error) {
 		}
 		return nil
 	})
-	g.Go(func() error {
+	safeGo(g, func() error {
 		var err error
 		logDirs, err = k.cache.getLogDirs(gCtx, k.admin)
 		logDirsErr = err // graceful fallback — don't fail the group

@@ -7,6 +7,20 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+// safeGo runs fn inside an errgroup goroutine with panic recovery.
+// franz-go can panic with nil pointer dereference inside loadCoordinators
+// when the underlying client connection is disrupted during a cluster switch.
+func safeGo(g *errgroup.Group, fn func() error) {
+	g.Go(func() (retErr error) {
+		defer func() {
+			if r := recover(); r != nil {
+				retErr = fmt.Errorf("recovered panic: %v", r)
+			}
+		}()
+		return fn()
+	})
+}
+
 // GetConsumerGroups returns all consumer groups with state and lag summary.
 // Parallelizes Lag + DescribeGroups calls for faster response.
 func (k *KafkaService) GetConsumerGroups() ([]ConsumerGroup, error) {
@@ -38,17 +52,19 @@ func (k *KafkaService) GetConsumerGroups() ([]ConsumerGroup, error) {
 	var lagsErr error
 
 	g2, gCtx := errgroup.WithContext(ctx)
-	g2.Go(func() error {
+	safeGo(g2, func() error {
 		var err error
 		lags, err = k.admin.Lag(gCtx, groupIDs...)
 		lagsErr = err
 		return nil // graceful fallback
 	})
-	g2.Go(func() error {
+	safeGo(g2, func() error {
 		described, _ = k.admin.DescribeGroups(gCtx, groupIDs...)
 		return nil
 	})
-	_ = g2.Wait()
+	if err := g2.Wait(); err != nil {
+		return nil, fmt.Errorf("consumer groups: %w", err)
+	}
 
 	// Build member counts from described groups
 	memberCounts := make(map[string]int)

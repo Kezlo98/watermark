@@ -25,7 +25,7 @@ func (k *KafkaService) GetClusterHealth() (*ClusterHealth, error) {
 	var logDirsErr error
 
 	g, gCtx := errgroup.WithContext(ctx)
-	g.Go(func() error {
+	safeGo(g, func() error {
 		var err error
 		metadata, err = k.cache.getMetadata(gCtx, k.admin)
 		if err != nil {
@@ -33,7 +33,7 @@ func (k *KafkaService) GetClusterHealth() (*ClusterHealth, error) {
 		}
 		return nil
 	})
-	g.Go(func() error {
+	safeGo(g, func() error {
 		var err error
 		logDirs, err = k.cache.getLogDirs(gCtx, k.admin)
 		logDirsErr = err // graceful fallback
@@ -90,7 +90,7 @@ func (k *KafkaService) GetBrokers() ([]Broker, error) {
 	var logDirsErr error
 
 	g, gCtx := errgroup.WithContext(ctx)
-	g.Go(func() error {
+	safeGo(g, func() error {
 		var err error
 		metadata, err = k.cache.getMetadata(gCtx, k.admin)
 		if err != nil {
@@ -98,7 +98,7 @@ func (k *KafkaService) GetBrokers() ([]Broker, error) {
 		}
 		return nil
 	})
-	g.Go(func() error {
+	safeGo(g, func() error {
 		var err error
 		logDirs, err = k.cache.getLogDirs(gCtx, k.admin)
 		logDirsErr = err // graceful fallback

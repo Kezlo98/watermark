@@ -100,7 +100,12 @@ func (k *KafkaService) Connect(profileID string) error {
 }
 
 // Disconnect closes the active Kafka connection.
+// Stops any active live-tail first to prevent goroutines from using a closed client.
 func (k *KafkaService) Disconnect() error {
+	// Stop live-tail BEFORE acquiring the write lock to avoid deadlock
+	// (StopLiveTail uses activeTailMu, not k.mu)
+	k.StopLiveTail()
+
 	k.mu.Lock()
 	defer k.mu.Unlock()
 
@@ -108,13 +113,13 @@ func (k *KafkaService) Disconnect() error {
 		return nil
 	}
 
+	k.cache.invalidate()
 	k.admin = nil
 	k.client.Close()
 	k.client = nil
 	k.baseOpts = nil
 	k.connected = false
 	k.activeProfile = ""
-	k.cache.invalidate()
 
 	return nil
 }
