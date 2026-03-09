@@ -3,6 +3,9 @@
  * Invalidates both the Go backend metadata cache (ClearCache)
  * and TanStack Query cache (invalidateQueries) for the given query keys.
  *
+ * Query keys are automatically scoped by the active cluster ID.
+ * Resets the cluster timestamp so the cache is considered fresh.
+ *
  * Supports Cmd+R / Ctrl+R keyboard shortcut when mounted.
  */
 
@@ -11,11 +14,13 @@ import { RefreshCw, Check } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { ClearCache } from "@/lib/wails-client";
+import { useSettingsStore } from "@/store/settings";
+import { clusterQueryKey } from "@/hooks/use-kafka-query";
 
 const DEFAULT_COOLDOWN_MS = 10_000;
 
 interface RefreshButtonProps {
-  /** Query keys to invalidate, e.g. [["topics"], ["dashboard"]] */
+  /** Query keys to invalidate (without cluster prefix), e.g. [["topics"], ["dashboard"]] */
   queryKeys: string[][];
   /** Cooldown duration in ms (default: 10_000) */
   cooldownMs?: number;
@@ -33,6 +38,8 @@ export function RefreshButton({
   className,
 }: RefreshButtonProps) {
   const queryClient = useQueryClient();
+  const activeClusterId = useSettingsStore((s) => s.activeClusterId);
+  const touchClusterTimestamp = useSettingsStore((s) => s.touchClusterTimestamp);
   const [state, setState] = useState<ButtonState>("idle");
   const [countdown, setCountdown] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -53,12 +60,19 @@ export function RefreshButton({
       // Step 1: Clear Go backend cache
       await ClearCache();
 
-      // Step 2: Invalidate TanStack Query cache for all specified keys
+      // Step 2: Invalidate TanStack Query cache for all specified keys (cluster-scoped)
       await Promise.all(
         queryKeys.map((key) =>
-          queryClient.invalidateQueries({ queryKey: key })
+          queryClient.invalidateQueries({
+            queryKey: clusterQueryKey(activeClusterId, key),
+          })
         )
       );
+
+      // Step 3: Reset cluster timestamp so cache is considered fresh
+      if (activeClusterId) {
+        touchClusterTimestamp(activeClusterId);
+      }
 
       // Brief success flash
       setState("success");
@@ -82,7 +96,7 @@ export function RefreshButton({
       // On error, go back to idle so user can retry
       setState("idle");
     }
-  }, [state, queryKeys, queryClient, cooldownMs, clearTimer]);
+  }, [state, queryKeys, queryClient, activeClusterId, touchClusterTimestamp, cooldownMs, clearTimer]);
 
   // Keyboard shortcut: Cmd+R / Ctrl+R
   useEffect(() => {

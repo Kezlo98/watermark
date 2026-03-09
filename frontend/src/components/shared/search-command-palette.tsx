@@ -29,6 +29,7 @@ import {
 import type { Topic, ConsumerGroup, SchemaSubject } from "@/types/kafka";
 import type { TopicAnnotation } from "@/types/annotations";
 import { useSettingsStore } from "@/store/settings";
+import { clusterQueryKey } from "@/hooks/use-kafka-query";
 
 /* ── Static page entries ─────────────────────────────────────────────── */
 
@@ -78,9 +79,9 @@ export function SearchCommandPalette() {
 
   /* ── Gather search data from React Query cache ──────────────────── */
 
-  const topics: Topic[] = queryClient.getQueryData(["topics"]) ?? [];
-  const consumerGroups: ConsumerGroup[] = queryClient.getQueryData(["consumer-groups"]) ?? [];
-  const schemaSubjects: SchemaSubject[] = queryClient.getQueryData(["schema-subjects"]) ?? [];
+  const topics: Topic[] = queryClient.getQueryData(clusterQueryKey(clusterId, ["topics"])) ?? [];
+  const consumerGroups: ConsumerGroup[] = queryClient.getQueryData(clusterQueryKey(clusterId, ["consumer-groups"])) ?? [];
+  const schemaSubjects: SchemaSubject[] = queryClient.getQueryData(clusterQueryKey(clusterId, ["schema-subjects"])) ?? [];
   const annotations: Record<string, TopicAnnotation> =
     queryClient.getQueryData(["annotations", clusterId ?? ""]) ?? {};
 

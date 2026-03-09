@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { ChevronDown, Power, Settings, Plus, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSettingsStore } from "@/store/settings";
-import { useKafkaQuery } from "@/hooks/use-kafka-query";
+import { useQuery } from "@tanstack/react-query";
 import { GetClusters } from "@/lib/wails-client";
 
 const COLOR_DOTS: Record<string, string> = {
@@ -25,11 +25,13 @@ export function ClusterDropdown() {
     openSettings,
   } = useSettingsStore();
 
-  const { data: clusters = [] } = useKafkaQuery(
-    ["clusters"],
-    GetClusters,
-    { refetchInterval: false },
-  );
+  /* Cluster profiles are global config — not scoped by active cluster */
+  const { data: clusters = [] } = useQuery({
+    queryKey: ["clusters"],
+    queryFn: GetClusters,
+    refetchInterval: false,
+    staleTime: Infinity,
+  });
 
   const activeCluster = clusters.find((c) => c.id === activeClusterId);
 

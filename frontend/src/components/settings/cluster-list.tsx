@@ -2,9 +2,8 @@ import { useState } from "react";
 import { Plus, Pencil, Copy, Trash2, Power } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ClusterForm } from "./cluster-form";
-import { useKafkaQuery } from "@/hooks/use-kafka-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { GetClusters, DeleteClusterProfile, DuplicateCluster } from "@/lib/wails-client";
-import { useQueryClient } from "@tanstack/react-query";
 import { useSettingsStore } from "@/store/settings";
 
 const COLOR_DOTS: Record<string, string> = {
@@ -20,11 +19,13 @@ export function ClusterList() {
   const { activeClusterId, connectionStatus, connectToCluster, disconnectCluster } =
     useSettingsStore();
 
-  const { data: clusters = [] } = useKafkaQuery(
-    ["clusters"],
-    GetClusters,
-    { refetchInterval: false },
-  );
+  /* Cluster profiles are global config — not scoped by active cluster */
+  const { data: clusters = [] } = useQuery({
+    queryKey: ["clusters"],
+    queryFn: GetClusters,
+    refetchInterval: false,
+    staleTime: Infinity,
+  });
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ["clusters"] });
 

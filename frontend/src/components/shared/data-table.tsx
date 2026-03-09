@@ -52,12 +52,12 @@ export function DataTable<T>({
         <table className="w-full">
           <thead className="sticky top-0 z-10">
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="bg-[var(--glass-bg,rgba(255,255,255,0.03))] backdrop-blur">
+              <tr key={headerGroup.id} className="bg-[#141414]">
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
                     className={cn(
-                      "px-4 py-3 text-left text-[10px] font-mono font-semibold",
+                      "px-4 py-3 text-left text-[11px] font-mono font-semibold",
                       "text-slate-400 uppercase tracking-wider",
                       header.column.getCanSort() && "cursor-pointer select-none"
                     )}

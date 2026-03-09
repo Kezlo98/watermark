@@ -3,6 +3,11 @@
  * with topics, consumer groups, and schema subjects immediately
  * after a cluster connection is established.
  *
+ * Also handles per-cluster cache invalidation:
+ * - If the cluster cache is older than 30 minutes, removes stale data
+ *   before prefetching fresh data.
+ * - If cache is fresh (< 30 min), serves from cache instantly — no refetch.
+ *
  * This ensures the ⌘K command palette has data to search
  * without requiring the user to visit each page first.
  *
@@ -13,11 +18,15 @@
 import { useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSettingsStore, type ConnectionStatus } from "@/store/settings";
+import { clusterQueryKey } from "@/hooks/use-kafka-query";
 import { GetTopics, GetConsumerGroups, GetSubjects } from "@/lib/wails-client";
 
 export function usePrefetchOnConnect() {
   const queryClient = useQueryClient();
   const connectionStatus = useSettingsStore((s) => s.connectionStatus);
+  const activeClusterId = useSettingsStore((s) => s.activeClusterId);
+  const isClusterCacheExpired = useSettingsStore((s) => s.isClusterCacheExpired);
+  const touchClusterTimestamp = useSettingsStore((s) => s.touchClusterTimestamp);
   const prevStatus = useRef<ConnectionStatus>("disconnected");
 
   useEffect(() => {
@@ -27,25 +36,32 @@ export function usePrefetchOnConnect() {
 
     prevStatus.current = connectionStatus;
 
-    if (!justConnected) return;
+    if (!justConnected || !activeClusterId) return;
+
+    // Check if this cluster's cache is expired (> 30 min)
+    if (isClusterCacheExpired(activeClusterId)) {
+      // Nuke stale cached data for this cluster
+      queryClient.removeQueries({ queryKey: [activeClusterId] });
+      touchClusterTimestamp(activeClusterId);
+    }
 
     /* Fire-and-forget prefetches — errors are silently swallowed */
     queryClient.prefetchQuery({
-      queryKey: ["topics"],
+      queryKey: clusterQueryKey(activeClusterId, ["topics"]),
       queryFn: GetTopics,
       staleTime: 30_000,
     });
 
     queryClient.prefetchQuery({
-      queryKey: ["consumer-groups"],
+      queryKey: clusterQueryKey(activeClusterId, ["consumer-groups"]),
       queryFn: GetConsumerGroups,
       staleTime: 30_000,
     });
 
     queryClient.prefetchQuery({
-      queryKey: ["schema-subjects"],
+      queryKey: clusterQueryKey(activeClusterId, ["schema-subjects"]),
       queryFn: GetSubjects,
       staleTime: 30_000,
     });
-  }, [connectionStatus, queryClient]);
+  }, [connectionStatus, activeClusterId, queryClient, isClusterCacheExpired, touchClusterTimestamp]);
 }

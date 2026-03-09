@@ -11,6 +11,9 @@ import {
 /** Frontend timeout (slightly longer than backend's 10s to let backend timeout trigger first) */
 const CONNECTION_TIMEOUT_MS = 15_000;
 
+/** Cache TTL — invalidate cluster cache if older than 30 minutes */
+const CLUSTER_CACHE_TTL_MS = 30 * 60 * 1000;
+
 /** Wraps a promise with a timeout — rejects if it doesn't resolve in time */
 function withTimeout<T>(promise: Promise<T>, ms: number, label = "Operation"): Promise<T> {
   return Promise.race([
@@ -35,12 +38,19 @@ interface SettingsState {
   /* Active Cluster */
   activeClusterId: string | null;
 
+  /* Per-cluster cache timestamps */
+  clusterTimestamps: Record<string, number>;
+  touchClusterTimestamp: (id: string) => void;
+
   /* Connection */
   connectionStatus: ConnectionStatus;
   connectionError: string | null;
   connectToCluster: (id: string) => Promise<void>;
   disconnectCluster: () => Promise<void>;
   initializeConnection: () => Promise<void>;
+
+  /** Check if a cluster's cache has expired (older than CLUSTER_CACHE_TTL_MS) */
+  isClusterCacheExpired: (id: string) => boolean;
 
   /* Settings Overlay */
   isSettingsOpen: boolean;
@@ -64,8 +74,22 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
 
   activeClusterId: null,
 
+  clusterTimestamps: {},
+
+  touchClusterTimestamp: (id: string) => {
+    set((s) => ({
+      clusterTimestamps: { ...s.clusterTimestamps, [id]: Date.now() },
+    }));
+  },
+
   connectionStatus: "disconnected",
   connectionError: null,
+
+  isClusterCacheExpired: (id: string) => {
+    const ts = get().clusterTimestamps[id];
+    if (!ts) return true; // no timestamp = treat as expired
+    return Date.now() - ts > CLUSTER_CACHE_TTL_MS;
+  },
 
   connectToCluster: async (id: string) => {
     const { activeClusterId } = get();
@@ -84,7 +108,13 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     try {
       await SetActiveCluster(id);
       await withTimeout(Connect(id), CONNECTION_TIMEOUT_MS, "Connection");
-      set({ connectionStatus: "connected", connectionError: null });
+
+      // Update timestamp on successful connection
+      set((s) => ({
+        connectionStatus: "connected",
+        connectionError: null,
+        clusterTimestamps: { ...s.clusterTimestamps, [id]: Date.now() },
+      }));
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       set({ connectionStatus: "error", connectionError: message });
@@ -112,14 +142,21 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       // Check if already connected (e.g. hot reload)
       const connected = await IsConnected();
       if (connected) {
-        set({ connectionStatus: "connected", activeClusterId: activeId });
+        set((s) => ({
+          connectionStatus: "connected",
+          activeClusterId: activeId,
+          clusterTimestamps: { ...s.clusterTimestamps, [activeId]: Date.now() },
+        }));
         return;
       }
 
       // Try to auto-connect to the saved active cluster
       set({ connectionStatus: "connecting", activeClusterId: activeId });
       await withTimeout(Connect(activeId), CONNECTION_TIMEOUT_MS, "Auto-connect");
-      set({ connectionStatus: "connected" });
+      set((s) => ({
+        connectionStatus: "connected",
+        clusterTimestamps: { ...s.clusterTimestamps, [activeId]: Date.now() },
+      }));
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       set({ connectionStatus: "error", connectionError: message });
