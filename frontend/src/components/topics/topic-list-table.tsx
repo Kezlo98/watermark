@@ -35,6 +35,9 @@ export function TopicListTable({ onTopicClick, searchFilter, hideInternal }: Top
 
   const filteredData = topics.filter((topic) => {
     if (hideInternal && topic.isInternal) return false;
+    if (searchFilter) {
+      return topic.name.toLowerCase().includes(searchFilter.toLowerCase());
+    }
     return true;
   });
 
