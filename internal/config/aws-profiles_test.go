@@ -100,6 +100,41 @@ aws_access_key_id = AKIA...
 		}
 	})
 
+	t.Run("config file skips non-profile sections", func(t *testing.T) {
+		dir := t.TempDir()
+		configPath := filepath.Join(dir, "config")
+		content := `[default]
+region = us-east-1
+
+[sso-session corp-sso]
+sso_start_url = https://example.com
+
+[services my-services]
+dynamodb = endpoint_url = http://localhost:8000
+
+[profile staging]
+region = us-west-2
+`
+		if err := os.WriteFile(configPath, []byte(content), 0644); err != nil {
+			t.Fatal(err)
+		}
+
+		seen := map[string]bool{"default": true}
+		profiles := []string{"(Default)"}
+		parseAWSFile(configPath, true, seen, &profiles)
+
+		// Only "staging" should be added; sso-session and services must be skipped
+		want := []string{"(Default)", "staging"}
+		if len(profiles) != len(want) {
+			t.Fatalf("got %d profiles, want %d: %v", len(profiles), len(want), profiles)
+		}
+		for i, p := range want {
+			if profiles[i] != p {
+				t.Errorf("profiles[%d] = %q, want %q", i, profiles[i], p)
+			}
+		}
+	})
+
 	t.Run("empty file returns unchanged slice", func(t *testing.T) {
 		dir := t.TempDir()
 		configPath := filepath.Join(dir, "config")

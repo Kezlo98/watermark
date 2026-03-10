@@ -55,8 +55,10 @@ func parseAWSFile(path string, isConfigFile bool, seen map[string]bool, profiles
 			if strings.HasPrefix(inner, "profile ") {
 				name = strings.TrimPrefix(inner, "profile ")
 				name = strings.TrimSpace(name)
+			} else {
+				// [default] is already in seen; skip [sso-session …], [services …], etc.
+				continue
 			}
-			// [default] is handled — already in seen map
 		}
 
 		if name != "" && !seen[name] {
