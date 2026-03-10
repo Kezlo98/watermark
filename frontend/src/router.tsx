@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Toaster } from "sonner";
 import {
   createRootRoute,
   createRoute,
@@ -78,6 +79,7 @@ function AppShell() {
         </main>
       </div>
       <SettingsOverlay />
+      <Toaster theme="dark" position="bottom-right" richColors />
     </div>
   );
 }
