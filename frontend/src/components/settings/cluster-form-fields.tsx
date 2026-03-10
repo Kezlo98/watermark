@@ -1,4 +1,6 @@
 import { cn } from "@/lib/utils";
+import { AwsProfileSelect } from "./aws-profile-select";
+import { AwsRegionSelect } from "./aws-region-select";
 
 interface ClusterFormFieldsProps {
   form: {
@@ -12,6 +14,8 @@ interface ClusterFormFieldsProps {
     readOnly: boolean;
     schemaRegistryUrl: string;
     schemaRegistryPassword: string;
+    awsProfile: string;
+    awsRegion: string;
   };
   onChange: (updates: Partial<ClusterFormFieldsProps["form"]>) => void;
   clusterId: string;
@@ -19,7 +23,10 @@ interface ClusterFormFieldsProps {
 }
 
 export function ClusterFormFields({ form, onChange, clusterId, isNew }: ClusterFormFieldsProps) {
-  const showSaslFields = form.securityProtocol !== "NONE" && form.securityProtocol !== "SSL";
+  const showSaslFields = form.securityProtocol !== "NONE"
+    && form.securityProtocol !== "SSL"
+    && form.securityProtocol !== "AWS_MSK_IAM";
+  const showAwsFields = form.securityProtocol === "AWS_MSK_IAM";
 
   return (
     <>
@@ -73,6 +80,7 @@ export function ClusterFormFields({ form, onChange, clusterId, isNew }: ClusterF
             <option value="SASL_SCRAM">SASL_SCRAM</option>
             <option value="SASL_SSL">SASL_SSL</option>
             <option value="SSL">SSL</option>
+            <option value="AWS_MSK_IAM">AWS_MSK_IAM</option>
           </select>
         </div>
         {showSaslFields && (
@@ -90,6 +98,19 @@ export function ClusterFormFields({ form, onChange, clusterId, isNew }: ClusterF
           </div>
         )}
       </div>
+
+      {showAwsFields && (
+        <div className="grid grid-cols-2 gap-4">
+          <AwsProfileSelect
+            value={form.awsProfile}
+            onChange={(v) => onChange({ awsProfile: v })}
+          />
+          <AwsRegionSelect
+            value={form.awsRegion}
+            onChange={(v) => onChange({ awsRegion: v })}
+          />
+        </div>
+      )}
 
       {showSaslFields && (
         <div className="grid grid-cols-2 gap-4">
