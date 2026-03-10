@@ -85,7 +85,7 @@ export function UpdateBanner() {
     return null;
   }
 
-  const isUpdating = phase === "downloading" || phase === "verifying" || phase === "applying" || phase === "re-signing";
+  const isUpdating = phase === "checking" || phase === "downloading" || phase === "verifying" || phase === "applying" || phase === "re-signing";
   const isDone = phase === "done";
   const isError = phase === "error";
 
@@ -131,11 +131,14 @@ export function UpdateBanner() {
 
         {/* Done state */}
         {isDone && (
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="size-3.5 text-emerald-400" />
-            <span className="text-[11px] font-semibold text-emerald-400">
-              Updated to {updateInfo.latestVersion}
-            </span>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="size-3.5 text-emerald-400" />
+              <span className="text-[11px] font-semibold text-emerald-400">
+                Updated to {updateInfo.latestVersion}
+              </span>
+            </div>
+            <p className="text-[10px] text-emerald-400/60">Restart the app to use the new version.</p>
           </div>
         )}
 

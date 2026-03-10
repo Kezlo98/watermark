@@ -58,8 +58,9 @@ jobs:
           fi
 
       - name: Build Wails app (universal binary)
+        env:
+          TAG: ${{ steps.tag.outputs.tag }}
         run: |
-          TAG="${{ steps.tag.outputs.tag }}"
           wails build -clean -platform darwin/universal \
             -ldflags "-X main.version=${TAG}"
 
@@ -121,12 +122,12 @@ jobs:
             "./build/bin/${{ env.APP_NAME }}.app"
 
       - name: Create ZIP for auto-updater
-        run: |
-          TAG="${{ steps.tag.outputs.tag }}"
-          cd ./build/bin
-          zip -r "${APP_NAME}_${TAG}_darwin_all.zip" "${{ env.APP_NAME }}.app"
         env:
+          TAG: ${{ steps.tag.outputs.tag }}
           APP_NAME: ${{ env.APP_NAME }}
+        run: |
+          cd ./build/bin
+          zip -r "${APP_NAME}_${TAG}_darwin_all.zip" "${APP_NAME}.app"
 
       - name: Generate SHA256 checksums
         run: |
@@ -203,8 +204,9 @@ jobs:
 
       - name: Detect pre-release
         id: prerelease
+        env:
+          TAG: ${{ steps.tag.outputs.tag }}
         run: |
-          TAG="${{ steps.tag.outputs.tag }}"
           if [[ "$TAG" == *"-"* ]]; then
             echo "is_prerelease=true" >> $GITHUB_OUTPUT
           else

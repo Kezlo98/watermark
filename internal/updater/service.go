@@ -202,22 +202,27 @@ func (u *UpdaterService) ApplyUpdate() error {
 // StartPeriodicCheck runs a background goroutine that checks for updates
 // every 6 hours and emits "update:available" Wails events when found.
 func (u *UpdaterService) StartPeriodicCheck() {
-	// Do an initial check after a short delay (let the app finish loading)
-	time.Sleep(10 * time.Second)
+	u.mu.RLock()
+	ctx := u.ctx
+	u.mu.RUnlock()
+
+	if ctx == nil {
+		return
+	}
+
+	// Wait for the initial delay but honour early shutdown
+	select {
+	case <-ctx.Done():
+		return
+	case <-time.After(10 * time.Second):
+	}
+
 	u.checkAndEmit()
 
 	ticker := time.NewTicker(checkInterval)
 	defer ticker.Stop()
 
 	for {
-		u.mu.RLock()
-		ctx := u.ctx
-		u.mu.RUnlock()
-
-		if ctx == nil {
-			return
-		}
-
 		select {
 		case <-ctx.Done():
 			return
