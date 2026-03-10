@@ -46,6 +46,10 @@ export function ImportConfig(arg1) {
   return window['go']['config']['ConfigService']['ImportConfig'](arg1);
 }
 
+export function ListAWSProfiles() {
+  return window['go']['config']['ConfigService']['ListAWSProfiles']();
+}
+
 export function SaveCluster(arg1) {
   return window['go']['config']['ConfigService']['SaveCluster'](arg1);
 }

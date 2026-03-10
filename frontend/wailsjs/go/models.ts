@@ -57,6 +57,8 @@ export namespace config {
 	    password?: string;
 	    schemaRegistryUrl?: string;
 	    schemaRegistryPassword?: string;
+	    awsProfile?: string;
+	    awsRegion?: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new ClusterProfile(source);
@@ -75,6 +77,8 @@ export namespace config {
 	        this.password = source["password"];
 	        this.schemaRegistryUrl = source["schemaRegistryUrl"];
 	        this.schemaRegistryPassword = source["schemaRegistryPassword"];
+	        this.awsProfile = source["awsProfile"];
+	        this.awsRegion = source["awsRegion"];
 	    }
 	}
 

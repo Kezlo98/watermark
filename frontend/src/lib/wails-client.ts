@@ -44,6 +44,7 @@ export {
   TestConnection,
   ExportConfig,
   ImportConfig,
+  ListAWSProfiles,
 } from "../../wailsjs/go/config/ConfigService";
 
 // --- Schema Service ---

@@ -24,6 +24,8 @@ export function GetSettings():Promise<config.AppSettings>;
 
 export function ImportConfig(arg1:string):Promise<void>;
 
+export function ListAWSProfiles():Promise<Array<string>>;
+
 export function SaveCluster(arg1:config.ClusterProfile):Promise<void>;
 
 export function SaveSettings(arg1:config.AppSettings):Promise<void>;

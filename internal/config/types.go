@@ -13,6 +13,8 @@ type ClusterProfile struct {
 	Password               string `json:"password,omitempty"`
 	SchemaRegistryURL      string `json:"schemaRegistryUrl,omitempty"`
 	SchemaRegistryPassword string `json:"schemaRegistryPassword,omitempty"`
+	AwsProfile             string `json:"awsProfile,omitempty"` // AWS profile name for MSK IAM auth
+	AwsRegion              string `json:"awsRegion,omitempty"`  // AWS region override (empty = from config/env)
 }
 
 // AppSettings matches frontend AppSettings interface in types/config.ts

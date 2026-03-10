@@ -181,7 +181,8 @@
 - [ ] Cluster form: Profile Name, Bootstrap Servers
 - [ ] Color Tag picker (tints header navbar as safety warning)
 - [ ] Read-Only Mode toggle
-- [ ] Auth dropdown: None, SASL/PLAIN, SASL/SCRAM, SSL
+- [ ] Auth dropdown: None, SASL/PLAIN, SASL/SCRAM, SSL, AWS_MSK_IAM
+- [ ] AWS Profile dropdown (visible when AWS_MSK_IAM selected)
 - [ ] Schema Registry URL + independent auth credentials
 - [ ] `[Test Connection]` button → validates credentials before save
 

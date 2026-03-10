@@ -31,6 +31,8 @@ export function ClusterForm({ clusterId, clusterName, onClose }: ClusterFormProp
     readOnly: false,
     schemaRegistryUrl: "",
     schemaRegistryPassword: "",
+    awsProfile: "",
+    awsRegion: "",
   });
 
   const [saving, setSaving] = useState(false);
@@ -54,6 +56,8 @@ export function ClusterForm({ clusterId, clusterName, onClose }: ClusterFormProp
           readOnly: cluster.readOnly,
           schemaRegistryUrl: cluster.schemaRegistryUrl || "",
           schemaRegistryPassword: "",
+          awsProfile: cluster.awsProfile || "",
+          awsRegion: cluster.awsRegion || "",
         });
         setLoaded(true);
       })
@@ -85,6 +89,8 @@ export function ClusterForm({ clusterId, clusterName, onClose }: ClusterFormProp
     setSaving(true);
     setSaveError("");
     try {
+      const isAwsMsk = form.securityProtocol === "AWS_MSK_IAM";
+      const isNoAuth = form.securityProtocol === "NONE";
       const profile = new config.ClusterProfile({
         id: isNew ? "" : clusterId,
         name: form.name.trim(),
@@ -92,9 +98,11 @@ export function ClusterForm({ clusterId, clusterName, onClose }: ClusterFormProp
         color: form.labelColor,
         readOnly: form.readOnly,
         securityProtocol: form.securityProtocol,
-        saslMechanism: form.securityProtocol !== "NONE" ? form.saslMechanism : "",
-        username: form.securityProtocol !== "NONE" ? form.username : "",
-        password: form.password || undefined,
+        saslMechanism: (!isNoAuth && !isAwsMsk) ? form.saslMechanism : "",
+        username: (!isNoAuth && !isAwsMsk) ? form.username : "",
+        password: (!isNoAuth && !isAwsMsk) ? (form.password || undefined) : undefined,
+        awsProfile: isAwsMsk ? form.awsProfile : "",
+        awsRegion: isAwsMsk ? form.awsRegion : "",
         schemaRegistryUrl: form.schemaRegistryUrl || undefined,
         schemaRegistryPassword: form.schemaRegistryPassword || undefined,
       });
@@ -150,18 +158,25 @@ export function ClusterForm({ clusterId, clusterName, onClose }: ClusterFormProp
 
       {/* Action buttons */}
       <div className="flex justify-between items-center pt-4 border-t border-white/5">
-        <button
-          onClick={handleTestConnection}
-          disabled={testStatus === "testing"}
-          className="flex items-center gap-1.5 px-4 py-2 text-sm text-slate-400 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors disabled:opacity-50"
-        >
-          {testStatus === "testing" ? (
-            <Loader2 className="size-3.5 animate-spin" />
-          ) : (
-            <Zap className="size-3.5" />
+        <div className="relative group">
+          <button
+            onClick={handleTestConnection}
+            disabled={testStatus === "testing" || form.securityProtocol === "AWS_MSK_IAM"}
+            className="flex items-center gap-1.5 px-4 py-2 text-sm text-slate-400 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {testStatus === "testing" ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : (
+              <Zap className="size-3.5" />
+            )}
+            Test Connection
+          </button>
+          {form.securityProtocol === "AWS_MSK_IAM" && (
+            <div className="absolute left-0 bottom-full mb-2 px-3 py-2 bg-slate-800 border border-white/10 rounded-lg text-xs text-slate-300 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+              AWS IAM auth is validated on Connect
+            </div>
           )}
-          Test Connection
-        </button>
+        </div>
 
         <div className="flex gap-3">
           <button
