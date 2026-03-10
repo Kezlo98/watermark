@@ -10,11 +10,12 @@ const TOPIC_NAME_REGEX = /^[a-zA-Z0-9._-]+$/;
 const MAX_TOPIC_NAME_LENGTH = 249;
 
 function validateTopicName(name: string): string | null {
-  if (!name.trim()) return "Topic name is required";
-  if (name === "." || name === "..") return "Topic name cannot be '.' or '..'";
-  if (name.length > MAX_TOPIC_NAME_LENGTH)
+  const trimmed = name.trim();
+  if (!trimmed) return "Topic name is required";
+  if (trimmed === "." || trimmed === "..") return "Topic name cannot be '.' or '..'";
+  if (trimmed.length > MAX_TOPIC_NAME_LENGTH)
     return `Topic name cannot exceed ${MAX_TOPIC_NAME_LENGTH} characters`;
-  if (!TOPIC_NAME_REGEX.test(name))
+  if (!TOPIC_NAME_REGEX.test(trimmed))
     return "Only letters, numbers, dots, hyphens, and underscores allowed";
   return null;
 }
@@ -41,6 +42,12 @@ export function CreateTopicModal({ isOpen, onClose }: CreateTopicModalProps) {
   const [form, setForm] = useState(DEFAULT_FORM);
   const [error, setError] = useState<string | null>(null);
 
+  const handleClose = () => {
+    setForm({ ...DEFAULT_FORM });
+    setError(null);
+    onClose();
+  };
+
   const mutation = useMutation({
     mutationFn: () =>
       CreateTopic(form.name.trim(), form.partitions, form.replicationFactor, {
@@ -56,13 +63,6 @@ export function CreateTopicModal({ isOpen, onClose }: CreateTopicModalProps) {
       toast.error(`Failed to create topic: ${err.message}`);
     },
   });
-
-  const handleClose = () => {
-    setForm({ ...DEFAULT_FORM });
-    setError(null);
-    mutation.reset();
-    onClose();
-  };
 
   const handleSubmit = () => {
     const validationError = validateTopicName(form.name);
@@ -81,7 +81,7 @@ export function CreateTopicModal({ isOpen, onClose }: CreateTopicModalProps) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
-      onClick={handleClose}
+      onClick={mutation.isPending ? undefined : handleClose}
     >
       {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
       <div className="glass-panel w-full max-w-lg p-6" onClick={(e) => e.stopPropagation()}>
@@ -89,7 +89,7 @@ export function CreateTopicModal({ isOpen, onClose }: CreateTopicModalProps) {
           <h2 className="text-lg font-display font-bold text-white uppercase tracking-wider">
             Create New Topic
           </h2>
-          <button onClick={handleClose} className="p-1 text-slate-400 hover:text-white transition-colors">
+          <button onClick={handleClose} disabled={mutation.isPending} className="p-1 text-slate-400 hover:text-white transition-colors disabled:opacity-50">
             <X className="size-5" />
           </button>
         </div>
@@ -183,6 +183,7 @@ export function CreateTopicModal({ isOpen, onClose }: CreateTopicModalProps) {
         <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-white/5">
           <button
             onClick={handleClose}
+            disabled={mutation.isPending}
             className="px-4 py-2 text-sm text-slate-400 hover:text-white bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors"
           >
             Cancel
