@@ -72,3 +72,10 @@ export {
   ImportFromFile,
 } from "../../wailsjs/go/annotations/AnnotationService";
 
+// --- Updater Service ---
+export {
+  GetCurrentVersion,
+  CheckForUpdate,
+  ApplyUpdate,
+} from "../../wailsjs/go/updater/UpdaterService";
+
