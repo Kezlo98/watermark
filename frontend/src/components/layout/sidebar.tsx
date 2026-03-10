@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import {
   BarChart3,
   Layers,
@@ -7,6 +8,8 @@ import {
 } from "lucide-react";
 import logoImg from "@/assets/images/logo-universal.png";
 import { cn } from "@/lib/utils";
+import { GetCurrentVersion } from "@/lib/wails-client";
+import { UpdateBanner } from "./update-banner";
 
 interface NavItem {
   id: string;
@@ -26,6 +29,13 @@ export function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Fetch real version from Go backend (never changes during runtime)
+  const { data: version = "dev" } = useQuery({
+    queryKey: ["app-version"],
+    queryFn: GetCurrentVersion,
+    staleTime: Infinity,
+  });
+
   const isActive = (path: string) => {
     if (path === "/") return location.pathname === "/";
     return location.pathname.startsWith(path);
@@ -42,9 +52,6 @@ export function Sidebar() {
           <h1 className="text-base font-display font-bold text-white tracking-tight">
             Watermark
           </h1>
-          <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
-            Dev Infra
-          </span>
         </div>
       </div>
 
@@ -78,10 +85,14 @@ export function Sidebar() {
         </div>
       </nav>
 
+      {/* Update banner (rendered above version footer) */}
+      <UpdateBanner />
+
       {/* Version footer */}
-      <div className="px-6 py-4 border-t border-white/5">
-        <span className="text-[10px] font-mono text-slate-600">v0.1.0</span>
+      <div className="px-6 py-4 border-t border-white/5 text-center">
+        <span className="text-[10px] font-mono text-slate-600">{version}</span>
       </div>
     </aside>
   );
 }
+

@@ -44,6 +44,7 @@ export {
   TestConnection,
   ExportConfig,
   ImportConfig,
+  ListAWSProfiles,
 } from "../../wailsjs/go/config/ConfigService";
 
 // --- Schema Service ---
@@ -70,4 +71,11 @@ export {
   ExportAllToFile,
   ImportFromFile,
 } from "../../wailsjs/go/annotations/AnnotationService";
+
+// --- Updater Service ---
+export {
+  GetCurrentVersion,
+  CheckForUpdate,
+  ApplyUpdate,
+} from "../../wailsjs/go/updater/UpdaterService";
 

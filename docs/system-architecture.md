@@ -160,6 +160,25 @@ TS: export function GetTopics(): Promise<main.Topic[]>
 - TLS client certificates stored in OS certificate store
 - No network requests to external telemetry services
 
+#### AWS MSK IAM Authentication
+
+```
+ClusterProfile.SecurityProtocol = "AWS_MSK_IAM"
+ClusterProfile.AwsProfile = "staging" (or "" for default chain)
+         │
+         ▼
+aws-sdk-go-v2/config.LoadDefaultConfig()
+  → Resolves credentials: env → ~/.aws/credentials → SSO → IAM role
+         │
+         ▼
+franz-go/sasl/aws.ManagedStreamingIAM(callback)
+  → Auto-refreshing SASL mechanism + mandatory TLS
+```
+
+- No AWS credentials stored in Watermark config — always resolved from AWS credential chain
+- Profile discovery parses `~/.aws/config` and `~/.aws/credentials`
+- SSO login hint in error messages when credentials fail
+
 ### Build & Distribution
 
 ```

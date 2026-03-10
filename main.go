@@ -7,11 +7,15 @@ import (
 	"watermark-01/internal/config"
 	"watermark-01/internal/kafka"
 	"watermark-01/internal/schema"
+	"watermark-01/internal/updater"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 )
+
+// version is injected at build time via: -ldflags "-X main.version=vX.Y.Z"
+var version = "dev"
 
 //go:embed all:frontend/dist
 var assets embed.FS
@@ -33,7 +37,9 @@ func main() {
 		return
 	}
 
-	app := NewApp(configSvc, kafkaSvc, schemaSvc, annotationSvc)
+	updaterSvc := updater.NewUpdaterService(version)
+
+	app := NewApp(configSvc, kafkaSvc, schemaSvc, annotationSvc, updaterSvc)
 
 	err = wails.Run(&options.App{
 		Title:  "Watermark",
@@ -51,6 +57,7 @@ func main() {
 			kafkaSvc,
 			schemaSvc,
 			annotationSvc,
+			updaterSvc,
 		},
 	})
 

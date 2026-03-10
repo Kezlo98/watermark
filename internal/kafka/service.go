@@ -10,8 +10,10 @@ import (
 
 	"watermark-01/internal/config"
 
+	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/twmb/franz-go/pkg/kadm"
 	"github.com/twmb/franz-go/pkg/kgo"
+	awsmsk "github.com/twmb/franz-go/pkg/sasl/aws"
 	"github.com/twmb/franz-go/pkg/sasl/plain"
 	"github.com/twmb/franz-go/pkg/sasl/scram"
 )
@@ -86,6 +88,10 @@ func (k *KafkaService) Connect(profileID string) error {
 		client.Close()
 		if connectCtx.Err() == context.DeadlineExceeded {
 			return fmt.Errorf("connection timed out after %s — cluster unreachable", connectionTimeout)
+		}
+		// Hint for AWS auth failures
+		if profile.SecurityProtocol == "AWS_MSK_IAM" {
+			return fmt.Errorf("AWS MSK IAM auth failed: %w — verify AWS credentials and IAM policy", err)
 		}
 		return fmt.Errorf("connect: ping failed: %w", err)
 	}
@@ -204,6 +210,50 @@ func (k *KafkaService) buildClientOpts(profile *config.ClusterProfile, password 
 		}
 		opts = append(opts, kgo.DialTLSConfig(&tls.Config{}))
 	case "SSL":
+		opts = append(opts, kgo.DialTLSConfig(&tls.Config{}))
+	case "AWS_MSK_IAM":
+		var loadOpts []func(*awsconfig.LoadOptions) error
+		if profile.AwsProfile != "" {
+			loadOpts = append(loadOpts, awsconfig.WithSharedConfigProfile(profile.AwsProfile))
+		}
+		if profile.AwsRegion != "" {
+			loadOpts = append(loadOpts, awsconfig.WithRegion(profile.AwsRegion))
+		}
+		awsCfg, err := awsconfig.LoadDefaultConfig(k.getCtx(), loadOpts...)
+		if err != nil {
+			return nil, fmt.Errorf("load AWS config: %w", err)
+		}
+
+		// Resolve the effective region — user override → AWS config chain
+		effectiveRegion := profile.AwsRegion
+		if effectiveRegion == "" {
+			effectiveRegion = awsCfg.Region
+		}
+
+		mechanism := awsmsk.ManagedStreamingIAM(func(ctx context.Context) (awsmsk.Auth, error) {
+			creds, err := awsCfg.Credentials.Retrieve(ctx)
+			if err != nil {
+				profileName := profile.AwsProfile
+				if profileName == "" {
+					profileName = "default"
+				}
+				return awsmsk.Auth{}, fmt.Errorf("AWS credentials: %w — run 'aws sso login --profile %s' if using SSO", err, profileName)
+			}
+			return awsmsk.Auth{
+				AccessKey:    creds.AccessKeyID,
+				SecretKey:    creds.SecretAccessKey,
+				SessionToken: creds.SessionToken,
+			}, nil
+		})
+
+		// If we have a region, wrap the mechanism to work around franz-go's
+		// identifyRegion() which only parses region from *.amazonaws.com hostnames.
+		// For VPC endpoints or custom DNS, inject the region via a wrapper.
+		if effectiveRegion != "" {
+			mechanism = newRegionAwareMSKIAM(mechanism, effectiveRegion)
+		}
+
+		opts = append(opts, kgo.SASL(mechanism))
 		opts = append(opts, kgo.DialTLSConfig(&tls.Config{}))
 	}
 

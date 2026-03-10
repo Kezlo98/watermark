@@ -57,6 +57,8 @@ export namespace config {
 	    password?: string;
 	    schemaRegistryUrl?: string;
 	    schemaRegistryPassword?: string;
+	    awsProfile?: string;
+	    awsRegion?: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new ClusterProfile(source);
@@ -75,6 +77,8 @@ export namespace config {
 	        this.password = source["password"];
 	        this.schemaRegistryUrl = source["schemaRegistryUrl"];
 	        this.schemaRegistryPassword = source["schemaRegistryPassword"];
+	        this.awsProfile = source["awsProfile"];
+	        this.awsRegion = source["awsRegion"];
 	    }
 	}
 
@@ -397,6 +401,33 @@ export namespace schema {
 	        this.type = source["type"];
 	        this.date = source["date"];
 	        this.description = source["description"];
+	    }
+	}
+
+}
+
+export namespace updater {
+	
+	export class UpdateInfo {
+	    available: boolean;
+	    currentVersion: string;
+	    latestVersion: string;
+	    releaseUrl: string;
+	    releaseNotes: string;
+	    publishedAt: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new UpdateInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.available = source["available"];
+	        this.currentVersion = source["currentVersion"];
+	        this.latestVersion = source["latestVersion"];
+	        this.releaseUrl = source["releaseUrl"];
+	        this.releaseNotes = source["releaseNotes"];
+	        this.publishedAt = source["publishedAt"];
 	    }
 	}
 
