@@ -269,23 +269,22 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
         </div>
       )}
 
-      {/* Split pane: messages table + inspector */}
-      <div className={cn("grid gap-4", selectedMessage ? "grid-cols-[1fr_400px]" : "grid-cols-1")}>
-        <MessagesTable
-          messages={messages}
-          selectedMessage={selectedMessage}
-          onSelectMessage={setSelectedMessage}
-        />
+      <MessagesTable
+        messages={messages}
+        selectedMessage={selectedMessage}
+        onSelectMessage={setSelectedMessage}
+        inspectorOpen={!!selectedMessage}
+      />
 
-        {selectedMessage && (
-          <MessageInspector
-            value={selectedMessage.value}
-            offset={selectedMessage.offset}
-            format={format}
-            onClose={() => setSelectedMessage(null)}
-          />
-        )}
-      </div>
+      {/* Inspector: shown below table when a message is selected */}
+      {selectedMessage && (
+        <MessageInspector
+          value={selectedMessage.value}
+          offset={selectedMessage.offset}
+          format={format}
+          onClose={() => setSelectedMessage(null)}
+        />
+      )}
     </div>
   );
 }
