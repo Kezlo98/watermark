@@ -74,6 +74,8 @@ func (u *UpdaterService) CheckForUpdate() UpdateInfo {
 	updater, err := selfupdate.NewUpdater(selfupdate.Config{
 		Source:    source,
 		Validator: &selfupdate.ChecksumValidator{UniqueFilename: "checksums.txt"},
+		// Universal macOS binary is named "darwin_all" — match it for any darwin arch
+		Filters: []string{"darwin_all"},
 	})
 	if err != nil {
 		log.Printf("updater: create updater error: %v", err)
@@ -167,6 +169,8 @@ func (u *UpdaterService) ApplyUpdate() error {
 	updater, err := selfupdate.NewUpdater(selfupdate.Config{
 		Source:    source,
 		Validator: &selfupdate.ChecksumValidator{UniqueFilename: "checksums.txt"},
+		// Universal macOS binary is named "darwin_all" — match it for any darwin arch
+		Filters: []string{"darwin_all"},
 	})
 	if err != nil {
 		emit("error", 0, err.Error())
