@@ -35,7 +35,7 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, insp
   return (
     <div className="glass-panel overflow-hidden flex flex-col">
       {/* Table — height shrinks when inspector is open to keep it visible */}
-      <div className={cn("overflow-auto", inspectorOpen ? "max-h-[264px]" : "max-h-[528px]")}>
+      <div className={cn("overflow-auto", inspectorOpen ? "max-h-[30vh]" : "max-h-[50vh]")}>
         <table className="w-full">
           <thead>
             <tr className="bg-white/5">

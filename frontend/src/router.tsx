@@ -7,6 +7,7 @@ import {
   Outlet,
   useNavigate,
   useParams,
+  useRouter,
 } from "@tanstack/react-router";
 import { Plus, Send, ChevronLeft } from "lucide-react";
 import { Sidebar } from "@/components/layout/sidebar";
@@ -177,14 +178,14 @@ const topicsRoute = createRoute({
 /* ========================================================================= */
 function TopicDetailPage() {
   const { topicId } = useParams({ from: "/topics/$topicId" });
-  const navigate = useNavigate();
+  const router = useRouter();
   const [produceOpen, setProduceOpen] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
 
   return (
     <div className="space-y-6">
       <button
-        onClick={() => navigate({ to: "/topics" })}
+        onClick={() => router.history.back()}
         className="flex items-center gap-1 text-sm text-slate-400 hover:text-slate-200 transition-colors"
       >
         <ChevronLeft className="size-4" />
@@ -277,7 +278,7 @@ const consumersRoute = createRoute({
 /* ========================================================================= */
 function ConsumerDetailPage() {
   const { groupId } = useParams({ from: "/consumers/$groupId" });
-  const navigate = useNavigate();
+  const router = useRouter();
   const { data: detail } = useKafkaQuery(
     ["consumer-group-detail", groupId],
     () => GetConsumerGroupDetail(groupId),
@@ -286,7 +287,7 @@ function ConsumerDetailPage() {
   return (
     <div className="space-y-6">
       <button
-        onClick={() => navigate({ to: "/consumers" })}
+        onClick={() => router.history.back()}
         className="flex items-center gap-1 text-sm text-slate-400 hover:text-slate-200 transition-colors"
       >
         <ChevronLeft className="size-4" />
