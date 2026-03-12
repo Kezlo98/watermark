@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Search, Settings, Bell, Plus } from "lucide-react";
+import { Search, Settings } from "lucide-react";
 import { useSettingsStore } from "@/store/settings";
 import { useSearchPaletteStore } from "@/store/search-palette";
 import { ClusterDropdown } from "./cluster-dropdown";
@@ -44,16 +44,6 @@ export function AppHeader() {
 
         {/* Right: Actions */}
         <div className="flex items-center gap-2">
-          <button className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-primary bg-primary/10 rounded-lg border border-primary/20 hover:bg-primary/20 transition-colors">
-            <Plus className="size-3.5" />
-            New Resource
-          </button>
-
-          <button className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors relative">
-            <Bell className="size-4" />
-            <span className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-semantic-orange" />
-          </button>
-
           <button
             id="settings-trigger"
             onClick={openSettings}
