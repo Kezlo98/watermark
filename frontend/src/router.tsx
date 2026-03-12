@@ -8,7 +8,7 @@ import {
   useNavigate,
   useParams,
 } from "@tanstack/react-router";
-import { Plus, Send } from "lucide-react";
+import { Plus, Send, ChevronLeft } from "lucide-react";
 import { Sidebar } from "@/components/layout/sidebar";
 import { AppHeader } from "@/components/layout/app-header";
 import { SettingsOverlay } from "@/components/settings/settings-overlay";
@@ -177,11 +177,19 @@ const topicsRoute = createRoute({
 /* ========================================================================= */
 function TopicDetailPage() {
   const { topicId } = useParams({ from: "/topics/$topicId" });
+  const navigate = useNavigate();
   const [produceOpen, setProduceOpen] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
 
   return (
     <div className="space-y-6">
+      <button
+        onClick={() => navigate({ to: "/topics" })}
+        className="flex items-center gap-1 text-sm text-slate-400 hover:text-slate-200 transition-colors"
+      >
+        <ChevronLeft className="size-4" />
+        Topics
+      </button>
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <h1 className="text-3xl font-mono font-bold uppercase tracking-wider">
@@ -269,6 +277,7 @@ const consumersRoute = createRoute({
 /* ========================================================================= */
 function ConsumerDetailPage() {
   const { groupId } = useParams({ from: "/consumers/$groupId" });
+  const navigate = useNavigate();
   const { data: detail } = useKafkaQuery(
     ["consumer-group-detail", groupId],
     () => GetConsumerGroupDetail(groupId),
@@ -276,6 +285,13 @@ function ConsumerDetailPage() {
 
   return (
     <div className="space-y-6">
+      <button
+        onClick={() => navigate({ to: "/consumers" })}
+        className="flex items-center gap-1 text-sm text-slate-400 hover:text-slate-200 transition-colors"
+      >
+        <ChevronLeft className="size-4" />
+        Consumer Groups
+      </button>
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-mono font-bold uppercase tracking-wider">
           Consumer Group: <span className="text-primary">{groupId}</span>
