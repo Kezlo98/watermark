@@ -9,9 +9,10 @@ interface MessagesTableProps {
   messages: Message[];
   selectedMessage: Message | null;
   onSelectMessage: (msg: Message) => void;
+  inspectorOpen?: boolean;
 }
 
-export function MessagesTable({ messages, selectedMessage, onSelectMessage }: MessagesTableProps) {
+export function MessagesTable({ messages, selectedMessage, onSelectMessage, inspectorOpen = false }: MessagesTableProps) {
   const [pageSize, setPageSize] = useState(20);
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -33,8 +34,8 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage }: Me
 
   return (
     <div className="glass-panel overflow-hidden flex flex-col">
-      {/* Table */}
-      <div className="overflow-auto flex-1">
+      {/* Table — height shrinks when inspector is open to keep it visible */}
+      <div className={cn("overflow-auto", inspectorOpen ? "max-h-[30vh]" : "max-h-[50vh]")}>
         <table className="w-full">
           <thead>
             <tr className="bg-white/5">
