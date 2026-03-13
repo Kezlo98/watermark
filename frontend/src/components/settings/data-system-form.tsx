@@ -1,33 +1,37 @@
 import { useEffect, useState, useCallback } from "react";
-import { Download, Upload, Loader2, ArrowDownCircle, CheckCircle2 } from "lucide-react";
+import { Download, Upload, Loader2, ArrowDownCircle, CheckCircle2, AlertCircle } from "lucide-react";
 import { GetCurrentVersion, CheckForUpdate, ApplyUpdate } from "@/lib/wails-client";
 import type { UpdateInfo } from "@/components/layout/update-banner";
 
-type CheckState = "idle" | "checking" | "up-to-date" | "available" | "updating" | "done";
+type CheckState = "idle" | "checking" | "up-to-date" | "available" | "updating" | "done" | "error";
 
 function AppVersionSection() {
   const [version, setVersion] = useState("");
   const [checkState, setCheckState] = useState<CheckState>("idle");
   const [updateInfo, setUpdateInfo] = useState<UpdateInfo | null>(null);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     GetCurrentVersion().then(setVersion).catch(() => {});
   }, []);
 
   const handleCheck = useCallback(async () => {
-    if (checkState === "available" || checkState === "done") {
+    if (checkState === "available") {
       // Trigger update
       setCheckState("updating");
+      setErrorMsg("");
       try {
         await ApplyUpdate();
         setCheckState("done");
-      } catch {
-        setCheckState("available");
+      } catch (err) {
+        setErrorMsg(err instanceof Error ? err.message : "Update failed");
+        setCheckState("error");
       }
       return;
     }
 
     setCheckState("checking");
+    setErrorMsg("");
     try {
       const info = await CheckForUpdate();
       if (info?.available) {
@@ -36,8 +40,9 @@ function AppVersionSection() {
       } else {
         setCheckState("up-to-date");
       }
-    } catch {
-      setCheckState("idle");
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : "Check failed");
+      setCheckState("error");
     }
   }, [checkState]);
 
@@ -48,6 +53,7 @@ function AppVersionSection() {
       case "available": return `Update to ${updateInfo?.latestVersion}`;
       case "updating": return "Updating…";
       case "done": return "Restart to apply";
+      case "error": return "Retry";
       default: return "Check for Updates";
     }
   };
@@ -55,6 +61,7 @@ function AppVersionSection() {
   const isLoading = checkState === "checking" || checkState === "updating";
   const isAvailable = checkState === "available";
   const isDone = checkState === "done";
+  const isError = checkState === "error";
 
   return (
     <section>
@@ -74,15 +81,21 @@ function AppVersionSection() {
           className={`flex items-center gap-2 px-3 py-1.5 text-xs rounded-lg border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
             isAvailable
               ? "bg-primary/20 border-primary/30 text-primary hover:bg-primary/30"
-              : "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10"
+              : isError
+                ? "bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20"
+                : "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10"
           }`}
         >
           {isLoading && <Loader2 className="size-3 animate-spin" />}
           {isAvailable && <ArrowDownCircle className="size-3" />}
           {isDone && <CheckCircle2 className="size-3 text-emerald-400" />}
+          {isError && <AlertCircle className="size-3" />}
           {buttonLabel()}
         </button>
       </div>
+      {isError && errorMsg && (
+        <p className="text-xs text-red-400/70 mt-2">{errorMsg}</p>
+      )}
     </section>
   );
 }
