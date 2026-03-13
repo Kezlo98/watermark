@@ -9,6 +9,8 @@ export function Connect(arg1:string):Promise<void>;
 
 export function ConsumeMessages(arg1:string,arg2:number,arg3:number,arg4:number):Promise<Array<kafka.Message>>;
 
+export function ConsumeMessagesFromTimestamp(arg1:string,arg2:number,arg3:number,arg4:number):Promise<Array<kafka.Message>>;
+
 export function CreateTopic(arg1:string,arg2:number,arg3:number,arg4:Record<string, string>):Promise<void>;
 
 export function DeleteTopic(arg1:string):Promise<void>;
