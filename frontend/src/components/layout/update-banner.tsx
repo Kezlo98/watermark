@@ -32,6 +32,16 @@ export function UpdateBanner() {
   const [errorMsg, setErrorMsg] = useState("");
   const [dismissed, setDismissed] = useState(false);
 
+  // Startup check — runs once on mount
+  useEffect(() => {
+    CheckForUpdate().then((info) => {
+      if (info?.available) {
+        setUpdateInfo(info);
+        setDismissed(false);
+      }
+    }).catch(() => {});
+  }, []);
+
   // Listen for backend-pushed update events (periodic check)
   useEffect(() => {
     const cancel = EventsOn("update:available", (info: UpdateInfo) => {
