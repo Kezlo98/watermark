@@ -1,8 +1,6 @@
 import { RefreshCw, Timer, TimerOff, Radio } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-type StartPosition = "Latest" | "Earliest" | "CustomOffset" | "FromDate";
-type MessageFormat = "Auto" | "String" | "JSON" | "Avro" | "Protobuf" | "Hex";
+import type { StartPosition, MessageFormat } from "@/types/kafka";
 
 const FETCH_LIMIT_OPTIONS = [50, 100, 200, 500] as const;
 
@@ -180,7 +178,7 @@ export function MessagesFilterBar({
 
       {/* Message count */}
       <span className="ml-auto text-xs font-mono text-slate-500">
-        {messageCount} messages fetched
+        {messageCount} messages shown
       </span>
     </div>
   );

@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { Square } from "lucide-react";
-import type { Message } from "@/types/kafka";
+import type { Message, StartPosition, MessageFormat } from "@/types/kafka";
 import { useKafkaQuery } from "@/hooks/use-kafka-query";
 import { useDebounce } from "@/hooks/use-debounce";
 import { ConsumeMessages, ConsumeMessagesFromTimestamp, StartLiveTail, StopLiveTail } from "@/lib/wails-client";
@@ -9,8 +9,6 @@ import { MessagesTable } from "./messages-table";
 import { MessageInspector } from "./message-inspector";
 import { MessagesFilterBar } from "./messages-filter-bar";
 
-type MessageFormat = "Auto" | "String" | "JSON" | "Avro" | "Protobuf" | "Hex";
-type StartPosition = "Latest" | "Earliest" | "CustomOffset" | "FromDate";
 const LIVE_TAIL_MAX_MESSAGES = 500;
 const AUTO_REFRESH_SECONDS = 10;
 
