@@ -14,6 +14,10 @@ export function ConsumeMessages(arg1, arg2, arg3, arg4) {
   return window['go']['kafka']['KafkaService']['ConsumeMessages'](arg1, arg2, arg3, arg4);
 }
 
+export function ConsumeMessagesFromTimestamp(arg1, arg2, arg3, arg4) {
+  return window['go']['kafka']['KafkaService']['ConsumeMessagesFromTimestamp'](arg1, arg2, arg3, arg4);
+}
+
 export function CreateTopic(arg1, arg2, arg3, arg4) {
   return window['go']['kafka']['KafkaService']['CreateTopic'](arg1, arg2, arg3, arg4);
 }

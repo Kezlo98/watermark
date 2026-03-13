@@ -18,6 +18,10 @@ export type ConsumerGroupMember = kafka.ConsumerGroupMember;
 export type ConsumerGroupOffset = kafka.ConsumerGroupOffset;
 export type ClusterHealth = kafka.ClusterHealth;
 export type TopicConfig = kafka.TopicConfig;
+
+// UI filter types shared between MessagesTab and MessagesFilterBar
+export type StartPosition = "Latest" | "Earliest" | "CustomOffset" | "FromDate";
+export type MessageFormat = "Auto" | "String" | "JSON" | "Avro" | "Protobuf" | "Hex";
 export type AclEntry = kafka.AclEntry;
 export type DashboardData = kafka.DashboardData;
 

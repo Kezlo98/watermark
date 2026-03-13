@@ -77,6 +77,7 @@ type ConsumerGroupMember struct {
 type ConsumerGroupOffset struct {
 	Topic         string `json:"topic"`
 	Partition     int32  `json:"partition"`
+	Host          string `json:"host"`
 	CurrentOffset int64  `json:"currentOffset"`
 	EndOffset     int64  `json:"endOffset"`
 	Lag           int64  `json:"lag"`

@@ -146,6 +146,22 @@ func (k *KafkaService) GetConsumerGroupDetail(groupID string) (*ConsumerGroupDet
 		})
 	}
 
+	// Build partition→host map from member assignments
+	type partKey struct {
+		topic     string
+		partition int32
+	}
+	partHost := make(map[partKey]string, len(members)*4)
+	for _, m := range dg.Members {
+		if consumer, ok := m.Assigned.AsConsumer(); ok {
+			for _, t := range consumer.Topics {
+				for _, p := range t.Partitions {
+					partHost[partKey{t.Topic, p}] = m.ClientHost
+				}
+			}
+		}
+	}
+
 	// Get lag details
 	lags, err := k.admin.Lag(ctx, groupID)
 	if err != nil {
@@ -158,6 +174,7 @@ func (k *KafkaService) GetConsumerGroupDetail(groupID string) (*ConsumerGroupDet
 			offsets = append(offsets, ConsumerGroupOffset{
 				Topic:         ml.Topic,
 				Partition:     ml.Partition,
+				Host:          partHost[partKey{ml.Topic, ml.Partition}],
 				CurrentOffset: ml.Commit.At,
 				EndOffset:     ml.End.Offset,
 				Lag:           ml.Lag,
