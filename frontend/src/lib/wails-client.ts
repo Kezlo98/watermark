@@ -20,6 +20,7 @@ export {
   CreateTopic,
   DeleteTopic,
   ConsumeMessages,
+  ConsumeMessagesFromTimestamp,
   ProduceMessage,
   StartLiveTail,
   StopLiveTail,

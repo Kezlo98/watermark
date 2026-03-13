@@ -68,6 +68,18 @@ function AppShell() {
     });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Cmd+, shortcut to open settings
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "," && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        openSettings();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [openSettings]);
+
   return (
     <div className="flex h-screen bg-background text-foreground">
       <Sidebar />

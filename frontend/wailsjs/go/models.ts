@@ -167,6 +167,7 @@ export namespace kafka {
 	export class ConsumerGroupOffset {
 	    topic: string;
 	    partition: number;
+	    host: string;
 	    currentOffset: number;
 	    endOffset: number;
 	    lag: number;
@@ -179,6 +180,7 @@ export namespace kafka {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.topic = source["topic"];
 	        this.partition = source["partition"];
+	        this.host = source["host"];
 	        this.currentOffset = source["currentOffset"];
 	        this.endOffset = source["endOffset"];
 	        this.lag = source["lag"];
