@@ -15,6 +15,7 @@ import { AppHeader } from "@/components/layout/app-header";
 import { SettingsOverlay } from "@/components/settings/settings-overlay";
 import { useSettingsStore } from "@/store/settings";
 import { usePrefetchOnConnect } from "@/hooks/use-prefetch-on-connect";
+import { useLagAlerts } from "@/hooks/use-lag-alerts";
 import { GetClusters } from "@/lib/wails-client";
 
 /* ====== Dashboard imports ====== */
@@ -37,6 +38,7 @@ import { ConsumerGroupTable } from "@/components/consumers/consumer-group-table"
 import { GroupDetailHeader } from "@/components/consumers/group-detail-header";
 import { ActiveMembersTable } from "@/components/consumers/active-members-table";
 import { OffsetsLagTable } from "@/components/consumers/offsets-lag-table";
+import { SetAlertPopover } from "@/components/consumers/set-alert-popover";
 import { useKafkaQuery } from "@/hooks/use-kafka-query";
 import { GetConsumerGroupDetail } from "@/lib/wails-client";
 import type { ConsumerGroupState } from "@/types/kafka";
@@ -51,8 +53,9 @@ import { VersionHistory } from "@/components/schemas/version-history";
 /* ========================================================================= */
 
 function AppShell() {
-  const { initializeConnection, openSettings } = useSettingsStore();
+  const { initializeConnection, openSettings, activeClusterId } = useSettingsStore();
   usePrefetchOnConnect();
+  useLagAlerts(activeClusterId);
 
   useEffect(() => {
     // Auto-connect to saved active cluster on app mount
@@ -311,6 +314,7 @@ function ConsumerDetailPage() {
         </h1>
         <div className="flex gap-2">
           <RefreshButton queryKeys={[["consumer-group-detail", groupId]]} />
+          <SetAlertPopover groupId={groupId} />
           <button
             disabled
             className="px-4 py-2 text-sm text-slate-400 bg-white/5 rounded-lg border border-white/10 opacity-50 cursor-not-allowed"

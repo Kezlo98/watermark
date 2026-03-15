@@ -4,6 +4,8 @@ import { useSettingsStore } from "@/store/settings";
 import { useSearchPaletteStore } from "@/store/search-palette";
 import { ClusterDropdown } from "./cluster-dropdown";
 import { SearchCommandPalette } from "@/components/shared/search-command-palette";
+import { NotificationBell } from "./notification-bell";
+import { NotificationPanel } from "./notification-panel";
 
 export function AppHeader() {
   const { openSettings } = useSettingsStore();
@@ -44,6 +46,9 @@ export function AppHeader() {
 
         {/* Right: Actions */}
         <div className="flex items-center gap-2">
+          {/* Notification bell */}
+          <NotificationBell />
+
           <button
             id="settings-trigger"
             onClick={openSettings}
@@ -56,6 +61,9 @@ export function AppHeader() {
 
       {/* ⌘K Command Palette */}
       <SearchCommandPalette />
+
+      {/* Notification dropdown panel */}
+      <NotificationPanel />
     </>
   );
 }

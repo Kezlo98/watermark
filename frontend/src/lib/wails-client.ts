@@ -80,3 +80,17 @@ export {
   ApplyUpdate,
 } from "../../wailsjs/go/updater/UpdaterService";
 
+// --- Lag Alert Service ---
+export {
+  GetAlertConfig,
+  SaveAlertConfig,
+  AddRule,
+  UpdateRule,
+  DeleteRule,
+  GetAlerts,
+  GetUnreadCount,
+  MarkAllRead,
+  ClearAlerts,
+  RestartMonitoring,
+} from "../../wailsjs/go/lagalert/LagAlertService";
+
