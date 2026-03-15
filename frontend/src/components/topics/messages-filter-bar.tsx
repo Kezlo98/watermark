@@ -1,4 +1,4 @@
-import { RefreshCw, Timer, TimerOff, Radio } from "lucide-react";
+import { RefreshCw, Timer, TimerOff, Radio, CheckSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { StartPosition, MessageFormat } from "@/types/kafka";
 
@@ -24,6 +24,9 @@ interface MessagesFilterBarProps {
   countdown: number;
   onStartLiveTail: () => void;
   messageCount: number;
+  selectMode: boolean;
+  onSelectModeToggle: () => void;
+  selectedCount: number;
 }
 
 const selectClass =
@@ -49,6 +52,9 @@ export function MessagesFilterBar({
   countdown,
   onStartLiveTail,
   messageCount,
+  selectMode,
+  onSelectModeToggle,
+  selectedCount,
 }: MessagesFilterBarProps) {
   return (
     <div className="flex items-center gap-3 flex-wrap">
@@ -165,6 +171,20 @@ export function MessagesFilterBar({
         ) : (
           "Auto (10s)"
         )}
+      </button>
+
+      {/* Select mode toggle */}
+      <button
+        onClick={onSelectModeToggle}
+        className={cn(
+          "flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg border transition-colors",
+          selectMode
+            ? "text-primary bg-primary/10 border-primary/20"
+            : "text-slate-400 bg-white/5 border-white/10 hover:bg-white/10",
+        )}
+      >
+        <CheckSquare className="size-3.5" />
+        Select{selectedCount > 0 && ` (${selectedCount})`}
       </button>
 
       {/* Live Tail */}

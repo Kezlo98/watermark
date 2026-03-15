@@ -45,6 +45,8 @@ export function IsConnected():Promise<boolean>;
 
 export function ProduceMessage(arg1:string,arg2:number,arg3:string,arg4:string,arg5:Record<string, string>):Promise<void>;
 
+export function ProduceMessages(arg1:string,arg2:Array<kafka.ProduceMessageRequest>):Promise<Array<kafka.ProduceResult>>;
+
 export function ResetConsumerGroupOffsets(arg1:string,arg2:string):Promise<void>;
 
 export function SetContext(arg1:context.Context):Promise<void>;
