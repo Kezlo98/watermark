@@ -86,6 +86,10 @@ export function ProduceMessage(arg1, arg2, arg3, arg4, arg5) {
   return window['go']['kafka']['KafkaService']['ProduceMessage'](arg1, arg2, arg3, arg4, arg5);
 }
 
+export function ProduceMessages(arg1, arg2) {
+  return window['go']['kafka']['KafkaService']['ProduceMessages'](arg1, arg2);
+}
+
 export function ResetConsumerGroupOffsets(arg1, arg2) {
   return window['go']['kafka']['KafkaService']['ResetConsumerGroupOffsets'](arg1, arg2);
 }

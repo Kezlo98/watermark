@@ -144,6 +144,67 @@ func TestAclEntryJSON(t *testing.T) {
 	}
 }
 
+func TestProduceMessageRequestJSON(t *testing.T) {
+	req := ProduceMessageRequest{
+		Partition: 2,
+		Key:       "my-key",
+		Value:     `{"event":"test"}`,
+		Headers:   map[string]string{"Content-Type": "application/json"},
+	}
+	data, _ := json.Marshal(req)
+
+	var m map[string]interface{}
+	json.Unmarshal(data, &m)
+
+	for _, key := range []string{"partition", "key", "value", "headers"} {
+		if _, ok := m[key]; !ok {
+			t.Errorf("expected key %q", key)
+		}
+	}
+}
+
+func TestProduceMessageRequestOmitsEmptyHeaders(t *testing.T) {
+	req := ProduceMessageRequest{Partition: 0, Key: "k", Value: "v"}
+	data, _ := json.Marshal(req)
+
+	var m map[string]interface{}
+	json.Unmarshal(data, &m)
+
+	if _, ok := m["headers"]; ok {
+		t.Error("headers should be omitted when nil")
+	}
+}
+
+func TestProduceResultJSON(t *testing.T) {
+	r := ProduceResult{Index: 3, Partition: 1, Offset: 42}
+	data, _ := json.Marshal(r)
+
+	var m map[string]interface{}
+	json.Unmarshal(data, &m)
+
+	for _, key := range []string{"index", "partition", "offset"} {
+		if _, ok := m[key]; !ok {
+			t.Errorf("expected key %q", key)
+		}
+	}
+	// error field should be omitted when empty
+	if _, ok := m["error"]; ok {
+		t.Error("error should be omitted when empty")
+	}
+}
+
+func TestProduceResultWithErrorJSON(t *testing.T) {
+	r := ProduceResult{Index: 0, Partition: 0, Offset: 0, Error: "broker unavailable"}
+	data, _ := json.Marshal(r)
+
+	var m map[string]interface{}
+	json.Unmarshal(data, &m)
+
+	if v, ok := m["error"]; !ok || v != "broker unavailable" {
+		t.Errorf("expected error field to be %q, got %v", "broker unavailable", v)
+	}
+}
+
 func TestConsumerGroupMemberJSON(t *testing.T) {
 	m := ConsumerGroupMember{ClientID: "c1", Host: "/1.2.3.4", AssignedPartitions: []int32{0, 1, 2}}
 	data, _ := json.Marshal(m)

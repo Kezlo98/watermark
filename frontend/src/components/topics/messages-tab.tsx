@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Square } from "lucide-react";
+import { Square, RotateCcw, X } from "lucide-react";
 import type { Message, StartPosition, MessageFormat } from "@/types/kafka";
 import { useKafkaQuery } from "@/hooks/use-kafka-query";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -8,6 +8,7 @@ import { EventsOn } from "../../../wailsjs/runtime/runtime";
 import { MessagesTable } from "./messages-table";
 import { MessageInspector } from "./message-inspector";
 import { MessagesFilterBar } from "./messages-filter-bar";
+import { ProduceMessageModal } from "./produce-message-modal";
 
 const LIVE_TAIL_MAX_MESSAGES = 500;
 const AUTO_REFRESH_SECONDS = 10;
@@ -43,6 +44,32 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
 
   // --- UI state ---
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+  const [replayMessage, setReplayMessage] = useState<Message | null>(null);
+  const [batchReplayMessages, setBatchReplayMessages] = useState<Message[] | null>(null);
+
+  // --- Select mode state ---
+  const [selectMode, setSelectMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  const toggleSelection = (msg: Message) => {
+    const key = `${msg.partition}-${msg.offset}`;
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = (msgs: Message[]) => {
+    const allKeys = msgs.map(m => `${m.partition}-${m.offset}`);
+    const allSelected = allKeys.every(k => selectedIds.has(k));
+    setSelectedIds(allSelected ? new Set() : new Set(allKeys));
+  };
+
+  const handleSelectModeToggle = () => {
+    setSelectMode(prev => !prev);
+    setSelectedIds(new Set());
+  };
 
   const isFromDate = appliedStart === "FromDate" && appliedFromDate !== "";
   const startOffset =
@@ -70,12 +97,15 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
         )
       : fetchedMessages;
 
+  const selectedMessages = messages.filter(m => selectedIds.has(`${m.partition}-${m.offset}`));
+
   // --- Refresh handler ---
   const handleRefresh = useCallback(() => {
     setAppliedStart(startPosition);
     setAppliedLimit(fetchLimit);
     setAppliedCustomOffset(customOffset);
     setAppliedFromDate(fromDate);
+    setSelectedIds(new Set());
     setTimeout(() => refetch(), 0);
   }, [startPosition, fetchLimit, customOffset, fromDate, refetch]);
 
@@ -122,6 +152,7 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
   // --- Start live-tail ---
   const handleStartLiveTail = useCallback(async () => {
     if (autoRefresh) setAutoRefresh(false);
+    if (selectMode) { setSelectMode(false); setSelectedIds(new Set()); }
     setLiveTailMessages([]);
     setSelectedMessage(null);
     try {
@@ -196,14 +227,43 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
           countdown={countdown}
           onStartLiveTail={handleStartLiveTail}
           messageCount={messages.length}
+          selectMode={selectMode}
+          onSelectModeToggle={handleSelectModeToggle}
+          selectedCount={selectedIds.size}
         />
+      )}
+
+      {/* Selection toolbar */}
+      {selectMode && selectedIds.size > 0 && (
+        <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg border border-primary/20 bg-primary/5">
+          <span className="text-sm font-mono text-primary">{selectedIds.size} selected</span>
+          <button
+            onClick={() => setBatchReplayMessages(selectedMessages)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border text-primary bg-primary/10 border-primary/20 hover:bg-primary/20 transition-colors"
+          >
+            <RotateCcw className="size-3.5" />
+            Replay Selected
+          </button>
+          <button
+            onClick={() => setSelectedIds(new Set())}
+            className="flex items-center gap-1 px-2 py-1.5 text-sm text-slate-400 hover:text-white transition-colors"
+          >
+            <X className="size-3.5" />
+            Clear
+          </button>
+        </div>
       )}
 
       <MessagesTable
         messages={messages}
         selectedMessage={selectedMessage}
         onSelectMessage={setSelectedMessage}
+        onReplay={setReplayMessage}
         inspectorOpen={!!selectedMessage}
+        selectMode={selectMode}
+        selectedIds={selectedIds}
+        onToggleSelect={toggleSelection}
+        onToggleAll={toggleSelectAll}
       />
 
       {selectedMessage && (
@@ -212,8 +272,17 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
           offset={selectedMessage.offset}
           format={format}
           onClose={() => setSelectedMessage(null)}
+          onReplay={() => setReplayMessage(selectedMessage)}
         />
       )}
+
+      <ProduceMessageModal
+        isOpen={!!replayMessage || !!batchReplayMessages}
+        onClose={() => { setReplayMessage(null); setBatchReplayMessages(null); }}
+        topicName={topicName}
+        replaySource={replayMessage ?? undefined}
+        batchReplaySource={batchReplayMessages ?? undefined}
+      />
     </div>
   );
 }
