@@ -99,3 +99,19 @@ type AclEntry struct {
 	PermissionType string `json:"permissionType"` // "Allow" or "Deny"
 	Host           string `json:"host"`
 }
+
+// ProduceMessageRequest represents a single message in a batch produce request.
+type ProduceMessageRequest struct {
+	Partition int32             `json:"partition"`
+	Key       string            `json:"key"`
+	Value     string            `json:"value"`
+	Headers   map[string]string `json:"headers,omitempty"`
+}
+
+// ProduceResult represents the result of producing a single message in a batch.
+type ProduceResult struct {
+	Index     int    `json:"index"`
+	Partition int32  `json:"partition"`
+	Offset    int64  `json:"offset"`
+	Error     string `json:"error,omitempty"`
+}
