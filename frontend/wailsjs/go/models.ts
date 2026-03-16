@@ -363,6 +363,123 @@ export namespace kafka {
 
 }
 
+export namespace lagalert {
+	
+	export class AlertEvent {
+	    id: string;
+	    clusterId: string;
+	    groupId: string;
+	    matchedRule: string;
+	    rulePattern: string;
+	    level: string;
+	    lag: number;
+	    threshold: number;
+	    // Go type: time
+	    timestamp: any;
+	    resolved: boolean;
+	    // Go type: time
+	    resolvedAt?: any;
+	    read: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new AlertEvent(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
+	        this.clusterId = source["clusterId"];
+	        this.groupId = source["groupId"];
+	        this.matchedRule = source["matchedRule"];
+	        this.rulePattern = source["rulePattern"];
+	        this.level = source["level"];
+	        this.lag = source["lag"];
+	        this.threshold = source["threshold"];
+	        this.timestamp = this.convertValues(source["timestamp"], null);
+	        this.resolved = source["resolved"];
+	        this.resolvedAt = this.convertValues(source["resolvedAt"], null);
+	        this.read = source["read"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class AlertRule {
+	    id: string;
+	    groupPattern: string;
+	    warningLag: number;
+	    criticalLag: number;
+	    enabled: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new AlertRule(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
+	        this.groupPattern = source["groupPattern"];
+	        this.warningLag = source["warningLag"];
+	        this.criticalLag = source["criticalLag"];
+	        this.enabled = source["enabled"];
+	    }
+	}
+	export class ClusterAlertConfig {
+	    enabled: boolean;
+	    pollIntervalSec: number;
+	    notifyOS: boolean;
+	    notificationSound: boolean;
+	    rules: AlertRule[];
+	
+	    static createFrom(source: any = {}) {
+	        return new ClusterAlertConfig(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.enabled = source["enabled"];
+	        this.pollIntervalSec = source["pollIntervalSec"];
+	        this.notifyOS = source["notifyOS"];
+	        this.notificationSound = source["notificationSound"];
+	        this.rules = this.convertValues(source["rules"], AlertRule);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+
+}
+
 export namespace schema {
 	
 	export class SchemaSubject {
