@@ -26,7 +26,9 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, onRe
 
   // Reset page if it's out of bounds after data/pageSize change
   const safePage = Math.min(currentPage, totalPages - 1);
-  if (safePage !== currentPage) setCurrentPage(safePage);
+  useEffect(() => {
+    if (safePage !== currentPage) setCurrentPage(safePage);
+  }, [safePage, currentPage]);
 
   const paginatedMessages = useMemo(() => {
     const start = safePage * pageSize;

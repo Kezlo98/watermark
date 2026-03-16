@@ -250,10 +250,11 @@ func (k *KafkaService) ProduceMessages(topicName string, messages []ProduceMessa
 		idx := i
 		k.client.Produce(ctx, record, func(r *kgo.Record, err error) {
 			defer wg.Done()
-			results[idx] = ProduceResult{Index: idx, Partition: r.Partition, Offset: r.Offset}
 			if err != nil {
-				results[idx].Error = err.Error()
+				results[idx] = ProduceResult{Index: idx, Error: err.Error()}
+				return
 			}
+			results[idx] = ProduceResult{Index: idx, Partition: r.Partition, Offset: r.Offset}
 		})
 	}
 

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { X, Loader2, CheckCircle2, XCircle, RotateCcw } from "lucide-react";
-import { ProduceMessage, ProduceMessages } from "@/lib/wails-client";
+import { ProduceMessage } from "@/lib/wails-client";
 import type { Message } from "@/types/kafka";
 import type { kafka } from "../../../wailsjs/go/models";
 import { BatchReplayProgress } from "./batch-replay-progress";
@@ -30,6 +30,13 @@ export function ProduceMessageModal({ isOpen, onClose, topicName, replaySource, 
   const [statusMessage, setStatusMessage] = useState("");
   const [batchState, setBatchState] = useState<BatchState>({ total: 0, completed: 0, failed: 0, results: [] });
   const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cancelledRef = useRef(false);
+
+  // Cancel in-flight batch when modal closes
+  useEffect(() => {
+    if (!isOpen) cancelledRef.current = true;
+    else cancelledRef.current = false;
+  }, [isOpen]);
 
   // Pre-fill form for single replay
   useEffect(() => {
@@ -83,21 +90,25 @@ export function ProduceMessageModal({ isOpen, onClose, topicName, replaySource, 
   const handleBatchReplay = async () => {
     if (!batchReplaySource?.length) return;
     setStatus("sending");
-    const requests = batchReplaySource.map(msg => ({
-      partition: msg.partition,
-      key: msg.key ?? "",
-      value: msg.value ?? "",
-      headers: msg.headers ?? {},
-    }));
-    try {
-      const results = await ProduceMessages(topicName, requests);
-      const failed = results.filter((r: kafka.ProduceResult) => r.error).length;
-      setBatchState({ total: requests.length, completed: requests.length, failed, results });
-      setStatus("success");
-    } catch (err) {
-      setStatus("error");
-      setStatusMessage(err instanceof Error ? err.message : String(err));
+    const total = batchReplaySource.length;
+    const results: kafka.ProduceResult[] = [];
+    let failed = 0;
+    setBatchState({ total, completed: 0, failed: 0, results: [] });
+
+    for (let i = 0; i < batchReplaySource.length; i++) {
+      if (cancelledRef.current) return;
+      const msg = batchReplaySource[i];
+      try {
+        await ProduceMessage(topicName, msg.partition, msg.key ?? "", msg.value ?? "", msg.headers ?? {});
+        results.push({ index: i, partition: msg.partition, offset: -1, error: "" } as kafka.ProduceResult);
+      } catch (err) {
+        failed++;
+        results.push({ index: i, partition: msg.partition, offset: -1, error: err instanceof Error ? err.message : String(err) } as kafka.ProduceResult);
+      }
+      if (!cancelledRef.current) setBatchState({ total, completed: i + 1, failed, results: [...results] });
     }
+
+    if (!cancelledRef.current) setStatus("success");
   };
 
   if (!isOpen) return null;

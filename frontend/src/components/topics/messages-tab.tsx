@@ -47,6 +47,9 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
   const [replayMessage, setReplayMessage] = useState<Message | null>(null);
   const [batchReplayMessages, setBatchReplayMessages] = useState<Message[] | null>(null);
 
+  const openSingleReplay = (msg: Message) => { setBatchReplayMessages(null); setReplayMessage(msg); };
+  const openBatchReplay = (msgs: Message[]) => { setReplayMessage(null); setBatchReplayMessages(msgs); };
+
   // --- Select mode state ---
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -63,7 +66,15 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
   const toggleSelectAll = (msgs: Message[]) => {
     const allKeys = msgs.map(m => `${m.partition}-${m.offset}`);
     const allSelected = allKeys.every(k => selectedIds.has(k));
-    setSelectedIds(allSelected ? new Set() : new Set(allKeys));
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (allSelected) {
+        allKeys.forEach(k => next.delete(k));
+      } else {
+        allKeys.forEach(k => next.add(k));
+      }
+      return next;
+    });
   };
 
   const handleSelectModeToggle = () => {
@@ -97,7 +108,7 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
         )
       : fetchedMessages;
 
-  const selectedMessages = messages.filter(m => selectedIds.has(`${m.partition}-${m.offset}`));
+  const selectedMessages = fetchedMessages.filter(m => selectedIds.has(`${m.partition}-${m.offset}`));
 
   // --- Refresh handler ---
   const handleRefresh = useCallback(() => {
@@ -238,7 +249,7 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
         <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg border border-primary/20 bg-primary/5">
           <span className="text-sm font-mono text-primary">{selectedIds.size} selected</span>
           <button
-            onClick={() => setBatchReplayMessages(selectedMessages)}
+            onClick={() => openBatchReplay(selectedMessages)}
             className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border text-primary bg-primary/10 border-primary/20 hover:bg-primary/20 transition-colors"
           >
             <RotateCcw className="size-3.5" />
@@ -258,7 +269,7 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
         messages={messages}
         selectedMessage={selectedMessage}
         onSelectMessage={setSelectedMessage}
-        onReplay={setReplayMessage}
+        onReplay={openSingleReplay}
         inspectorOpen={!!selectedMessage}
         selectMode={selectMode}
         selectedIds={selectedIds}
@@ -272,7 +283,7 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
           offset={selectedMessage.offset}
           format={format}
           onClose={() => setSelectedMessage(null)}
-          onReplay={() => setReplayMessage(selectedMessage)}
+          onReplay={() => openSingleReplay(selectedMessage!)}
         />
       )}
 
