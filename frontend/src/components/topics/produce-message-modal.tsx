@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { X, Loader2, CheckCircle2, XCircle, RotateCcw } from "lucide-react";
-import { ProduceMessage } from "@/lib/wails-client";
+import { ProduceMessage, ProduceMessages } from "@/lib/wails-client";
 import type { Message } from "@/types/kafka";
 import type { kafka } from "../../../wailsjs/go/models";
 import { BatchReplayProgress } from "./batch-replay-progress";
@@ -91,24 +91,27 @@ export function ProduceMessageModal({ isOpen, onClose, topicName, replaySource, 
     if (!batchReplaySource?.length) return;
     setStatus("sending");
     const total = batchReplaySource.length;
-    const results: kafka.ProduceResult[] = [];
-    let failed = 0;
     setBatchState({ total, completed: 0, failed: 0, results: [] });
 
-    for (let i = 0; i < batchReplaySource.length; i++) {
-      if (cancelledRef.current) return;
-      const msg = batchReplaySource[i];
-      try {
-        await ProduceMessage(topicName, msg.partition, msg.key ?? "", msg.value ?? "", msg.headers ?? {});
-        results.push({ index: i, partition: msg.partition, offset: -1, error: "" } as kafka.ProduceResult);
-      } catch (err) {
-        failed++;
-        results.push({ index: i, partition: msg.partition, offset: -1, error: err instanceof Error ? err.message : String(err) } as kafka.ProduceResult);
-      }
-      if (!cancelledRef.current) setBatchState({ total, completed: i + 1, failed, results: [...results] });
-    }
+    try {
+      const requests = batchReplaySource.map((msg) => ({
+        partition: msg.partition,
+        key: msg.key ?? "",
+        value: msg.value ?? "",
+        headers: msg.headers ?? {},
+      }));
 
-    if (!cancelledRef.current) setStatus("success");
+      const results = await ProduceMessages(topicName, requests);
+      if (cancelledRef.current) return;
+
+      const failed = results.filter((r) => !!r.error).length;
+      setBatchState({ total, completed: total, failed, results });
+      setStatus("success");
+    } catch (err) {
+      if (cancelledRef.current) return;
+      setStatus("error");
+      setStatusMessage(err instanceof Error ? err.message : String(err));
+    }
   };
 
   if (!isOpen) return null;
