@@ -23,7 +23,7 @@ func NewNotifier() *Notifier {
 
 // NotifyBreach sends an OS notification for the first breach of a group.
 // Subsequent calls for the same key are no-ops until ClearState is called.
-func (n *Notifier) NotifyBreach(clusterID, group string, level AlertLevel, lag, threshold int64) {
+func (n *Notifier) NotifyBreach(clusterID, group string, level AlertLevel, lag, threshold int64, soundEnabled bool) {
 	n.mu.Lock()
 	key := clusterID + ":" + group
 	if n.notified[key] {
@@ -41,7 +41,11 @@ func (n *Notifier) NotifyBreach(clusterID, group string, level AlertLevel, lag, 
 	title := fmt.Sprintf("Kafka Lag Alert — %s", levelStr)
 	body := fmt.Sprintf("Group: %s\nLag: %d (threshold: %d)", group, lag, threshold)
 
-	if err := beeep.Notify(title, body, ""); err != nil {
+	notifyFn := beeep.Notify
+	if soundEnabled {
+		notifyFn = beeep.Alert
+	}
+	if err := notifyFn(title, body, ""); err != nil {
 		log.Printf("lagalert: OS notification failed: %v", err)
 	}
 }

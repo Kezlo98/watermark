@@ -208,7 +208,7 @@ func (s *LagAlertService) pollOnce(clusterID string) error {
 
 			// OS notification (debounced by notifier)
 			if cfg.NotifyOS {
-				go s.notifier.NotifyBreach(clusterID, group.GroupID, currentLevel, group.TotalLag, threshold)
+				go s.notifier.NotifyBreach(clusterID, group.GroupID, currentLevel, group.TotalLag, threshold, cfg.NotificationSound)
 			}
 		}
 	}

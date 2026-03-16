@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/shared/data-table";
 import { StatusBadge } from "@/components/shared/status-badge";
@@ -26,7 +27,7 @@ export function ConsumerGroupTable({ onGroupClick, searchFilter }: ConsumerGroup
   const { data: groups = [] } = useKafkaQuery(["consumer-groups"], GetConsumerGroups);
   const { alerts } = useLagAlertsStore();
 
-  const columns: ColumnDef<ConsumerGroup, unknown>[] = [
+  const columns = useMemo<ColumnDef<ConsumerGroup, unknown>[]>(() => [
     {
       accessorKey: "groupId",
       header: "Group ID",
@@ -59,7 +60,7 @@ export function ConsumerGroupTable({ onGroupClick, searchFilter }: ConsumerGroup
         <AlertIndicator groupId={row.original.groupId} alerts={alerts} />
       ),
     },
-  ];
+  ], [alerts]);
 
   return (
     <DataTable

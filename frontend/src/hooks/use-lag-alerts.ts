@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { EventsOn, EventsOff } from "../../wailsjs/runtime/runtime";
+import { EventsOn } from "../../wailsjs/runtime/runtime";
 import { useLagAlertsStore } from "@/store/lag-alerts";
 import type { LagAlertPayload } from "@/types/lag-alerts";
 
@@ -42,9 +42,9 @@ export function useLagAlerts(clusterID: string | null) {
       }
     };
 
-    EventsOn("lag:alert", handler);
+    const off = EventsOn("lag:alert", handler);
     return () => {
-      EventsOff("lag:alert");
+      off();
     };
   }, [clusterID, addAlerts, markResolved]);
 }
