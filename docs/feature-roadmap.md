@@ -28,7 +28,7 @@
 | # | Feature | Effort | Impact | Status |
 |---|---------|--------|--------|--------|
 | 1 | 🔔 [Consumer Lag Alerting](#1--consumer-lag-alerting) | ~1.5 wk | Very High | ✅ Done |
-| 2 | 📝 [Message Replay Tool](#2--message-replay--re-produce-tool) | ~1 wk | High | ⬜ Not Started |
+| 2 | 📝 [Message Replay Tool](#2--message-replay--re-produce-tool) | ~1 wk | High | ✅ Done |
 | 3 | 📋 [Topic Templates & Cloning](#3--topic-templates--cloning) | ~1 wk | Medium-High | ⬜ Not Started |
 | 4 | 🌙 [Light Theme & Theme Engine](#4--light-theme--theme-engine) | ~1 wk | Medium | ⬜ Not Started |
 | 5 | 🔄 [Multi-Cluster Operations](#5--multi-cluster-operations) | ~3 wk | High | ⬜ Not Started |
@@ -70,7 +70,7 @@
 
 ### 2. 📝 Message Replay / Re-produce Tool
 
-> Building blocks exist (message browser + produce modal). Chain them.
+> ✅ **Shipped** — Branch: `feat/message-replay-tool`
 
 - Right-click message in browser → "Replay to Topic"
 - Edit key / value / headers before replay
