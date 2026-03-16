@@ -220,42 +220,22 @@ func resolveStartOffsetFromEndOffsets(endOffset int64, startOffset int64, limit 
 
 // ProduceMessages sends a batch of messages to a topic concurrently and returns per-message results.
 // Partial failures are reported individually — successful messages are not rolled back.
+// Delegates to ProduceMessage for each item to avoid duplicated record-building logic.
 func (k *KafkaService) ProduceMessages(topicName string, messages []ProduceMessageRequest) ([]ProduceResult, error) {
-	k.mu.RLock()
-	defer k.mu.RUnlock()
-
-	if err := k.ensureConnected(); err != nil {
-		return nil, err
-	}
-
-	ctx := k.getCtx()
 	results := make([]ProduceResult, len(messages))
 	var wg sync.WaitGroup
 
 	for i, msg := range messages {
-		record := &kgo.Record{
-			Topic:     topicName,
-			Partition: msg.Partition,
-			Key:       []byte(msg.Key),
-			Value:     []byte(msg.Value),
-		}
-		for hk, hv := range msg.Headers {
-			record.Headers = append(record.Headers, kgo.RecordHeader{
-				Key:   hk,
-				Value: []byte(hv),
-			})
-		}
-
 		wg.Add(1)
-		idx := i
-		k.client.Produce(ctx, record, func(r *kgo.Record, err error) {
+		go func(idx int, m ProduceMessageRequest) {
 			defer wg.Done()
+			err := k.ProduceMessage(topicName, m.Partition, m.Key, m.Value, m.Headers)
 			if err != nil {
 				results[idx] = ProduceResult{Index: idx, Error: err.Error()}
 				return
 			}
-			results[idx] = ProduceResult{Index: idx, Partition: r.Partition, Offset: r.Offset}
-		})
+			results[idx] = ProduceResult{Index: idx, Partition: m.Partition}
+		}(i, msg)
 	}
 
 	wg.Wait()
