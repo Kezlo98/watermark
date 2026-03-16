@@ -318,6 +318,42 @@ export namespace kafka {
 	        this.highWatermark = source["highWatermark"];
 	    }
 	}
+	export class ProduceMessageRequest {
+	    partition: number;
+	    key: string;
+	    value: string;
+	    headers?: Record<string, string>;
+	
+	    static createFrom(source: any = {}) {
+	        return new ProduceMessageRequest(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.partition = source["partition"];
+	        this.key = source["key"];
+	        this.value = source["value"];
+	        this.headers = source["headers"];
+	    }
+	}
+	export class ProduceResult {
+	    index: number;
+	    partition: number;
+	    offset: number;
+	    error?: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ProduceResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.index = source["index"];
+	        this.partition = source["partition"];
+	        this.offset = source["offset"];
+	        this.error = source["error"];
+	    }
+	}
 	export class Topic {
 	    name: string;
 	    partitions: number;

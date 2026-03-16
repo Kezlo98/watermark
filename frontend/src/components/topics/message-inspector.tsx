@@ -1,4 +1,5 @@
 import { lazy, Suspense } from "react";
+import { RotateCcw } from "lucide-react";
 
 const MonacoEditor = lazy(() => import("@monaco-editor/react"));
 
@@ -24,9 +25,10 @@ interface MessageInspectorProps {
   offset: number;
   format: MessageFormat;
   onClose: () => void;
+  onReplay?: () => void;
 }
 
-export function MessageInspector({ value, offset, format, onClose }: MessageInspectorProps) {
+export function MessageInspector({ value, offset, format, onClose, onReplay }: MessageInspectorProps) {
   const { content, language } = formatMessageValue(value, format);
 
   return (
@@ -36,6 +38,15 @@ export function MessageInspector({ value, offset, format, onClose }: MessageInsp
           MESSAGE INSPECTOR (Offset: {offset})
         </span>
         <div className="flex gap-2">
+          {onReplay && (
+            <button
+              onClick={onReplay}
+              className="text-xs text-slate-400 hover:text-white px-2 py-1 rounded bg-white/5 hover:bg-white/10 transition-colors flex items-center gap-1"
+            >
+              <RotateCcw className="size-3" />
+              Replay
+            </button>
+          )}
           <button
             onClick={() => navigator.clipboard.writeText(value)}
             className="text-xs text-slate-400 hover:text-white px-2 py-1 rounded bg-white/5 hover:bg-white/10 transition-colors"

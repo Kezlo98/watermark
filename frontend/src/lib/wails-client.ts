@@ -22,6 +22,7 @@ export {
   ConsumeMessages,
   ConsumeMessagesFromTimestamp,
   ProduceMessage,
+  ProduceMessages,
   StartLiveTail,
   StopLiveTail,
   GetConsumerGroups,

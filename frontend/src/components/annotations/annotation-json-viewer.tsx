@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { ChevronRight, Code2, Copy, Check } from "lucide-react";
+import { useState, lazy, Suspense } from "react";
+import { ChevronRight, Code2, Copy, Check, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import Editor from "@monaco-editor/react";
+
+const Editor = lazy(() => import("@monaco-editor/react"));
 
 interface AnnotationJsonViewerProps {
   annotations: Record<string, unknown>;
@@ -58,30 +59,32 @@ export function AnnotationJsonViewer({
               <Copy className="size-3" />
             )}
           </button>
-          <Editor
-            height={editorHeight}
-            language="json"
-            value={jsonContent}
-            theme="vs-dark"
-            options={{
-              readOnly: true,
-              minimap: { enabled: false },
-              lineNumbers: "off",
-              folding: true,
-              scrollBeyondLastLine: false,
-              fontSize: 12,
-              fontFamily: "'JetBrains Mono', monospace",
-              padding: { top: 12, bottom: 12 },
-              overviewRulerLanes: 0,
-              hideCursorInOverviewRuler: true,
-              renderLineHighlight: "none",
-              scrollbar: {
-                vertical: "auto",
-                horizontal: "auto",
-                verticalScrollbarSize: 6,
-              },
-            }}
-          />
+          <Suspense fallback={<div className="flex justify-center items-center h-full p-4"><Loader2 className="w-4 h-4 animate-spin text-slate-400" /></div>}>
+            <Editor
+              height={editorHeight}
+              language="json"
+              value={jsonContent}
+              theme="vs-dark"
+              options={{
+                readOnly: true,
+                minimap: { enabled: false },
+                lineNumbers: "off",
+                folding: true,
+                scrollBeyondLastLine: false,
+                fontSize: 12,
+                fontFamily: "'JetBrains Mono', monospace",
+                padding: { top: 12, bottom: 12 },
+                overviewRulerLanes: 0,
+                hideCursorInOverviewRuler: true,
+                renderLineHighlight: "none",
+                scrollbar: {
+                  vertical: "auto",
+                  horizontal: "auto",
+                  verticalScrollbarSize: 6,
+                },
+              }}
+            />
+          </Suspense>
         </div>
       )}
     </div>
