@@ -200,7 +200,42 @@
 
 ---
 
-## Phase 9: Auto-Update ⬜
+## Phase 9: Topic Templates & Cloning ✅
+
+**Status**: Complete | **ETA**: 1 week (completed within schedule)
+
+### 9.1 Template Service Backend
+- [x] Create `internal/templates/` module with service classes
+- [x] Implement CRUD operations for TopicTemplate data structures
+- [x] Add file dialog integration for import/export operations
+- [x] Create comprehensive test suite (384 lines)
+- [x] Wire TemplateService into main.go and app.go
+- [x] Implement template persistence to `~/.watermark/templates.json`
+
+### 9.2 Template Management UI
+- [x] Create template list table with edit/delete actions
+- [x] Build save template modal for creating new templates
+- [x] Implement template picker dropdown for topic creation
+- [x] Add template settings panel in global settings
+- [x] Integrate template management into settings overlay
+
+### 9.3 Topic Cloning Feature
+- [x] Add clone button to topic list table
+- [x] Implement clone flow with pre-populated configuration
+- [x] Create TopicsPage extracted from router
+- [x] Modify CreateTopicModal with cloneFrom prop
+- [x] Add loading states and toast notifications
+- [x] Filter overridden configs for clean inheritance
+
+### 9.4 Template Auto-Matching
+- [x] Implement glob pattern matching for topic names
+- [x] Add pattern-based template application during topic creation
+- [x] Create utilities for template selection and precedence
+- [x] Integrate template matching into topic creation workflow
+
+---
+
+## Phase 10: Auto-Update ⬜
 
 **Status**: Not Started | **ETA**: 0.5 week
 
@@ -213,7 +248,7 @@
 
 ---
 
-## Phase 10: Polish & Release ⬜
+## Phase 11: Polish & Release ⬜
 
 **Status**: Not Started | **ETA**: 1 week
 
@@ -231,18 +266,20 @@
 
 ## Timeline Summary
 
-| Phase | Description | Duration | Cumulative |
-|-------|-------------|----------|------------|
-| 0 | Bootstrap | — | Done |
-| 1 | Foundation & Design System | 1 wk | 1 wk |
-| 2 | Backend Kafka Core | 2 wk | 3 wk |
-| 3 | Dashboard | 1 wk | 4 wk |
-| 4 | Topics Index | 1 wk | 5 wk |
-| 5 | Topic Detail | 2 wk | 7 wk |
-| 6 | Consumer Groups | 1.5 wk | 8.5 wk |
-| 7 | Schema Registry | 1 wk | 9.5 wk |
-| 8 | Settings | 1.5 wk | 11 wk |
-| 9 | Auto-Update | 0.5 wk | 11.5 wk |
-| 10 | Polish & Release | 1 wk | 12.5 wk |
+| Phase | Description | Status | Duration | Cumulative |
+|-------|-------------|--------|----------|------------|
+| 0 | Project Bootstrap | ✅ Complete | — | Done |
+| 1 | Foundation & Design System | ✅ Complete | 1 wk | 1 wk |
+| 2 | Backend Kafka Core | ✅ Complete | 2 wk | 3 wk |
+| 3 | Dashboard | ✅ Complete | 1 wk | 4 wk |
+| 4 | Topics Index | ✅ Complete | 1 wk | 5 wk |
+| 5 | Topic Detail | ✅ Complete | 2 wk | 7 wk |
+| 6 | Consumer Groups | 🟡 In Progress | 1.5 wk | 8.5 wk |
+| 7 | Schema Registry | ⬜ Not Started | 1 wk | 9.5 wk |
+| 8 | Settings | 🟡 In Progress | 1.5 wk | 11 wk |
+| 9 | Topic Templates & Cloning | ✅ Complete | 1 wk | 12 wk |
+| 10 | Auto-Update | ⬜ Not Started | 0.5 wk | 12.5 wk |
+| 11 | Polish & Release | ⬜ Not Started | 1 wk | 13.5 wk |
 
-**Estimated MVP delivery: ~12-13 weeks from Phase 1 start**
+**Current Status**: Topic Templates & Cloning feature completed (Phase 9)
+**Next Phase**: Consumer Groups detail implementation and completion of remaining features
