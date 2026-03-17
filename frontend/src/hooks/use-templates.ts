@@ -12,8 +12,9 @@ const TEMPLATE_KEYS = {
   all: (clusterId: string) => ["templates", clusterId] as const,
 };
 
-export function useTemplates() {
-  const clusterId = useSettingsStore((s) => s.activeClusterId);
+export function useTemplates(clusterIdOverride?: string) {
+  const activeClusterId = useSettingsStore((s) => s.activeClusterId);
+  const clusterId = clusterIdOverride ?? activeClusterId;
   const queryClient = useQueryClient();
 
   const templatesQuery = useQuery({

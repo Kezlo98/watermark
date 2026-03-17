@@ -29,7 +29,7 @@
 |---|---------|--------|--------|--------|
 | 1 | 🔔 [Consumer Lag Alerting](#1--consumer-lag-alerting) | ~1.5 wk | Very High | ✅ Done |
 | 2 | 📝 [Message Replay Tool](#2--message-replay--re-produce-tool) | ~1 wk | High | ✅ Done |
-| 3 | 📋 [Topic Templates & Cloning](#3--topic-templates--cloning) | ~1 wk | Medium-High | ⬜ Not Started |
+| 3 | 📋 [Topic Templates & Cloning](#3--topic-templates--cloning) | ~1 wk | Medium-High | ✅ Done |
 | 4 | 🌙 [Light Theme & Theme Engine](#4--light-theme--theme-engine) | ~1 wk | Medium | ⬜ Not Started |
 | 5 | 🔄 [Multi-Cluster Operations](#5--multi-cluster-operations) | ~3 wk | High | ⬜ Not Started |
 | 6 | 📦 [Bookmarks & Collections](#6--bookmarks--collections) | ~1 wk | Medium | ⬜ Not Started |

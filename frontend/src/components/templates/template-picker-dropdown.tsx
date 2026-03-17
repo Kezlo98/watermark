@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { ChevronDown, Sparkles } from "lucide-react";
 import { useTemplates } from "@/hooks/use-templates";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
-import { findBestTemplate } from "@/lib/glob-match";
+import { findBestTemplate, globMatch } from "@/lib/glob-match";
 import type { TopicTemplate } from "@/types/templates";
 
 interface TemplatePickerDropdownProps {
@@ -25,11 +25,16 @@ export function TemplatePickerDropdown({
   const suggestedTemplate = findBestTemplate(debouncedTopicName, templateList);
 
   useEffect(() => {
-    // Clear selection if topic name changes significantly
-    if (selectedTemplate && topicName !== selectedTemplate.pattern) {
+    // Clear selection if topic name no longer matches the template's glob pattern
+    if (
+      selectedTemplate &&
+      selectedTemplate.pattern &&
+      !globMatch(topicName, selectedTemplate.pattern)
+    ) {
       setSelectedTemplate(null);
+      onTemplateSelect(null);
     }
-  }, [topicName, selectedTemplate]);
+  }, [topicName, selectedTemplate, onTemplateSelect]);
 
   const handleSelect = (template: TopicTemplate | null) => {
     setSelectedTemplate(template);

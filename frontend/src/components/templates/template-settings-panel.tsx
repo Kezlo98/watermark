@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useSettingsStore } from "@/store/settings";
 import { useTemplates } from "@/hooks/use-templates";
+import type { TopicTemplate } from "@/types/templates";
 import { GetClusters, ExportTemplatesToFile, ImportTemplatesFromFile } from "@/lib/wails-client";
 import { TemplateListTable } from "./template-list-table";
 import { SaveTemplateModal } from "./save-template-modal";
@@ -12,11 +13,11 @@ export function TemplateSettingsPanel() {
   const activeClusterId = useSettingsStore((s) => s.activeClusterId);
   const [viewingClusterId, setViewingClusterId] = useState<string | null>(null);
   const [importMode, setImportMode] = useState<"merge" | "replace">("merge");
-  const [editingTemplate, setEditingTemplate] = useState<any | null>(null);
+  const [editingTemplate, setEditingTemplate] = useState<TopicTemplate | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   const effectiveClusterId = viewingClusterId ?? activeClusterId;
-  const { templateList, delete: deleteMutation } = useTemplates();
+  const { templateList, delete: deleteMutation } = useTemplates(effectiveClusterId ?? undefined);
 
   // Fetch all clusters for dropdown
   const { data: clusters = [] } = useQuery({

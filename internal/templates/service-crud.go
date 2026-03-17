@@ -163,7 +163,7 @@ func (s *TemplateService) saveStore() error {
 	}
 
 	path := filepath.Join(s.configDir, templatesFileName)
-	if err := os.WriteFile(path, data, 0644); err != nil {
+	if err := os.WriteFile(path, data, 0600); err != nil {
 		return fmt.Errorf("write templates: %w", err)
 	}
 	return nil
@@ -182,7 +182,10 @@ func (s *TemplateService) ensureCluster(clusterID string) {
 // generateID creates a random 8-byte hex ID (16 characters).
 func generateID() string {
 	b := make([]byte, 8)
-	rand.Read(b)
+	if _, err := rand.Read(b); err != nil {
+		// crypto/rand is not available; fall back to a timestamp-based ID
+		return fmt.Sprintf("%x", time.Now().UnixNano())
+	}
 	return hex.EncodeToString(b)
 }
 
