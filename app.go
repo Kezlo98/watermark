@@ -8,6 +8,7 @@ import (
 	"watermark-01/internal/kafka"
 	"watermark-01/internal/lagalert"
 	"watermark-01/internal/schema"
+	"watermark-01/internal/templates"
 	"watermark-01/internal/updater"
 )
 
@@ -20,11 +21,12 @@ type App struct {
 	annotationSvc *annotations.AnnotationService
 	updaterSvc    *updater.UpdaterService
 	lagAlertSvc   *lagalert.LagAlertService
+	templateSvc   *templates.TemplateService
 }
 
 // NewApp creates a new App application struct with all services.
-func NewApp(c *config.ConfigService, k *kafka.KafkaService, s *schema.SchemaService, a *annotations.AnnotationService, u *updater.UpdaterService, l *lagalert.LagAlertService) *App {
-	return &App{configSvc: c, kafkaSvc: k, schemaSvc: s, annotationSvc: a, updaterSvc: u, lagAlertSvc: l}
+func NewApp(c *config.ConfigService, k *kafka.KafkaService, s *schema.SchemaService, a *annotations.AnnotationService, u *updater.UpdaterService, l *lagalert.LagAlertService, t *templates.TemplateService) *App {
+	return &App{configSvc: c, kafkaSvc: k, schemaSvc: s, annotationSvc: a, updaterSvc: u, lagAlertSvc: l, templateSvc: t}
 }
 
 // startup is called when the Wails app starts. Passes context to services.
@@ -35,6 +37,7 @@ func (a *App) startup(ctx context.Context) {
 	a.annotationSvc.SetContext(ctx)
 	a.updaterSvc.SetContext(ctx)
 	a.lagAlertSvc.SetContext(ctx)
+	a.templateSvc.SetContext(ctx)
 
 	// Auto-connect to last active cluster (non-blocking)
 	if id := a.configSvc.GetActiveClusterID(); id != "" {

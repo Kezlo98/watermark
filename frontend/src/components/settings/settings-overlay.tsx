@@ -6,12 +6,14 @@ import { ClusterList } from "./cluster-list";
 import { AppearanceForm } from "./appearance-form";
 import { DataSystemForm } from "./data-system-form";
 import { AnnotationSettingsPanel } from "@/components/annotations/annotation-settings-panel";
+import { TemplateSettingsPanel } from "@/components/templates/template-settings-panel";
 import { AlertsForm } from "./alerts-form";
 
 const SETTINGS_TABS = [
   { id: "clusters", label: "🌐 Clusters" },
   { id: "appearance", label: "🎨 Appearance" },
   { id: "annotations", label: "🏷️ Annotations" },
+  { id: "templates", label: "📋 Templates" },
   { id: "system", label: "💻 System" },
   { id: "alerts", label: "🔔 Alerts" },
 ];
@@ -64,6 +66,7 @@ export function SettingsOverlay() {
             {activeTab === "clusters" && <ClusterList />}
             {activeTab === "appearance" && <AppearanceForm />}
             {activeTab === "annotations" && <AnnotationSettingsPanel />}
+            {activeTab === "templates" && <TemplateSettingsPanel />}
             {activeTab === "system" && <DataSystemForm />}
             {activeTab === "alerts" && <AlertsForm />}
           </div>

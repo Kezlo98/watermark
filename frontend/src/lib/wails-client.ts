@@ -95,3 +95,16 @@ export {
   RestartMonitoring,
 } from "../../wailsjs/go/lagalert/LagAlertService";
 
+// --- Template Service ---
+export {
+  GetTemplates,
+  GetTemplate,
+  SaveTemplate,
+  UpdateTemplate,
+  DeleteTemplate,
+  ExportTemplates,
+  ImportTemplates,
+  ExportToFile as ExportTemplatesToFile,
+  ImportFromFile as ImportTemplatesFromFile,
+} from "../../wailsjs/go/templates/TemplateService";
+
