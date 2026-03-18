@@ -32,6 +32,7 @@ export {
 } from "../../wailsjs/go/kafka/KafkaService";
 
 // --- Config Service ---
+// NOTE: GetDecryptedPassword intentionally NOT exported — decryption stays server-side only
 export {
   GetClusters,
   GetCluster,
@@ -42,11 +43,12 @@ export {
   SaveSettings,
   GetActiveClusterID,
   SetActiveCluster,
-  GetDecryptedPassword,
   TestConnection,
   ExportConfig,
   ImportConfig,
   ListAWSProfiles,
+  GetSkippedVersion,
+  SkipVersion,
 } from "../../wailsjs/go/config/ConfigService";
 
 // --- Schema Service ---
@@ -79,6 +81,7 @@ export {
   GetCurrentVersion,
   CheckForUpdate,
   ApplyUpdate,
+  GetChangelog,
 } from "../../wailsjs/go/updater/UpdaterService";
 
 // --- Lag Alert Service ---

@@ -595,9 +595,27 @@ export namespace templates {
 }
 
 export namespace updater {
-	
+
+	export class ReleaseNote {
+	    version: string;
+	    date: string;
+	    notes: string;
+
+	    static createFrom(source: any = {}) {
+	        return new ReleaseNote(source);
+	    }
+
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.version = source["version"];
+	        this.date = source["date"];
+	        this.notes = source["notes"];
+	    }
+	}
+
 	export class UpdateInfo {
 	    available: boolean;
+	    skipped: boolean;
 	    currentVersion: string;
 	    latestVersion: string;
 	    releaseUrl: string;
@@ -611,6 +629,7 @@ export namespace updater {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.available = source["available"];
+	        this.skipped = source["skipped"];
 	        this.currentVersion = source["currentVersion"];
 	        this.latestVersion = source["latestVersion"];
 	        this.releaseUrl = source["releaseUrl"];

@@ -32,4 +32,5 @@ type AppConfig struct {
 	Clusters        []ClusterProfile `json:"clusters"`
 	Settings        AppSettings      `json:"settings"`
 	ActiveClusterID string           `json:"activeClusterId"`
+	SkippedVersion  string           `json:"skippedVersion,omitempty"`
 }

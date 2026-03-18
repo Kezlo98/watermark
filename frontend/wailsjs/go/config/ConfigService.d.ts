@@ -22,6 +22,10 @@ export function GetDecryptedSchemaRegistryPassword(arg1:string):Promise<string>;
 
 export function GetSettings():Promise<config.AppSettings>;
 
+export function GetSkippedVersion():Promise<string>;
+
+export function SkipVersion(arg1:string):Promise<void>;
+
 export function ImportConfig(arg1:string):Promise<void>;
 
 export function ListAWSProfiles():Promise<Array<string>>;
