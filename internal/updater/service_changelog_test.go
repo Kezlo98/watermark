@@ -84,9 +84,14 @@ func TestFilterByVersionRange(t *testing.T) {
 
 func TestFilterByVersionRangeInvalidVersion(t *testing.T) {
 	notes := parseChangelog(sampleChangelog)
-	// Invalid current version → returns all notes (graceful fallback)
+	// Invalid current version → returns empty slice (safe fallback)
 	filtered := filterByVersionRange(notes, "invalid", "1.0.3")
-	if len(filtered) != len(notes) {
-		t.Errorf("expected fallback to all notes, got %d", len(filtered))
+	if len(filtered) != 0 {
+		t.Errorf("expected empty slice for invalid version, got %d", len(filtered))
+	}
+	// Invalid latest version → returns empty slice
+	filtered = filterByVersionRange(notes, "1.0.0", "")
+	if len(filtered) != 0 {
+		t.Errorf("expected empty slice for empty latest version, got %d", len(filtered))
 	}
 }

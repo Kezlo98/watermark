@@ -236,7 +236,7 @@ jobs:
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
           name: "${{ env.APP_NAME }} ${{ steps.tag.outputs.tag }}"
-          body: ${{ steps.changelog.outputs.notes }}
+          body: "${{ steps.changelog.outputs.notes }}"
           draft: false
           prerelease: ${{ steps.prerelease.outputs.is_prerelease }}
           files: |

@@ -99,8 +99,11 @@ func (u *UpdaterService) CheckForUpdate() UpdateInfo {
 		return info
 	}
 
-	// Cache latest release for ApplyUpdate
+	// Cache latest release for ApplyUpdate; invalidate changelog if version changed
 	u.mu.Lock()
+	if u.latest == nil || u.latest.Version() != release.Version() {
+		u.changelog = nil
+	}
 	u.latest = release
 	u.mu.Unlock()
 

@@ -75,12 +75,12 @@ func filterByVersionRange(notes []ReleaseNote, current, latest string) []Release
 	currentSV, err := semver.NewVersion(currentClean)
 	if err != nil {
 		log.Printf("changelog: invalid current version %q: %v", current, err)
-		return notes
+		return nil
 	}
 	latestSV, err := semver.NewVersion(latestClean)
 	if err != nil {
 		log.Printf("changelog: invalid latest version %q: %v", latest, err)
-		return notes
+		return nil
 	}
 
 	var filtered []ReleaseNote
