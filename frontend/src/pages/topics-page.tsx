@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { SearchInput } from "@/components/shared/search-input";
@@ -79,11 +80,10 @@ export function TopicsPage() {
         />
         <RefreshButton queryKeys={[["topics"]]} />
         <label className="flex items-center gap-2 text-sm text-slate-400 cursor-pointer">
-          <input
-            type="checkbox"
+          <Checkbox
             checked={hideInternal}
-            onChange={(e) => setHideInternal(e.target.checked)}
-            className="size-4 rounded border-white/20 bg-white/5 text-primary focus:ring-primary/50"
+            onCheckedChange={(v) => setHideInternal(!!v)}
+            className="size-4"
           />
           Hide Internal Topics
         </label>

@@ -1,4 +1,5 @@
 import { lazy, Suspense } from "react";
+import { Slider } from "@/components/ui/slider";
 import { useSettingsStore } from "@/store/settings";
 import {
   Select,
@@ -74,13 +75,13 @@ export function AppearanceForm() {
             </div>
             <div>
               <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">Font Size ({codeFontSize}px)</label>
-              <input
-                type="range"
+              <Slider
+                value={[codeFontSize]}
+                onValueChange={([v]) => setCodeFontSize(v)}
                 min={12}
                 max={16}
-                value={codeFontSize}
-                onChange={(e) => setCodeFontSize(Number(e.target.value))}
-                className="w-full accent-primary"
+                step={1}
+                className="w-full mt-2"
               />
             </div>
           </div>

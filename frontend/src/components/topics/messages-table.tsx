@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Message } from "@/types/kafka";
@@ -49,11 +50,10 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, onRe
             <tr className="bg-white/5">
               {selectMode && (
                 <th className="px-3 py-3 w-8">
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     checked={paginatedMessages.length > 0 && paginatedMessages.every(m => selectedIds?.has(`${m.partition}-${m.offset}`))}
-                    onChange={() => onToggleAll?.(paginatedMessages)}
-                    className="accent-primary size-4 cursor-pointer"
+                    onCheckedChange={() => onToggleAll?.(paginatedMessages)}
+                    className="size-4"
                   />
                 </th>
               )}
@@ -95,12 +95,11 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, onRe
                   >
                     {selectMode && (
                       <td className="px-3 py-3 w-8">
-                        <input
-                          type="checkbox"
+                        <Checkbox
                           checked={isChecked}
-                          onChange={() => onToggleSelect?.(msg)}
+                          onCheckedChange={() => onToggleSelect?.(msg)}
                           onClick={(e) => e.stopPropagation()}
-                          className="accent-primary size-4 cursor-pointer"
+                          className="size-4"
                         />
                       </td>
                     )}

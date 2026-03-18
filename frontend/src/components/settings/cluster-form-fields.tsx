@@ -1,4 +1,6 @@
 import { cn } from "@/lib/utils";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { AwsProfileSelect } from "./aws-profile-select";
 import { AwsRegionSelect } from "./aws-region-select";
 import {
@@ -161,16 +163,14 @@ export function ClusterFormFields({ form, onChange, clusterId, isNew }: ClusterF
       </div>
 
       <div className="flex items-center gap-2">
-        <input
-          type="checkbox"
+        <Switch
           id={`read-only-toggle-${clusterId}`}
           checked={form.readOnly}
-          onChange={(e) => onChange({ readOnly: e.target.checked })}
-          className="size-4 rounded border-white/20 bg-white/5 text-primary focus:ring-primary/50"
+          onCheckedChange={(checked) => onChange({ readOnly: checked })}
         />
-        <label htmlFor={`read-only-toggle-${clusterId}`} className="text-sm text-slate-300">
+        <Label htmlFor={`read-only-toggle-${clusterId}`} className="text-sm text-slate-300 font-normal cursor-pointer">
           Enable Read-Only Mode (Disable write operations)
-        </label>
+        </Label>
       </div>
     </>
   );

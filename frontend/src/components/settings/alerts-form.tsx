@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { useSettingsStore } from "@/store/settings";
 import { useLagAlertsStore } from "@/store/lag-alerts";
 import {
@@ -228,27 +230,19 @@ function Toggle({
   onChange: () => void;
   disabled?: boolean;
 }) {
+  const id = `toggle-${label.toLowerCase().replace(/\s+/g, "-")}`;
   return (
     <div className="flex items-center justify-between py-2">
       <div>
-        <div className="text-sm text-white">{label}</div>
+        <Label htmlFor={id} className="text-sm text-white font-normal cursor-pointer">{label}</Label>
         <div className="text-xs text-slate-500">{description}</div>
       </div>
-      <button
-        role="switch"
-        aria-checked={checked}
-        onClick={onChange}
+      <Switch
+        id={id}
+        checked={checked}
+        onCheckedChange={onChange}
         disabled={disabled}
-        className={`relative w-10 h-5 rounded-full transition-colors disabled:opacity-40 ${
-          checked ? "bg-primary" : "bg-white/10"
-        }`}
-      >
-        <span
-          className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
-            checked ? "translate-x-5" : "translate-x-0"
-          }`}
-        />
-      </button>
+      />
     </div>
   );
 }
