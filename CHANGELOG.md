@@ -5,6 +5,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.0.4-alpha] - 2026-03-18
+
+### Added
+
+- Changelog modal in update workflow — shows release notes before applying update
+- Skip version support — dismiss updates and suppress auto-check banner
+- CHANGELOG.md as single source of truth for release notes
+
 ## [1.0.3] - 2026-03-13
 
 ### Added
