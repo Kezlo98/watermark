@@ -5,31 +5,56 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "#0A0A0A",
-        foreground: "#F5F5F5",
+        /* shadcn CSS-variable-driven tokens */
+        background: "var(--background)",
+        foreground: "var(--foreground)",
         primary: {
-          DEFAULT: "#8B5CF6",
-          foreground: "#FFFFFF",
+          DEFAULT: "var(--primary)",
+          foreground: "var(--primary-foreground)",
         },
+        card: {
+          DEFAULT: "var(--card)",
+          foreground: "var(--card-foreground)",
+        },
+        popover: {
+          DEFAULT: "var(--popover)",
+          foreground: "var(--popover-foreground)",
+        },
+        secondary: {
+          DEFAULT: "var(--secondary)",
+          foreground: "var(--secondary-foreground)",
+        },
+        muted: {
+          DEFAULT: "var(--muted)",
+          foreground: "var(--muted-foreground)",
+        },
+        accent: {
+          DEFAULT: "var(--accent)",
+          foreground: "var(--accent-foreground)",
+        },
+        destructive: {
+          DEFAULT: "var(--destructive)",
+          foreground: "var(--destructive-foreground)",
+        },
+        border: "var(--border)",
+        input: "var(--input)",
+        ring: "var(--ring)",
+        /* Project-specific tokens */
         glass: {
-          panel: "#141414",
+          panel: "var(--glass-panel)",
           sidebar: "rgba(10, 10, 10, 0.4)",
         },
-        border: {
-          subtle: "rgba(255, 255, 255, 0.1)",
-          hover: "rgba(255, 255, 255, 0.2)",
-        },
         semantic: {
-          cyan: "#00FFFF",
-          purple: "#BF00FF",
-          orange: "#FF8C00",
-          red: "#FF0000",
+          cyan: "var(--semantic-cyan)",
+          purple: "var(--semantic-purple)",
+          orange: "var(--semantic-orange)",
+          red: "var(--semantic-red)",
         },
         status: {
-          healthy: "#34D399",
-          rebalancing: "#FBBF24",
-          dead: "#EF4444",
-          empty: "#94A3B8",
+          healthy: "var(--status-healthy)",
+          rebalancing: "var(--status-rebalancing)",
+          dead: "var(--status-dead)",
+          empty: "var(--status-empty)",
         },
       },
       fontFamily: {
@@ -39,11 +64,14 @@ export default {
       },
       borderRadius: {
         glass: "16px",
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
       },
       animation: {
         "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 };
