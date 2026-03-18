@@ -561,6 +561,39 @@ export namespace schema {
 
 }
 
+export namespace templates {
+	
+	export class TopicTemplate {
+	    id: string;
+	    name: string;
+	    description?: string;
+	    pattern?: string;
+	    partitions: number;
+	    replicationFactor: number;
+	    configs: Record<string, string>;
+	    createdAt: string;
+	    updatedAt: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new TopicTemplate(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
+	        this.name = source["name"];
+	        this.description = source["description"];
+	        this.pattern = source["pattern"];
+	        this.partitions = source["partitions"];
+	        this.replicationFactor = source["replicationFactor"];
+	        this.configs = source["configs"];
+	        this.createdAt = source["createdAt"];
+	        this.updatedAt = source["updatedAt"];
+	    }
+	}
+
+}
+
 export namespace updater {
 	
 	export class UpdateInfo {

@@ -28,6 +28,7 @@ import { TopicTabs } from "@/components/topics/topic-tabs";
 import { ProduceMessageModal } from "@/components/topics/produce-message-modal";
 import { SearchInput } from "@/components/shared/search-input";
 import { RefreshButton } from "@/components/shared/refresh-button";
+import { TopicsPage } from "@/pages/topics-page";
 
 /* ====== Annotations imports ====== */
 import { TopicOwnershipHeader } from "@/components/annotations/topic-ownership-header";
@@ -131,56 +132,6 @@ const dashboardRoute = createRoute({
 /* ========================================================================= */
 /*  Phase 03 — Topics Index                                                  */
 /* ========================================================================= */
-function TopicsPage() {
-  const navigate = useNavigate();
-  const [search, setSearch] = useState("");
-  const [hideInternal, setHideInternal] = useState(false);
-  const [createOpen, setCreateOpen] = useState(false);
-
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-mono font-bold uppercase tracking-wider">
-          Topics
-        </h1>
-        <button
-          onClick={() => setCreateOpen(true)}
-          className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors"
-        >
-          <Plus className="size-3.5" />
-          Create Topic
-        </button>
-      </div>
-
-      <div className="flex items-center gap-4">
-        <SearchInput
-          value={search}
-          onChange={setSearch}
-          placeholder="Search topics..."
-          className="w-80"
-        />
-        <RefreshButton queryKeys={[["topics"]]} />
-        <label className="flex items-center gap-2 text-sm text-slate-400 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={hideInternal}
-            onChange={(e) => setHideInternal(e.target.checked)}
-            className="size-4 rounded border-white/20 bg-white/5 text-primary focus:ring-primary/50"
-          />
-          Hide Internal Topics
-        </label>
-      </div>
-
-      <TopicListTable
-        onTopicClick={(name) => navigate({ to: "/topics/$topicId", params: { topicId: name } })}
-        searchFilter={search}
-        hideInternal={hideInternal}
-      />
-
-      <CreateTopicModal isOpen={createOpen} onClose={() => setCreateOpen(false)} />
-    </div>
-  );
-}
 
 const topicsRoute = createRoute({
   getParentRoute: () => rootRoute,

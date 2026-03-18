@@ -1,0 +1,109 @@
+import { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { Plus } from "lucide-react";
+import { toast } from "sonner";
+import { SearchInput } from "@/components/shared/search-input";
+import { RefreshButton } from "@/components/shared/refresh-button";
+import { TopicListTable } from "@/components/topics/topic-list-table";
+import { CreateTopicModal } from "@/components/topics/create-topic-modal";
+import { GetTopic, GetTopicConfigs } from "@/lib/wails-client";
+
+export function TopicsPage() {
+  const navigate = useNavigate();
+  const [search, setSearch] = useState("");
+  const [hideInternal, setHideInternal] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [cloneSource, setCloneSource] = useState<{
+    name: string;
+    partitions: number;
+    replicationFactor: number;
+    configs: Record<string, string>;
+  } | null>(null);
+
+  const handleCloneTopic = async (topicName: string) => {
+    try {
+      const [topic, configs] = await Promise.all([
+        GetTopic(topicName),
+        GetTopicConfigs(topicName),
+      ]);
+
+      // Filter to overridden configs only
+      const overridden: Record<string, string> = {};
+      configs
+        .filter((c) => c.isOverridden)
+        .forEach((c) => {
+          overridden[c.name] = c.value;
+        });
+
+      setCloneSource({
+        name: topicName,
+        partitions: topic.partitions,
+        replicationFactor: topic.replicas,
+        configs: overridden,
+      });
+    } catch (err) {
+      toast.error(
+        `Failed to clone topic: ${err instanceof Error ? err.message : "Unknown error"}`,
+      );
+    }
+  };
+
+  const handleCloseCreateModal = () => {
+    setCreateOpen(false);
+    setCloneSource(null);
+  };
+
+  const isCreateModalOpen = createOpen || !!cloneSource;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-mono font-bold uppercase tracking-wider">
+          Topics
+        </h1>
+        <button
+          onClick={() => setCreateOpen(true)}
+          className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors"
+        >
+          <Plus className="size-3.5" />
+          Create Topic
+        </button>
+      </div>
+
+      <div className="flex items-center gap-4">
+        <SearchInput
+          value={search}
+          onChange={setSearch}
+          placeholder="Search topics..."
+          className="w-80"
+        />
+        <RefreshButton queryKeys={[["topics"]]} />
+        <label className="flex items-center gap-2 text-sm text-slate-400 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={hideInternal}
+            onChange={(e) => setHideInternal(e.target.checked)}
+            className="size-4 rounded border-white/20 bg-white/5 text-primary focus:ring-primary/50"
+          />
+          Hide Internal Topics
+        </label>
+      </div>
+
+      <TopicListTable
+        onTopicClick={(name) =>
+          navigate({ to: "/topics/$topicId", params: { topicId: name } })
+        }
+        onCloneTopic={handleCloneTopic}
+        searchFilter={search}
+        hideInternal={hideInternal}
+      />
+
+      <CreateTopicModal
+        key={cloneSource ? `clone-${cloneSource.name}` : "create"}
+        isOpen={isCreateModalOpen}
+        onClose={handleCloseCreateModal}
+        cloneFrom={cloneSource ?? undefined}
+      />
+    </div>
+  );
+}

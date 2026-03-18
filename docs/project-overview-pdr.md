@@ -34,25 +34,53 @@ A lightweight, native desktop app built with:
 - **macOS** (primary, Apple Silicon + Intel)
 - **Windows** (secondary, via WebView2)
 
-## Core Features (MVP — 7 Pages)
+## Core Features (MVP — 7 Pages) + Templates Extension ✅
 
-### Page 1: Cluster Overview (Dashboard)
+### Page 1: Cluster Overview (Dashboard) ✅
 - **Hero Metrics**: Cluster Status (🟢 Healthy), Total Brokers, Total Topics, Total Partitions
 - **Brokers Table**: Broker ID, Host/IP, Port, Rack, Kafka Data Size on Disk per broker
 - **Controller Highlight**: Active Controller node visually distinguished
 
-### Page 2: Topics Index
+### Page 2: Topics Index ✅
 - **Controls**: Search bar, "Hide Internal Topics" toggle (hides `__consumer_offsets`), `[+ Create Topic]` button
 - **Data Table**: Topic Name, Partitions, Replicas, Size on Disk, Retention Policy
+- **Clone Button**: `[Clone Topic]` action on each row → pre-populated create modal
 - Sortable columns, row click navigates to Topic Detail
 
-### Page 3: Topic Detail (5 Tabs)
+### Page 3: Topic Detail (5 Tabs) ✅
 - **Global Action**: `[+ Produce Message]` button → modal (partition selector, Key/Value inputs, headers injection)
 - **Tab 1 — Messages**: Start offset/timestamp selector, JSON/Text filter, Format selector (Auto, String, JSON, Avro, Protobuf, Hex). Live-tail grid capped at 100 messages. Click row → Monaco JSON inspector pane
 - **Tab 2 — Consumers**: Consumer groups reading this topic with per-group total lag
 - **Tab 3 — Partitions**: Partition ID, Leader Broker, Replicas, ISR, Low/High Watermarks. Highlight ISR ≠ Replicas
 - **Tab 4 — Configuration**: Topic configs table with visual distinction for overridden vs. cluster defaults
 - **Tab 5 — ACL**: Read-only list of Read/Write permissions per principal
+- **Save Template Button**: `[Save as Template]` → modal to save current configuration as reusable template
+
+### Topic Templates & Cloning Feature ✅
+**NEW: Enhanced Topic Management with Template System**
+
+#### Template Management
+- **Create Templates**: Save topic configurations with custom name, description, partition count, replication factor, and specific configs
+- **Template Storage**: Persistent JSON storage in `~/.watermark/templates.json` per cluster
+- **Template Editing**: Full CRUD operations with UI for managing template library
+- **Import/Export**: Native OS file dialogs for backup/restore template collections
+
+#### Auto-Matching Templates
+- **Glob Pattern Matching**: Apply templates automatically based on topic name patterns (e.g., `user-events-*`, `logs-*-prod`)
+- **Template Precedence**: Order-based template selection for overlapping patterns
+- **Configuration Override**: Templates can override any topic configuration setting
+
+#### Topic Cloning
+- **One-Click Cloning**: Clone existing topics with full configuration (partitions, replicas, configs)
+- **Template-Based Creation**: Create new topics from templates with auto-matching
+- **Configuration Inheritance**: Clone maintains all overridden configurations from source topics
+- **Batch Operations**: Multiple template applications across different clusters
+
+#### User Interface
+- **Template Picker**: Dropdown selection during topic creation with search and filtering
+- **Template List Table**: Grid view of all templates with metadata (name, pattern, partitions, configs)
+- **Settings Integration**: Template management in global settings with cluster-specific controls
+- **Real-time Feedback**: Toast notifications for save/clone operations and error handling
 
 ### Page 4: Consumer Groups Index
 - **Controls**: Search bar

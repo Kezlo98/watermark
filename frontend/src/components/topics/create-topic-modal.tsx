@@ -3,6 +3,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { X, Loader2 } from "lucide-react";
 import { CreateTopic } from "@/lib/wails-client";
+import { TemplatePickerDropdown } from "@/components/templates/template-picker-dropdown";
+import type { TopicTemplate } from "@/types/templates";
 
 /* ---------- Kafka topic name validation ---------- */
 
@@ -30,17 +32,50 @@ const DEFAULT_FORM = {
   cleanupPolicy: "delete",
 };
 
+type FormState = typeof DEFAULT_FORM;
+
 /* ---------- Component ---------- */
 
 interface CreateTopicModalProps {
   isOpen: boolean;
   onClose: () => void;
+  cloneFrom?: {
+    name: string;
+    partitions: number;
+    replicationFactor: number;
+    configs: Record<string, string>;
+  };
 }
 
-export function CreateTopicModal({ isOpen, onClose }: CreateTopicModalProps) {
+export function CreateTopicModal({ isOpen, onClose, cloneFrom }: CreateTopicModalProps) {
   const queryClient = useQueryClient();
-  const [form, setForm] = useState(DEFAULT_FORM);
+  const [form, setForm] = useState(() =>
+    cloneFrom
+      ? {
+          name: "",
+          partitions: cloneFrom.partitions,
+          replicationFactor: cloneFrom.replicationFactor,
+          retentionMs: Number(cloneFrom.configs["retention.ms"] ?? DEFAULT_FORM.retentionMs),
+          cleanupPolicy: cloneFrom.configs["cleanup.policy"] ?? DEFAULT_FORM.cleanupPolicy,
+        }
+      : DEFAULT_FORM,
+  );
   const [error, setError] = useState<string | null>(null);
+
+  const applyTemplate = (template: TopicTemplate | null) => {
+    if (!template) {
+      setForm({ ...DEFAULT_FORM, name: form.name });
+      return;
+    }
+
+    setForm({
+      name: form.name, // Keep current name
+      partitions: template.partitions,
+      replicationFactor: template.replicationFactor,
+      retentionMs: Number(template.configs["retention.ms"] ?? DEFAULT_FORM.retentionMs),
+      cleanupPolicy: template.configs["cleanup.policy"] ?? DEFAULT_FORM.cleanupPolicy,
+    });
+  };
 
   const handleClose = () => {
     setForm({ ...DEFAULT_FORM });
@@ -48,12 +83,19 @@ export function CreateTopicModal({ isOpen, onClose }: CreateTopicModalProps) {
     onClose();
   };
 
+  // Build configs: base all overridden configs from clone source, override with form values
+  const buildConfigs = (): Record<string, string> => {
+    const base = cloneFrom?.configs ?? {};
+    return {
+      ...base,
+      "retention.ms": String(form.retentionMs),
+      "cleanup.policy": form.cleanupPolicy,
+    };
+  };
+
   const mutation = useMutation({
     mutationFn: () =>
-      CreateTopic(form.name.trim(), form.partitions, form.replicationFactor, {
-        "retention.ms": String(form.retentionMs),
-        "cleanup.policy": form.cleanupPolicy,
-      }),
+      CreateTopic(form.name.trim(), form.partitions, form.replicationFactor, buildConfigs()),
     onSuccess: () => {
       toast.success(`Topic "${form.name.trim()}" created successfully`);
       queryClient.invalidateQueries({ queryKey: ["topics"] });
@@ -87,7 +129,7 @@ export function CreateTopicModal({ isOpen, onClose }: CreateTopicModalProps) {
       <div className="glass-panel w-full max-w-lg p-6" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-display font-bold text-white uppercase tracking-wider">
-            Create New Topic
+            {cloneFrom ? `Clone from ${cloneFrom.name}` : "Create New Topic"}
           </h2>
           <button onClick={handleClose} disabled={mutation.isPending} className="p-1 text-slate-400 hover:text-white transition-colors disabled:opacity-50">
             <X className="size-5" />
@@ -95,6 +137,12 @@ export function CreateTopicModal({ isOpen, onClose }: CreateTopicModalProps) {
         </div>
 
         <div className="space-y-4">
+          {/* Template Picker */}
+          <TemplatePickerDropdown
+            topicName={form.name}
+            onTemplateSelect={applyTemplate}
+          />
+
           {/* Topic Name */}
           <div>
             <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">
