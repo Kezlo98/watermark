@@ -1,8 +1,17 @@
 import { useEffect, useState, useCallback } from "react";
-import { X, Loader2, CheckCircle2, AlertCircle, ChevronDown } from "lucide-react";
+import { Loader2, CheckCircle2, AlertCircle, ChevronDown } from "lucide-react";
 import { GetChangelog, ApplyUpdate, SkipVersion } from "@/lib/wails-client";
 import { renderChangelogMarkdown } from "@/lib/changelog-markdown-renderer";
 import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 interface ReleaseNote {
   version: string;
@@ -71,51 +80,29 @@ export function UpdateChangelogModal({ isOpen, onClose, updateInfo }: UpdateChan
     }
   }, [onClose]);
 
-  const handleBackdropClick = useCallback(() => {
-    if (state === "updating") return;
-    onClose("cancelled");
+  const handleOpenChange = useCallback((open: boolean) => {
+    if (!open && state !== "updating") {
+      onClose("cancelled");
+    }
   }, [state, onClose]);
-
-  if (!isOpen) return null;
 
   const visibleNotes = showAll ? changelog : changelog.slice(0, INITIAL_SHOW);
   const hiddenCount = changelog.length - INITIAL_SHOW;
   const isUpdating = state === "updating";
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
-      onClick={handleBackdropClick}
-    >
-      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-      <div
-        className="glass-panel w-full max-w-lg flex flex-col"
-        style={{ maxHeight: "70vh" }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-white/5 shrink-0">
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      <DialogContent className="max-w-lg max-h-[70vh]" showCloseButton={!isUpdating && state !== "success"}>
+        <DialogHeader>
           <div>
-            <h2 className="text-lg font-display font-bold text-white uppercase tracking-wider">
-              Update Available
-            </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <DialogTitle className="text-lg">Update Available</DialogTitle>
+            <DialogDescription className="mt-0.5">
               v{updateInfo.currentVersion} → v{updateInfo.latestVersion}
-            </p>
+            </DialogDescription>
           </div>
-          {!isUpdating && state !== "success" && (
-            <button
-              onClick={() => onClose("cancelled")}
-              className="p-1 text-slate-400 hover:text-white transition-colors"
-              aria-label="Close"
-            >
-              <X className="size-5" />
-            </button>
-          )}
-        </div>
+        </DialogHeader>
 
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 min-h-0">
+        <DialogBody>
           {/* Loading */}
           {state === "loading" && (
             <div className="flex items-center justify-center py-8 gap-2 text-slate-400">
@@ -186,12 +173,11 @@ export function UpdateChangelogModal({ isOpen, onClose, updateInfo }: UpdateChan
               )}
             </div>
           )}
-        </div>
+        </DialogBody>
 
         {/* Footer */}
         {state !== "success" && (
-          <div className="flex justify-end gap-3 px-6 py-4 border-t border-white/5 shrink-0">
-            {/* Skip only shown when changelog loaded successfully */}
+          <DialogFooter>
             {(state === "ready" || state === "update-error") && (
               <button
                 onClick={handleSkip}
@@ -212,10 +198,10 @@ export function UpdateChangelogModal({ isOpen, onClose, updateInfo }: UpdateChan
               {isUpdating && <Loader2 className="size-3.5 animate-spin" />}
               {isUpdating ? "Updating…" : `Update to v${updateInfo.latestVersion}`}
             </button>
-          </div>
+          </DialogFooter>
         )}
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 

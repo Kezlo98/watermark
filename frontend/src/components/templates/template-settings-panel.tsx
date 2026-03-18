@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Plus, Download, Upload } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -8,6 +8,23 @@ import type { TopicTemplate } from "@/types/templates";
 import { GetClusters, ExportTemplatesToFile, ImportTemplatesFromFile } from "@/lib/wails-client";
 import { TemplateListTable } from "./template-list-table";
 import { SaveTemplateModal } from "./save-template-modal";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function TemplateSettingsPanel() {
   const activeClusterId = useSettingsStore((s) => s.activeClusterId);
@@ -15,6 +32,7 @@ export function TemplateSettingsPanel() {
   const [importMode, setImportMode] = useState<"merge" | "replace">("merge");
   const [editingTemplate, setEditingTemplate] = useState<TopicTemplate | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [deletingTemplateId, setDeletingTemplateId] = useState<string | null>(null);
 
   const effectiveClusterId = viewingClusterId ?? activeClusterId;
   const { templateList, delete: deleteMutation } = useTemplates(effectiveClusterId ?? undefined);
@@ -48,13 +66,18 @@ export function TemplateSettingsPanel() {
     }
   };
 
-  const handleDelete = (templateId: string) => {
-    if (!confirm("Delete this template? This cannot be undone.")) return;
-    deleteMutation.mutate(templateId, {
+  const handleDeleteRequest = useCallback((templateId: string) => {
+    setDeletingTemplateId(templateId);
+  }, []);
+
+  const handleDeleteConfirm = useCallback(() => {
+    if (!deletingTemplateId) return;
+    deleteMutation.mutate(deletingTemplateId, {
       onSuccess: () => toast.success("Template deleted"),
       onError: (err) => toast.error(err instanceof Error ? err.message : "Delete failed"),
     });
-  };
+    setDeletingTemplateId(null);
+  }, [deletingTemplateId, deleteMutation]);
 
   return (
     <div className="space-y-6">
@@ -72,17 +95,21 @@ export function TemplateSettingsPanel() {
           <label className="mb-2 block text-sm font-medium text-slate-300">
             Viewing Cluster
           </label>
-          <select
+          <Select
             value={effectiveClusterId ?? ""}
-            onChange={(e) => setViewingClusterId(e.target.value || null)}
-            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-sm text-white focus:border-primary focus:outline-none"
+            onValueChange={(v) => setViewingClusterId(v || null)}
           >
-            {clusters.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name} {c.id === activeClusterId ? "(active)" : ""}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select cluster" />
+            </SelectTrigger>
+            <SelectContent>
+              {clusters.map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {c.name} {c.id === activeClusterId ? "(active)" : ""}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="flex items-end gap-2">
@@ -148,7 +175,7 @@ export function TemplateSettingsPanel() {
       <TemplateListTable
         templates={templateList}
         onEdit={(template) => setEditingTemplate(template)}
-        onDelete={handleDelete}
+        onDelete={handleDeleteRequest}
       />
 
       {/* Create Modal (empty form) */}
@@ -179,6 +206,24 @@ export function TemplateSettingsPanel() {
           editTemplateId={editingTemplate.id}
         />
       )}
+
+      {/* Delete Confirmation AlertDialog */}
+      <AlertDialog open={!!deletingTemplateId} onOpenChange={(open) => !open && setDeletingTemplateId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Template</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete this template. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

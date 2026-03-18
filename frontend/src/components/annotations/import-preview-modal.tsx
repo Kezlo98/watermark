@@ -1,7 +1,15 @@
 import { useMemo } from "react";
-import { X } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface ImportPreviewModalProps {
+  open: boolean;
   jsonData: string;
   mode: "merge" | "replace";
   onConfirm: () => void;
@@ -17,6 +25,7 @@ interface ImportStats {
 }
 
 export function ImportPreviewModal({
+  open,
   jsonData,
   mode,
   onConfirm,
@@ -45,23 +54,13 @@ export function ImportPreviewModal({
   }, [jsonData]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-      <div className="glass-panel w-full max-w-md">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
-          <h2 className="text-sm font-display font-bold text-white">
-            Import Preview
-          </h2>
-          <button
-            onClick={onCancel}
-            className="p-1 text-slate-400 hover:text-white transition-colors"
-          >
-            <X className="size-4" />
-          </button>
-        </div>
+    <Dialog open={open} onOpenChange={(v) => !v && onCancel()}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Import Preview</DialogTitle>
+        </DialogHeader>
 
-        {/* Body */}
-        <div className="p-6 space-y-4">
+        <DialogBody className="space-y-4">
           {stats.valid ? (
             <>
               <div className="grid grid-cols-2 gap-3">
@@ -106,10 +105,9 @@ export function ImportPreviewModal({
               </p>
             </div>
           )}
-        </div>
+        </DialogBody>
 
-        {/* Footer */}
-        <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-white/5">
+        <DialogFooter>
           <button
             onClick={onCancel}
             className="px-4 py-2 text-sm text-slate-400 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors"
@@ -123,8 +121,8 @@ export function ImportPreviewModal({
           >
             {isImporting ? "Importing..." : "Apply"}
           </button>
-        </div>
-      </div>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

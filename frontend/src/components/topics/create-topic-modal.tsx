@@ -1,10 +1,25 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { X, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { CreateTopic } from "@/lib/wails-client";
 import { TemplatePickerDropdown } from "@/components/templates/template-picker-dropdown";
 import type { TopicTemplate } from "@/types/templates";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 /* ---------- Kafka topic name validation ---------- */
 
@@ -49,7 +64,7 @@ interface CreateTopicModalProps {
 
 export function CreateTopicModal({ isOpen, onClose, cloneFrom }: CreateTopicModalProps) {
   const queryClient = useQueryClient();
-  const [form, setForm] = useState(() =>
+  const [form, setForm] = useState<FormState>(() =>
     cloneFrom
       ? {
           name: "",
@@ -69,7 +84,7 @@ export function CreateTopicModal({ isOpen, onClose, cloneFrom }: CreateTopicModa
     }
 
     setForm({
-      name: form.name, // Keep current name
+      name: form.name,
       partitions: template.partitions,
       replicationFactor: template.replicationFactor,
       retentionMs: Number(template.configs["retention.ms"] ?? DEFAULT_FORM.retentionMs),
@@ -83,7 +98,6 @@ export function CreateTopicModal({ isOpen, onClose, cloneFrom }: CreateTopicModa
     onClose();
   };
 
-  // Build configs: base all overridden configs from clone source, override with form values
   const buildConfigs = (): Record<string, string> => {
     const base = cloneFrom?.configs ?? {};
     return {
@@ -116,27 +130,18 @@ export function CreateTopicModal({ isOpen, onClose, cloneFrom }: CreateTopicModa
     mutation.mutate();
   };
 
-  if (!isOpen) return null;
-
   const retentionLabel = `(${Math.round(form.retentionMs / 86400000)}d)`;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
-      onClick={mutation.isPending ? undefined : handleClose}
-    >
-      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-      <div className="glass-panel w-full max-w-lg p-6" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-display font-bold text-white uppercase tracking-wider">
+    <Dialog open={isOpen} onOpenChange={(v) => !v && !mutation.isPending && handleClose()}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="text-lg">
             {cloneFrom ? `Clone from ${cloneFrom.name}` : "Create New Topic"}
-          </h2>
-          <button onClick={handleClose} disabled={mutation.isPending} className="p-1 text-slate-400 hover:text-white transition-colors disabled:opacity-50">
-            <X className="size-5" />
-          </button>
-        </div>
+          </DialogTitle>
+        </DialogHeader>
 
-        <div className="space-y-4">
+        <DialogBody className="space-y-4">
           {/* Template Picker */}
           <TemplatePickerDropdown
             topicName={form.name}
@@ -171,29 +176,31 @@ export function CreateTopicModal({ isOpen, onClose, cloneFrom }: CreateTopicModa
               <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">
                 Partitions
               </label>
-              <select
-                value={form.partitions}
-                onChange={(e) => setForm({ ...form, partitions: Number(e.target.value) })}
-                className="w-full h-9 px-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/50"
-              >
-                {[1, 3, 6, 12, 24, 48].map((n) => (
-                  <option key={n} value={n}>{n}</option>
-                ))}
-              </select>
+              <Select value={String(form.partitions)} onValueChange={(v) => setForm({ ...form, partitions: Number(v) })}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[1, 3, 6, 12, 24, 48].map((n) => (
+                    <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">
                 Replication Factor
               </label>
-              <select
-                value={form.replicationFactor}
-                onChange={(e) => setForm({ ...form, replicationFactor: Number(e.target.value) })}
-                className="w-full h-9 px-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/50"
-              >
-                {[1, 2, 3].map((n) => (
-                  <option key={n} value={n}>{n}</option>
-                ))}
-              </select>
+              <Select value={String(form.replicationFactor)} onValueChange={(v) => setForm({ ...form, replicationFactor: Number(v) })}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[1, 2, 3].map((n) => (
+                    <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
@@ -215,20 +222,20 @@ export function CreateTopicModal({ isOpen, onClose, cloneFrom }: CreateTopicModa
             <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">
               Cleanup Policy
             </label>
-            <select
-              value={form.cleanupPolicy}
-              onChange={(e) => setForm({ ...form, cleanupPolicy: e.target.value })}
-              className="w-full h-9 px-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/50"
-            >
-              <option value="delete">delete</option>
-              <option value="compact">compact</option>
-              <option value="compact,delete">compact,delete</option>
-            </select>
+            <Select value={form.cleanupPolicy} onValueChange={(v) => setForm({ ...form, cleanupPolicy: v })}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="delete">delete</SelectItem>
+                <SelectItem value="compact">compact</SelectItem>
+                <SelectItem value="compact,delete">compact,delete</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-        </div>
+        </DialogBody>
 
-        {/* Action Buttons */}
-        <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-white/5">
+        <DialogFooter>
           <button
             onClick={handleClose}
             disabled={mutation.isPending}
@@ -244,8 +251,8 @@ export function CreateTopicModal({ isOpen, onClose, cloneFrom }: CreateTopicModa
             {mutation.isPending && <Loader2 className="size-3.5 animate-spin" />}
             {mutation.isPending ? "Creating..." : "Create Topic"}
           </button>
-        </div>
-      </div>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

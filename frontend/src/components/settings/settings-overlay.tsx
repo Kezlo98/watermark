@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { X } from "lucide-react";
+import { useState } from "react";
 import { useSettingsStore } from "@/store/settings";
 import { TabNavigation } from "@/components/shared/tab-navigation";
 import { ClusterList } from "./cluster-list";
@@ -8,6 +7,12 @@ import { DataSystemForm } from "./data-system-form";
 import { AnnotationSettingsPanel } from "@/components/annotations/annotation-settings-panel";
 import { TemplateSettingsPanel } from "@/components/templates/template-settings-panel";
 import { AlertsForm } from "./alerts-form";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 const SETTINGS_TABS = [
   { id: "clusters", label: "🌐 Clusters" },
@@ -22,34 +27,13 @@ export function SettingsOverlay() {
   const { isSettingsOpen, closeSettings } = useSettingsStore();
   const [activeTab, setActiveTab] = useState("clusters");
 
-  /* Escape key to close */
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeSettings();
-    };
-    if (isSettingsOpen) {
-      window.addEventListener("keydown", handler);
-      return () => window.removeEventListener("keydown", handler);
-    }
-  }, [isSettingsOpen, closeSettings]);
-
-  if (!isSettingsOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-      <div className="glass-panel w-full max-w-4xl h-[80vh] flex flex-col">
+    <Sheet open={isSettingsOpen} onOpenChange={(open) => !open && closeSettings()}>
+      <SheetContent side="right" className="w-full max-w-4xl">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
-          <h2 className="text-lg font-display font-bold text-white">
-            ⚙️ Preferences
-          </h2>
-          <button
-            onClick={closeSettings}
-            className="p-1 text-slate-400 hover:text-white transition-colors"
-          >
-            <X className="size-5" />
-          </button>
-        </div>
+        <SheetHeader>
+          <SheetTitle>⚙️ Preferences</SheetTitle>
+        </SheetHeader>
 
         {/* Body: left tabs + content */}
         <div className="flex flex-1 overflow-hidden">
@@ -71,8 +55,7 @@ export function SettingsOverlay() {
             {activeTab === "alerts" && <AlertsForm />}
           </div>
         </div>
-      </div>
-    </div>
+      </SheetContent>
+    </Sheet>
   );
 }
-

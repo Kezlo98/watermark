@@ -1,6 +1,13 @@
 import { RefreshCw, Timer, TimerOff, Radio, CheckSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { StartPosition, MessageFormat } from "@/types/kafka";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const FETCH_LIMIT_OPTIONS = [50, 100, 200, 500] as const;
 
@@ -28,9 +35,6 @@ interface MessagesFilterBarProps {
   onSelectModeToggle: () => void;
   selectedCount: number;
 }
-
-const selectClass =
-  "h-8 px-2 bg-white/5 border border-white/10 rounded text-xs text-white font-mono focus:outline-none focus:ring-1 focus:ring-primary/50";
 
 export function MessagesFilterBar({
   startPosition,
@@ -61,16 +65,17 @@ export function MessagesFilterBar({
       {/* Start position */}
       <div className="flex items-center gap-2">
         <span className="text-xs font-mono text-slate-500">Start:</span>
-        <select
-          value={startPosition}
-          onChange={(e) => onStartPositionChange(e.target.value as StartPosition)}
-          className={selectClass}
-        >
-          <option value="Latest">Latest</option>
-          <option value="Earliest">Earliest</option>
-          <option value="CustomOffset">Custom Offset</option>
-          <option value="FromDate">From Date</option>
-        </select>
+        <Select value={startPosition} onValueChange={(v) => onStartPositionChange(v as StartPosition)}>
+          <SelectTrigger className="h-8 w-auto">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Latest">Latest</SelectItem>
+            <SelectItem value="Earliest">Earliest</SelectItem>
+            <SelectItem value="CustomOffset">Custom Offset</SelectItem>
+            <SelectItem value="FromDate">From Date</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Custom offset input */}
@@ -98,29 +103,31 @@ export function MessagesFilterBar({
       {/* Format */}
       <div className="flex items-center gap-2">
         <span className="text-xs font-mono text-slate-500">Format:</span>
-        <select
-          value={format}
-          onChange={(e) => onFormatChange(e.target.value as MessageFormat)}
-          className={selectClass}
-        >
-          {(["Auto", "String", "JSON", "Avro", "Protobuf", "Hex"] as MessageFormat[]).map((f) => (
-            <option key={f}>{f}</option>
-          ))}
-        </select>
+        <Select value={format} onValueChange={(v) => onFormatChange(v as MessageFormat)}>
+          <SelectTrigger className="h-8 w-auto">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {(["Auto", "String", "JSON", "Avro", "Protobuf", "Hex"] as MessageFormat[]).map((f) => (
+              <SelectItem key={f} value={f}>{f}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Fetch limit */}
       <div className="flex items-center gap-2">
         <span className="text-xs font-mono text-slate-500">Limit:</span>
-        <select
-          value={fetchLimit}
-          onChange={(e) => onFetchLimitChange(Number(e.target.value))}
-          className={selectClass}
-        >
-          {FETCH_LIMIT_OPTIONS.map((n) => (
-            <option key={n} value={n}>{n}</option>
-          ))}
-        </select>
+        <Select value={String(fetchLimit)} onValueChange={(v) => onFetchLimitChange(Number(v))}>
+          <SelectTrigger className="h-8 w-auto">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {FETCH_LIMIT_OPTIONS.map((n) => (
+              <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Body contains filter */}

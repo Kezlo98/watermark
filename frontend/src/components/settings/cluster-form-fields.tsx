@@ -1,6 +1,13 @@
 import { cn } from "@/lib/utils";
 import { AwsProfileSelect } from "./aws-profile-select";
 import { AwsRegionSelect } from "./aws-region-select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ClusterFormFieldsProps {
   form: {
@@ -43,16 +50,17 @@ export function ClusterFormFields({ form, onChange, clusterId, isNew }: ClusterF
         </div>
         <div>
           <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">Label Color</label>
-          <select
-            value={form.labelColor}
-            onChange={(e) => onChange({ labelColor: e.target.value })}
-            className="w-full h-9 px-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/50"
-          >
-            <option value="red">🔴 Red (Production)</option>
-            <option value="orange">🟡 Yellow (Staging)</option>
-            <option value="green">🟢 Green (Dev)</option>
-            <option value="purple">🟣 Purple (Default)</option>
-          </select>
+          <Select value={form.labelColor} onValueChange={(v) => onChange({ labelColor: v })}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="red">🔴 Red (Production)</SelectItem>
+                <SelectItem value="orange">🟡 Yellow (Staging)</SelectItem>
+                <SelectItem value="green">🟢 Green (Dev)</SelectItem>
+                <SelectItem value="purple">🟣 Purple (Default)</SelectItem>
+              </SelectContent>
+            </Select>
         </div>
       </div>
 
@@ -70,31 +78,33 @@ export function ClusterFormFields({ form, onChange, clusterId, isNew }: ClusterF
       <div className={cn("grid gap-4", showSaslFields ? "grid-cols-2" : "grid-cols-1")}>
         <div>
           <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">Security Protocol</label>
-          <select
-            value={form.securityProtocol}
-            onChange={(e) => onChange({ securityProtocol: e.target.value })}
-            className="w-full h-9 px-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/50"
-          >
-            <option value="NONE">None</option>
-            <option value="SASL_PLAIN">SASL_PLAIN</option>
-            <option value="SASL_SCRAM">SASL_SCRAM</option>
-            <option value="SASL_SSL">SASL_SSL</option>
-            <option value="SSL">SSL</option>
-            <option value="AWS_MSK_IAM">AWS_MSK_IAM</option>
-          </select>
+          <Select value={form.securityProtocol} onValueChange={(v) => onChange({ securityProtocol: v })}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="NONE">None</SelectItem>
+                <SelectItem value="SASL_PLAIN">SASL_PLAIN</SelectItem>
+                <SelectItem value="SASL_SCRAM">SASL_SCRAM</SelectItem>
+                <SelectItem value="SASL_SSL">SASL_SSL</SelectItem>
+                <SelectItem value="SSL">SSL</SelectItem>
+                <SelectItem value="AWS_MSK_IAM">AWS_MSK_IAM</SelectItem>
+              </SelectContent>
+            </Select>
         </div>
         {showSaslFields && (
           <div>
             <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">SASL Mechanism</label>
-            <select
-              value={form.saslMechanism}
-              onChange={(e) => onChange({ saslMechanism: e.target.value })}
-              className="w-full h-9 px-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/50"
-            >
-              <option value="PLAIN">PLAIN</option>
-              <option value="SCRAM-SHA-256">SCRAM-SHA-256</option>
-              <option value="SCRAM-SHA-512">SCRAM-SHA-512</option>
-            </select>
+            <Select value={form.saslMechanism} onValueChange={(v) => onChange({ saslMechanism: v })}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="PLAIN">PLAIN</SelectItem>
+                  <SelectItem value="SCRAM-SHA-256">SCRAM-SHA-256</SelectItem>
+                  <SelectItem value="SCRAM-SHA-512">SCRAM-SHA-512</SelectItem>
+                </SelectContent>
+              </Select>
           </div>
         )}
       </div>
