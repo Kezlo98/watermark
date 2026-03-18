@@ -11,6 +11,8 @@ import (
 	"sync"
 	"time"
 
+	"watermark-01/internal/config"
+
 	"github.com/creativeprojects/go-selfupdate"
 	wailsRuntime "github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -27,17 +29,20 @@ type UpdaterService struct {
 	version string // injected at build time via -ldflags
 	repo    string // "owner/repo"
 
-	ctx    context.Context // Wails runtime context (for events)
-	mu     sync.RWMutex
-	latest *selfupdate.Release // cached latest release
+	ctx       context.Context    // Wails runtime context (for events)
+	mu        sync.RWMutex
+	latest    *selfupdate.Release // cached latest release
+	configSvc *config.ConfigService
+	changelog []ReleaseNote // cached parsed changelog
 }
 
 // NewUpdaterService creates a new updater. version should be the build-time
 // injected version string (e.g. "v1.0.0" or "dev").
-func NewUpdaterService(version string) *UpdaterService {
+func NewUpdaterService(version string, configSvc *config.ConfigService) *UpdaterService {
 	return &UpdaterService{
-		version: version,
-		repo:    githubOwner + "/" + githubRepo,
+		version:   version,
+		repo:      githubOwner + "/" + githubRepo,
+		configSvc: configSvc,
 	}
 }
 
@@ -94,8 +99,11 @@ func (u *UpdaterService) CheckForUpdate() UpdateInfo {
 		return info
 	}
 
-	// Cache latest release for ApplyUpdate
+	// Cache latest release for ApplyUpdate; invalidate changelog if version changed
 	u.mu.Lock()
+	if u.latest == nil || u.latest.Version() != release.Version() {
+		u.changelog = nil
+	}
 	u.latest = release
 	u.mu.Unlock()
 
@@ -111,6 +119,14 @@ func (u *UpdaterService) CheckForUpdate() UpdateInfo {
 	info.ReleaseNotes = release.ReleaseNotes
 	if !release.PublishedAt.IsZero() {
 		info.PublishedAt = release.PublishedAt.Format(time.RFC3339)
+	}
+
+	// Mark as skipped if user previously chose to skip this version
+	if u.configSvc != nil {
+		skipped := u.configSvc.GetSkippedVersion()
+		if skipped != "" && strings.TrimPrefix(skipped, "v") == strings.TrimPrefix(release.Version(), "v") {
+			info.Skipped = true
+		}
 	}
 
 	return info
@@ -236,10 +252,11 @@ func (u *UpdaterService) StartPeriodicCheck() {
 	}
 }
 
-// checkAndEmit performs a check and emits an event if an update is available.
+// checkAndEmit performs a check and emits an event if an update is available and not skipped.
 func (u *UpdaterService) checkAndEmit() {
 	info := u.CheckForUpdate()
-	if info.Available {
+	// Suppress banner for skipped versions on auto-check
+	if info.Available && !info.Skipped {
 		u.mu.RLock()
 		ctx := u.ctx
 		u.mu.RUnlock()

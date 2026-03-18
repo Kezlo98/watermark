@@ -44,6 +44,21 @@ func (s *ConfigService) SetActiveCluster(id string) error {
 	return s.saveConfig()
 }
 
+// GetSkippedVersion returns the currently skipped update version.
+func (s *ConfigService) GetSkippedVersion() string {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.config.SkippedVersion
+}
+
+// SkipVersion persists the version to skip to config. Called as a Wails binding.
+func (s *ConfigService) SkipVersion(version string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.config.SkippedVersion = version
+	return s.saveConfig()
+}
+
 // GetDecryptedPassword decrypts and returns the Kafka password for a cluster.
 func (s *ConfigService) GetDecryptedPassword(id string) (string, error) {
 	s.mu.RLock()

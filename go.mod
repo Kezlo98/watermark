@@ -3,6 +3,7 @@ module watermark-01
 go 1.24.11
 
 require (
+	github.com/Masterminds/semver/v3 v3.4.0
 	github.com/aws/aws-sdk-go-v2/config v1.32.11
 	github.com/creativeprojects/go-selfupdate v1.5.2
 	github.com/gen2brain/beeep v0.11.2
@@ -18,7 +19,6 @@ require (
 	code.gitea.io/sdk/gitea v0.22.1 // indirect
 	git.sr.ht/~jackmordaunt/go-toast v1.1.2 // indirect
 	github.com/42wim/httpsig v1.2.3 // indirect
-	github.com/Masterminds/semver/v3 v3.4.0 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.41.3 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.19.11 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.19 // indirect

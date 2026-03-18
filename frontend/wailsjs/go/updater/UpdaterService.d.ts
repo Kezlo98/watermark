@@ -5,6 +5,8 @@ import {context} from '../models';
 
 export function ApplyUpdate():Promise<void>;
 
+export function GetChangelog():Promise<Array<updater.ReleaseNote>>;
+
 export function CheckForUpdate():Promise<updater.UpdateInfo>;
 
 export function GetCurrentVersion():Promise<string>;

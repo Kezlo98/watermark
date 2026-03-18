@@ -183,6 +183,9 @@ jobs:
     needs: [build-macos]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
@@ -213,14 +216,29 @@ jobs:
             echo "is_prerelease=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Extract changelog for this version
+        id: changelog
+        env:
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          VERSION="${TAG#v}"
+          if grep -q "## \[${VERSION}\]" CHANGELOG.md 2>/dev/null; then
+            NOTES=$(sed -n "/^## \[${VERSION}\]/,/^## \[/{/^## \[${VERSION}\]/d;/^## \[/d;p}" CHANGELOG.md)
+          else
+            NOTES="See [CHANGELOG.md](https://github.com/Kezlo98/watermark/blob/main/CHANGELOG.md) for details."
+          fi
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
           name: "${{ env.APP_NAME }} ${{ steps.tag.outputs.tag }}"
+          body: "${{ steps.changelog.outputs.notes }}"
           draft: false
           prerelease: ${{ steps.prerelease.outputs.is_prerelease }}
-          generate_release_notes: true
           files: |
             artifacts/**/*.dmg
             artifacts/**/*.zip

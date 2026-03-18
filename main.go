@@ -39,7 +39,7 @@ func main() {
 		return
 	}
 
-	updaterSvc := updater.NewUpdaterService(version)
+	updaterSvc := updater.NewUpdaterService(version, configSvc)
 	lagAlertSvc := lagalert.NewLagAlertService(kafkaSvc, configSvc.GetConfigDir())
 
 	templateSvc, err := templates.NewTemplateService(configSvc.GetConfigDir())

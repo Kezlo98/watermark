@@ -6,6 +6,10 @@ export function ApplyUpdate() {
   return window['go']['updater']['UpdaterService']['ApplyUpdate']();
 }
 
+export function GetChangelog() {
+  return window['go']['updater']['UpdaterService']['GetChangelog']();
+}
+
 export function CheckForUpdate() {
   return window['go']['updater']['UpdaterService']['CheckForUpdate']();
 }
