@@ -12,7 +12,7 @@ func (k *KafkaService) ResetConsumerGroupOffsets(groupID string, strategy string
 	k.mu.RLock()
 	defer k.mu.RUnlock()
 
-	if err := k.ensureConnected(); err != nil {
+	if err := k.ensureWritable(); err != nil {
 		return err
 	}
 

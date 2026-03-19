@@ -245,7 +245,7 @@ func (k *KafkaService) ProduceMessage(topicName string, partition int32, key str
 	k.mu.RLock()
 	defer k.mu.RUnlock()
 
-	if err := k.ensureConnected(); err != nil {
+	if err := k.ensureWritable(); err != nil {
 		return err
 	}
 

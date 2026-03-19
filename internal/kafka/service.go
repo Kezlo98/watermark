@@ -29,6 +29,7 @@ type KafkaService struct {
 	admin         *kadm.Client
 	mu            sync.RWMutex
 	connected     bool
+	readOnly      bool           // true when the active cluster profile has read-only mode enabled
 	activeProfile string
 	ctx           context.Context
 	baseOpts      []kgo.Opt      // broker + auth/TLS opts, reused for temp consumers
@@ -100,6 +101,7 @@ func (k *KafkaService) Connect(profileID string) error {
 	k.admin = kadm.NewClient(client)
 	k.baseOpts = opts
 	k.connected = true
+	k.readOnly = profile.ReadOnly
 	k.activeProfile = profileID
 
 	return nil
@@ -125,6 +127,7 @@ func (k *KafkaService) Disconnect() error {
 	k.client = nil
 	k.baseOpts = nil
 	k.connected = false
+	k.readOnly = false
 	k.activeProfile = ""
 
 	return nil
@@ -155,6 +158,18 @@ func (k *KafkaService) ClearCache() {
 func (k *KafkaService) ensureConnected() error {
 	if !k.connected {
 		return ErrNotConnected
+	}
+	return nil
+}
+
+// ensureWritable returns ErrReadOnly if the cluster is in read-only mode.
+// Must be called under at least an RLock.
+func (k *KafkaService) ensureWritable() error {
+	if err := k.ensureConnected(); err != nil {
+		return err
+	}
+	if k.readOnly {
+		return ErrReadOnly
 	}
 	return nil
 }
