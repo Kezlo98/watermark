@@ -8,11 +8,11 @@ import { AnnotationSettingsPanel } from "@/components/annotations/annotation-set
 import { TemplateSettingsPanel } from "@/components/templates/template-settings-panel";
 import { AlertsForm } from "./alerts-form";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const SETTINGS_TABS = [
   { id: "clusters", label: "🌐 Clusters" },
@@ -28,12 +28,12 @@ export function SettingsOverlay() {
   const [activeTab, setActiveTab] = useState("clusters");
 
   return (
-    <Sheet open={isSettingsOpen} onOpenChange={(open) => !open && closeSettings()}>
-      <SheetContent side="right" className="w-full max-w-4xl">
+    <Dialog open={isSettingsOpen} onOpenChange={(open) => !open && closeSettings()}>
+      <DialogContent className="max-w-4xl h-[80vh] flex flex-col gap-0 p-0">
         {/* Header */}
-        <SheetHeader>
-          <SheetTitle>⚙️ Preferences</SheetTitle>
-        </SheetHeader>
+        <DialogHeader className="px-6 py-4 border-b border-white/5">
+          <DialogTitle>⚙️ Preferences</DialogTitle>
+        </DialogHeader>
 
         {/* Body: left tabs + content */}
         <div className="flex flex-1 overflow-hidden">
@@ -55,7 +55,7 @@ export function SettingsOverlay() {
             {activeTab === "alerts" && <AlertsForm />}
           </div>
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }
