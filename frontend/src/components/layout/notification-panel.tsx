@@ -54,11 +54,10 @@ export function NotificationPanel() {
   return (
     <Popover
       open={isNotificationPanelOpen}
-      onOpenChange={(open) => { if (!open) closePanel(); else togglePanel(); }}
+      onOpenChange={(open) => { if (open) togglePanel(); else closePanel(); }}
     >
       <PopoverTrigger asChild>
         <button
-          onClick={togglePanel}
           className="relative p-2 text-slate-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
           aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}
         >
