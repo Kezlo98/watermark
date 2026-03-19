@@ -5,6 +5,32 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.0.4] - 2026-03-20
+
+### Added
+
+- Consumer lag alerting with configurable thresholds and notification center
+- Message replay tool — context menu, single & batch replay with progress tracking
+- Batch produce via `ProduceMessages` endpoint with lazy-loaded Monaco editor
+- Topic templates & cloning with editable config rows and settings panel
+- Changelog modal in auto-update workflow with fallback and cache invalidation
+- shadcn/ui component library with dark glassmorphism theme
+- Read-only mode enforcement — backend guards on write operations and frontend UI hiding
+- Cluster name coloring with label color; dot reserved for connection status
+
+### Changed
+
+- Migrate form controls (Switch, Checkbox, Slider), modals, settings, selects, overlays, and navigation to shadcn/ui
+- Remove unused notification-bell component
+
+### Fixed
+
+- WKWebView table header corruption and column overflow
+- Switch/Dialog Tailwind v4 syntax incompatibility with v3
+- Per-cluster color dots restored in cluster dropdown
+- Updater changelog fallback, cache invalidation, and release body quoting
+
+
 ## [1.0.3] - 2026-03-13
 
 ### Added
