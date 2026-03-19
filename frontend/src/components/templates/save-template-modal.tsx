@@ -1,7 +1,22 @@
 import { useState } from "react";
-import { X, Bookmark, Plus, Trash2 } from "lucide-react";
+import { Bookmark, Plus, Trash2 } from "lucide-react";
 import type { TopicConfig } from "@/types/kafka";
 import { useTemplates } from "@/hooks/use-templates";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ConfigRow {
   key: string;
@@ -78,8 +93,6 @@ export function SaveTemplateModal({
     buildInitialRows(configs, initialConfigMap),
   );
 
-  if (!isOpen) return null;
-
   const isEditMode = !!editTemplateId;
   const isPending = save.isPending || update.isPending;
 
@@ -148,26 +161,18 @@ export function SaveTemplateModal({
     configRows.filter((r) => r.key.trim()).length;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="w-full max-w-2xl max-h-[85vh] flex flex-col rounded-xl border border-slate-700 bg-slate-900 shadow-xl">
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-700 px-6 py-4 shrink-0">
+    <Dialog open={isOpen} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
           <div className="flex items-center gap-2">
             <Bookmark className="size-5 text-primary" />
-            <h2 className="text-lg font-semibold">
+            <DialogTitle className="text-lg">
               {isEditMode ? "Edit Template" : "Save as Template"}
-            </h2>
+            </DialogTitle>
           </div>
-          <button
-            onClick={onClose}
-            className="rounded p-1 text-slate-400 transition-colors hover:bg-slate-800 hover:text-slate-200"
-          >
-            <X className="size-5" />
-          </button>
-        </div>
+        </DialogHeader>
 
-        {/* Body — scrollable */}
-        <div className="space-y-5 p-6 overflow-y-auto flex-1">
+        <DialogBody className="space-y-5">
           {/* Template Name */}
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-300">
@@ -221,33 +226,35 @@ export function SaveTemplateModal({
               <label className="mb-2 block text-sm font-medium text-slate-300">
                 Partitions
               </label>
-              <select
-                value={partitions}
-                onChange={(e) => setPartitions(Number(e.target.value))}
-                className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-sm text-white focus:border-primary focus:outline-none"
-              >
-                {[1, 3, 6, 12, 24, 48].map((n) => (
-                  <option key={n} value={n}>
-                    {n}
-                  </option>
-                ))}
-              </select>
+              <Select value={String(partitions)} onValueChange={(v) => setPartitions(Number(v))}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[1, 3, 6, 12, 24, 48].map((n) => (
+                    <SelectItem key={n} value={String(n)}>
+                      {n}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-300">
                 Replication Factor
               </label>
-              <select
-                value={replicationFactor}
-                onChange={(e) => setReplicationFactor(Number(e.target.value))}
-                className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-sm text-white focus:border-primary focus:outline-none"
-              >
-                {[1, 2, 3].map((n) => (
-                  <option key={n} value={n}>
-                    {n}
-                  </option>
-                ))}
-              </select>
+              <Select value={String(replicationFactor)} onValueChange={(v) => setReplicationFactor(Number(v))}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[1, 2, 3].map((n) => (
+                    <SelectItem key={n} value={String(n)}>
+                      {n}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
@@ -269,7 +276,7 @@ export function SaveTemplateModal({
 
             {configRows.length === 0 ? (
               <div className="rounded-lg border border-dashed border-slate-700 bg-slate-800/30 px-4 py-6 text-center text-sm text-slate-500">
-                No configs added. Click "Add Config" to add key-value pairs.
+                No configs added. Click &quot;Add Config&quot; to add key-value pairs.
               </div>
             ) : (
               <div className="space-y-2">
@@ -327,10 +334,9 @@ export function SaveTemplateModal({
               </p>
             )}
           </div>
-        </div>
+        </DialogBody>
 
-        {/* Footer */}
-        <div className="flex items-center justify-end gap-3 border-t border-slate-700 px-6 py-4 shrink-0">
+        <DialogFooter>
           <button
             onClick={onClose}
             className="rounded-lg px-4 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800"
@@ -349,8 +355,8 @@ export function SaveTemplateModal({
                 ? "Update Template"
                 : "Save Template"}
           </button>
-        </div>
-      </div>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

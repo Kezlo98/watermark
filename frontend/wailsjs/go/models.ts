@@ -595,16 +595,16 @@ export namespace templates {
 }
 
 export namespace updater {
-
+	
 	export class ReleaseNote {
 	    version: string;
 	    date: string;
 	    notes: string;
-
+	
 	    static createFrom(source: any = {}) {
 	        return new ReleaseNote(source);
 	    }
-
+	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.version = source["version"];
@@ -612,7 +612,6 @@ export namespace updater {
 	        this.notes = source["notes"];
 	    }
 	}
-
 	export class UpdateInfo {
 	    available: boolean;
 	    skipped: boolean;

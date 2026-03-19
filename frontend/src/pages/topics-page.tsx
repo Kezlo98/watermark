@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { SearchInput } from "@/components/shared/search-input";
@@ -7,12 +8,14 @@ import { RefreshButton } from "@/components/shared/refresh-button";
 import { TopicListTable } from "@/components/topics/topic-list-table";
 import { CreateTopicModal } from "@/components/topics/create-topic-modal";
 import { GetTopic, GetTopicConfigs } from "@/lib/wails-client";
+import { useReadOnly } from "@/hooks/use-read-only";
 
 export function TopicsPage() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [hideInternal, setHideInternal] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
+  const isReadOnly = useReadOnly();
   const [cloneSource, setCloneSource] = useState<{
     name: string;
     partitions: number;
@@ -61,13 +64,15 @@ export function TopicsPage() {
         <h1 className="text-3xl font-mono font-bold uppercase tracking-wider">
           Topics
         </h1>
-        <button
-          onClick={() => setCreateOpen(true)}
-          className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors"
-        >
-          <Plus className="size-3.5" />
-          Create Topic
-        </button>
+        {!isReadOnly && (
+          <button
+            onClick={() => setCreateOpen(true)}
+            className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors"
+          >
+            <Plus className="size-3.5" />
+            Create Topic
+          </button>
+        )}
       </div>
 
       <div className="flex items-center gap-4">
@@ -79,11 +84,10 @@ export function TopicsPage() {
         />
         <RefreshButton queryKeys={[["topics"]]} />
         <label className="flex items-center gap-2 text-sm text-slate-400 cursor-pointer">
-          <input
-            type="checkbox"
+          <Checkbox
             checked={hideInternal}
-            onChange={(e) => setHideInternal(e.target.checked)}
-            className="size-4 rounded border-white/20 bg-white/5 text-primary focus:ring-primary/50"
+            onCheckedChange={(v) => setHideInternal(!!v)}
+            className="size-4"
           />
           Hide Internal Topics
         </label>

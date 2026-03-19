@@ -21,6 +21,7 @@ interface LagAlertsState {
   markAllRead: (clusterID: string) => Promise<void>;
   clearAll: (clusterID: string) => Promise<void>;
   togglePanel: () => void;
+  openPanel: () => void;
   closePanel: () => void;
   loadAlerts: (clusterID: string) => Promise<void>;
   loadConfig: (clusterID: string) => Promise<void>;
@@ -73,6 +74,8 @@ export const useLagAlertsStore = create<LagAlertsState>((set, get) => ({
 
   togglePanel: () =>
     set((s) => ({ isNotificationPanelOpen: !s.isNotificationPanelOpen })),
+
+  openPanel: () => set({ isNotificationPanelOpen: true }),
 
   closePanel: () => set({ isNotificationPanelOpen: false }),
 

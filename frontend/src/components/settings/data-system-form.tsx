@@ -1,4 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { Download, Upload, Loader2, ArrowDownCircle, CheckCircle2, AlertCircle } from "lucide-react";
 import { GetCurrentVersion, CheckForUpdate } from "@/lib/wails-client";
 import { UpdateChangelogModal } from "@/components/layout/update-changelog-modal";
@@ -120,28 +122,18 @@ export function DataSystemForm() {
         </h3>
 
         <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="launch-startup"
-              defaultChecked
-              className="size-4 rounded border-white/20 bg-white/5 text-primary focus:ring-primary/50"
-            />
-            <label htmlFor="launch-startup" className="text-sm text-slate-300">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="launch-startup" className="text-sm text-slate-300 font-normal cursor-pointer">
               Start application when computer starts
-            </label>
+            </Label>
+            <Switch id="launch-startup" defaultChecked />
           </div>
 
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="minimize-tray"
-              defaultChecked
-              className="size-4 rounded border-white/20 bg-white/5 text-primary focus:ring-primary/50"
-            />
-            <label htmlFor="minimize-tray" className="text-sm text-slate-300">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="minimize-tray" className="text-sm text-slate-300 font-normal cursor-pointer">
               Minimize to system tray when closed
-            </label>
+            </Label>
+            <Switch id="minimize-tray" defaultChecked />
           </div>
         </div>
       </section>
@@ -163,14 +155,10 @@ export function DataSystemForm() {
         </div>
 
         <div className="flex items-center gap-2 mt-3">
-          <input
-            type="checkbox"
-            id="include-passwords"
-            className="size-4 rounded border-white/20 bg-white/5 text-primary focus:ring-primary/50"
-          />
-          <label htmlFor="include-passwords" className="text-xs text-semantic-red">
+          <Switch id="include-passwords" />
+          <Label htmlFor="include-passwords" className="text-xs text-semantic-red font-normal cursor-pointer">
             Include passwords in export — <strong>⚠️ stored as plaintext, keep file secure</strong>
-          </label>
+          </Label>
         </div>
       </section>
 

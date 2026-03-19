@@ -1,16 +1,36 @@
 /* Google Fonts */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
+    /* Core — always-dark glassmorphism palette */
     --background: #0A0A0A;
     --foreground: #F5F5F5;
     --primary: #8B5CF6;
     --primary-foreground: #FFFFFF;
+
+    /* shadcn semantic tokens — mapped to dark glassmorphism palette */
+    --card: #141414;
+    --card-foreground: #F5F5F5;
+    --popover: #141414;
+    --popover-foreground: #F5F5F5;
+    --secondary: rgba(255, 255, 255, 0.08);
+    --secondary-foreground: #F5F5F5;
+    --muted: rgba(255, 255, 255, 0.06);
+    --muted-foreground: #94A3B8;
+    --accent: rgba(255, 255, 255, 0.08);
+    --accent-foreground: #F5F5F5;
+    --destructive: #EF4444;
+    --destructive-foreground: #FFFFFF;
+    --border: rgba(255, 255, 255, 0.1);
+    --input: rgba(255, 255, 255, 0.1);
+    --ring: #8B5CF6;
+    --radius: 0.625rem;
+
+    /* Project-specific tokens */
     --glass-panel: #141414;
     --border-subtle: rgba(255, 255, 255, 0.1);
     --border-hover: rgba(255, 255, 255, 0.2);
@@ -22,12 +42,23 @@
     --status-rebalancing: #FBBF24;
     --status-dead: #EF4444;
     --status-empty: #94A3B8;
+
+    /* Sidebar tokens (unused for now, but shadcn expects them) */
+    --sidebar: #0A0A0A;
+    --sidebar-foreground: #F5F5F5;
+    --sidebar-primary: #8B5CF6;
+    --sidebar-primary-foreground: #FFFFFF;
+    --sidebar-accent: rgba(255, 255, 255, 0.08);
+    --sidebar-accent-foreground: #F5F5F5;
+    --sidebar-border: rgba(255, 255, 255, 0.1);
+    --sidebar-ring: #8B5CF6;
   }
 
   * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    border-color: var(--border);
   }
 
   html {
@@ -41,6 +72,8 @@
   body {
     min-height: 100vh;
     overflow: hidden;
+    background-color: var(--background);
+    color: var(--foreground);
   }
 
   #root {
@@ -90,18 +123,6 @@
 }
 
 @layer utilities {
-  .font-display {
-    font-family: "Space Grotesk", "Inter", sans-serif;
-  }
-
-  .font-body {
-    font-family: "Inter", sans-serif;
-  }
-
-  .font-mono {
-    font-family: "JetBrains Mono", monospace;
-  }
-
   /* ⌘K Command Palette entrance animation */
   .palette-enter {
     animation: palette-in 150ms ease-out;

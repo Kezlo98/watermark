@@ -78,7 +78,15 @@ const brokerColumns: ColumnDef<Broker, unknown>[] = [
     header: "Status",
     cell: () => <StatusBadge status="healthy" label="Online" />,
   },
-  { accessorKey: "host", header: "Host / IP" },
+  {
+    accessorKey: "host",
+    header: "Host / IP",
+    cell: ({ row }) => (
+      <span className="block max-w-[280px] truncate" title={row.original.host}>
+        {row.original.host}
+      </span>
+    ),
+  },
   { accessorKey: "port", header: "Port" },
   {
     accessorKey: "partitions",

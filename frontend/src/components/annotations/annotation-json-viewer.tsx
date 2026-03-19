@@ -1,6 +1,7 @@
 import { useState, lazy, Suspense } from "react";
 import { ChevronRight, Code2, Copy, Check, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 
 const Editor = lazy(() => import("@monaco-editor/react"));
 
@@ -15,7 +16,6 @@ interface AnnotationJsonViewerProps {
 export function AnnotationJsonViewer({
   annotations,
 }: AnnotationJsonViewerProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const jsonContent = JSON.stringify(annotations, null, 2);
@@ -31,22 +31,19 @@ export function AnnotationJsonViewer({
   const editorHeight = Math.min(Math.max(lineCount * 19, 100), 300);
 
   return (
-    <div className="space-y-2">
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center gap-2 text-xs text-slate-400 hover:text-white transition-colors"
-      >
+    <Collapsible className="space-y-2">
+      <CollapsibleTrigger className="group flex items-center gap-2 text-xs text-slate-400 hover:text-white transition-colors">
         <ChevronRight
           className={cn(
             "size-3 transition-transform",
-            isExpanded && "rotate-90"
+            "group-data-[state=open]:rotate-90"
           )}
         />
         <Code2 className="size-3.5" />
         Raw Config
-      </button>
+      </CollapsibleTrigger>
 
-      {isExpanded && (
+      <CollapsibleContent>
         <div className="relative rounded-lg border border-white/5 overflow-hidden">
           <button
             onClick={handleCopy}
@@ -86,7 +83,7 @@ export function AnnotationJsonViewer({
             />
           </Suspense>
         </div>
-      )}
-    </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 }

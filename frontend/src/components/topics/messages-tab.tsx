@@ -9,6 +9,7 @@ import { MessagesTable } from "./messages-table";
 import { MessageInspector } from "./message-inspector";
 import { MessagesFilterBar } from "./messages-filter-bar";
 import { ProduceMessageModal } from "./produce-message-modal";
+import { useReadOnly } from "@/hooks/use-read-only";
 
 const LIVE_TAIL_MAX_MESSAGES = 500;
 const AUTO_REFRESH_SECONDS = 10;
@@ -18,6 +19,7 @@ interface MessagesTabProps {
 }
 
 export function MessagesTab({ topicName }: MessagesTabProps) {
+  const isReadOnly = useReadOnly();
   // --- Filter state (pending — applied only on refresh) ---
   const [startPosition, setStartPosition] = useState<StartPosition>("Latest");
   const [format, setFormat] = useState<MessageFormat>("Auto");
@@ -245,7 +247,7 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
       )}
 
       {/* Selection toolbar */}
-      {selectMode && selectedIds.size > 0 && (
+      {!isReadOnly && selectMode && selectedIds.size > 0 && (
         <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg border border-primary/20 bg-primary/5">
           <span className="text-sm font-mono text-primary">{selectedIds.size} selected</span>
           <button
@@ -269,7 +271,7 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
         messages={messages}
         selectedMessage={selectedMessage}
         onSelectMessage={setSelectedMessage}
-        onReplay={openSingleReplay}
+        onReplay={isReadOnly ? undefined : openSingleReplay}
         inspectorOpen={!!selectedMessage}
         selectMode={selectMode}
         selectedIds={selectedIds}
@@ -283,7 +285,7 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
           offset={selectedMessage.offset}
           format={format}
           onClose={() => setSelectedMessage(null)}
-          onReplay={() => openSingleReplay(selectedMessage!)}
+          onReplay={isReadOnly ? undefined : (() => openSingleReplay(selectedMessage!))}
         />
       )}
 

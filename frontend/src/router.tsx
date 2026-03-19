@@ -17,6 +17,7 @@ import { useSettingsStore } from "@/store/settings";
 import { usePrefetchOnConnect } from "@/hooks/use-prefetch-on-connect";
 import { useLagAlerts } from "@/hooks/use-lag-alerts";
 import { GetClusters } from "@/lib/wails-client";
+import { useReadOnly } from "@/hooks/use-read-only";
 
 /* ====== Dashboard imports ====== */
 import { DashboardMetricCards, BrokerTable } from "@/components/dashboard/dashboard-widgets";
@@ -147,6 +148,7 @@ function TopicDetailPage() {
   const router = useRouter();
   const [produceOpen, setProduceOpen] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
+  const isReadOnly = useReadOnly();
 
   return (
     <div className="space-y-6">
@@ -169,13 +171,15 @@ function TopicDetailPage() {
         </div>
         <div className="flex items-center gap-2">
           <RefreshButton queryKeys={[["topic-config", topicId], ["topic-partitions", topicId]]} />
-          <button
-            onClick={() => setProduceOpen(true)}
-            className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors"
-          >
-            <Send className="size-3.5" />
-            Produce Message
-          </button>
+          {!isReadOnly && (
+            <button
+              onClick={() => setProduceOpen(true)}
+              className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors"
+            >
+              <Send className="size-3.5" />
+              Produce Message
+            </button>
+          )}
         </div>
       </div>
 
@@ -245,6 +249,7 @@ const consumersRoute = createRoute({
 function ConsumerDetailPage() {
   const { groupId } = useParams({ from: "/consumers/$groupId" });
   const router = useRouter();
+  const isReadOnly = useReadOnly();
   const { data: detail } = useKafkaQuery(
     ["consumer-group-detail", groupId],
     () => GetConsumerGroupDetail(groupId),
@@ -266,16 +271,20 @@ function ConsumerDetailPage() {
         <div className="flex gap-2">
           <RefreshButton queryKeys={[["consumer-group-detail", groupId]]} />
           <SetAlertPopover groupId={groupId} />
-          <button
-            disabled
-            className="px-4 py-2 text-sm text-slate-400 bg-white/5 rounded-lg border border-white/10 opacity-50 cursor-not-allowed"
-            title="Group must be Empty or Dead to reset offsets"
-          >
-            ⏪ Reset Offsets
-          </button>
-          <button className="px-4 py-2 text-sm text-semantic-red bg-semantic-red/10 rounded-lg border border-semantic-red/20 hover:bg-semantic-red/20 transition-colors">
-            🗑️ Drop Group
-          </button>
+          {!isReadOnly && (
+            <>
+              <button
+                disabled
+                className="px-4 py-2 text-sm text-slate-400 bg-white/5 rounded-lg border border-white/10 opacity-50 cursor-not-allowed"
+                title="Group must be Empty or Dead to reset offsets"
+              >
+                ⏪ Reset Offsets
+              </button>
+              <button className="px-4 py-2 text-sm text-semantic-red bg-semantic-red/10 rounded-lg border border-semantic-red/20 hover:bg-semantic-red/20 transition-colors">
+                🗑️ Drop Group
+              </button>
+            </>
+          )}
         </div>
       </div>
 

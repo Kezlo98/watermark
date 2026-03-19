@@ -1,4 +1,5 @@
 import { type ColumnDef } from "@tanstack/react-table";
+import { Checkbox } from "@/components/ui/checkbox";
 import { DataTable } from "@/components/shared/data-table";
 import { formatBytes } from "@/lib/utils";
 import type { Topic } from "@/types/kafka";
@@ -58,21 +59,19 @@ export function TopicListTable({ onTopicClick, onCloneTopic, searchFilter, hideI
     {
       id: "select",
       header: () => (
-        <input
-          type="checkbox"
+        <Checkbox
           checked={allSelected}
-          onChange={toggleAll}
-          className="size-3.5 rounded border-white/20 bg-white/5 text-primary focus:ring-primary/50 cursor-pointer"
+          onCheckedChange={toggleAll}
           onClick={(e) => e.stopPropagation()}
+          className="size-3.5"
         />
       ),
       cell: ({ row }) => (
-        <input
-          type="checkbox"
+        <Checkbox
           checked={selectedTopicsForTag.includes(row.original.name)}
-          onChange={() => toggleTopicForTag(row.original.name)}
-          className="size-3.5 rounded border-white/20 bg-white/5 text-primary focus:ring-primary/50 cursor-pointer"
+          onCheckedChange={() => toggleTopicForTag(row.original.name)}
           onClick={(e) => e.stopPropagation()}
+          className="size-3.5"
         />
       ),
       enableSorting: false,

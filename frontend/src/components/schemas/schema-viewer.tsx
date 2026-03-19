@@ -4,6 +4,13 @@ import { CompatibilityBadge } from "./compatibility-badge";
 import type { SchemaType, CompatibilityLevel } from "@/types/kafka";
 import { useKafkaQuery } from "@/hooks/use-kafka-query";
 import { GetSchemaVersions, GetCompatibility } from "@/lib/wails-client";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const MonacoEditor = lazy(() => import("@monaco-editor/react"));
 
@@ -62,17 +69,18 @@ export function SchemaViewer({ subjectName }: SchemaViewerProps) {
           <h3 className="text-sm font-display font-bold text-white uppercase tracking-wider">
             {subjectName}
           </h3>
-          <select
-            value={selectedVersion}
-            onChange={(e) => setSelectedVersion(Number(e.target.value))}
-            className="h-8 px-2 bg-white/5 border border-white/10 rounded text-xs text-white font-mono focus:outline-none focus:ring-1 focus:ring-primary/50"
-          >
-            {versions.map((v) => (
-              <option key={v.version} value={v.version}>
-                v{v.version} {v.version === versions[0].version ? "(latest)" : ""}
-              </option>
-            ))}
-          </select>
+          <Select value={String(selectedVersion)} onValueChange={(v) => setSelectedVersion(Number(v))}>
+              <SelectTrigger className="h-8 w-auto">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {versions.map((v) => (
+                  <SelectItem key={v.version} value={String(v.version)}>
+                    v{v.version} {v.version === versions[0].version ? "(latest)" : ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           {compatibility && (
             <CompatibilityBadge level={compatibility as CompatibilityLevel} />
           )}

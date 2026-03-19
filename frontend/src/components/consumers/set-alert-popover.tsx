@@ -3,14 +3,22 @@ import { useSettingsStore } from "@/store/settings";
 import { useLagAlertsStore } from "@/store/lag-alerts";
 import { AddRule, DeleteRule, RestartMonitoring } from "@/lib/wails-client";
 import type { AlertRule } from "@/types/lag-alerts";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface SetAlertPopoverProps {
   groupId: string;
 }
 
 /**
- * Inline popover for quickly setting a lag alert rule for a specific consumer group.
+ * Popover for quickly setting a lag alert rule for a specific consumer group.
  * Creates an exact-match rule (not a glob pattern).
+ * Uses shadcn Popover — click-outside closes automatically.
  */
 export function SetAlertPopover({ groupId }: SetAlertPopoverProps) {
   const [open, setOpen] = useState(false);
@@ -27,13 +35,13 @@ export function SetAlertPopover({ groupId }: SetAlertPopoverProps) {
     (r) => r.groupPattern === groupId
   );
 
-  const handleOpen = () => {
-    if (existingRule) {
+  const handleOpen = (isOpen: boolean) => {
+    if (isOpen && existingRule) {
       setWarningLag(String(existingRule.warningLag));
       setCriticalLag(String(existingRule.criticalLag));
     }
-    setOpen(true);
-    setError("");
+    if (isOpen) setError("");
+    setOpen(isOpen);
   };
 
   const handleSave = async () => {
@@ -82,76 +90,76 @@ export function SetAlertPopover({ groupId }: SetAlertPopoverProps) {
     }
   };
 
-  if (!open) {
-    return (
-      <button
-        onClick={handleOpen}
-        className="px-3 py-1.5 text-sm text-slate-400 bg-white/5 rounded-lg border border-white/10 hover:text-white hover:border-white/20 transition-colors"
-        title="Set lag alert for this group"
-      >
-        🔔 Set Alert
-      </button>
-    );
-  }
-
   return (
-    <div className="relative">
-      <div className="absolute right-0 top-8 z-50 w-72 glass-panel p-4 shadow-xl space-y-3">
-        <div className="text-sm font-semibold text-white">Lag Alert</div>
-        <div className="text-xs text-slate-400 truncate font-mono">{groupId}</div>
+    <Popover open={open} onOpenChange={handleOpen}>
+      <PopoverTrigger asChild>
+        <button
+          className="px-3 py-1.5 text-sm text-slate-400 bg-white/5 rounded-lg border border-white/10 hover:text-white hover:border-white/20 transition-colors"
+        >
+          🔔 Set Alert
+        </button>
+      </PopoverTrigger>
 
-        <div className="space-y-2">
-          <label className="block text-xs text-slate-400">
-            Warning lag threshold
-            <input
-              type="number"
-              min={1}
-              value={warningLag}
-              onChange={(e) => setWarningLag(e.target.value)}
-              placeholder="e.g. 1000"
-              className="mt-1 w-full px-2 py-1.5 text-sm bg-white/5 border border-white/10 rounded text-white placeholder-slate-600 focus:outline-none focus:border-white/30"
-            />
-          </label>
-          <label className="block text-xs text-slate-400">
-            Critical lag threshold
-            <input
-              type="number"
-              min={1}
-              value={criticalLag}
-              onChange={(e) => setCriticalLag(e.target.value)}
-              placeholder="e.g. 5000"
-              className="mt-1 w-full px-2 py-1.5 text-sm bg-white/5 border border-white/10 rounded text-white placeholder-slate-600 focus:outline-none focus:border-white/30"
-            />
-          </label>
-        </div>
+      <PopoverContent className="w-72" align="end" sideOffset={8}>
+        <div className="space-y-3">
+          <div className="text-sm font-semibold text-white">Lag Alert</div>
+          <div className="text-xs text-slate-400 truncate font-mono">{groupId}</div>
 
-        {error && <p className="text-xs text-semantic-red">{error}</p>}
+          <div className="space-y-2">
+            <div className="space-y-1">
+              <Label className="text-xs text-slate-400">
+                Warning lag threshold
+              </Label>
+              <Input
+                type="number"
+                min={1}
+                value={warningLag}
+                onChange={(e) => setWarningLag(e.target.value)}
+                placeholder="e.g. 1000"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs text-slate-400">
+                Critical lag threshold
+              </Label>
+              <Input
+                type="number"
+                min={1}
+                value={criticalLag}
+                onChange={(e) => setCriticalLag(e.target.value)}
+                placeholder="e.g. 5000"
+              />
+            </div>
+          </div>
 
-        <div className="flex gap-2 pt-1">
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="flex-1 px-3 py-1.5 text-xs bg-primary/20 text-primary border border-primary/30 rounded hover:bg-primary/30 transition-colors disabled:opacity-50"
-          >
-            {saving ? "Saving…" : "Save"}
-          </button>
-          {existingRule && (
+          {error && <p className="text-xs text-semantic-red">{error}</p>}
+
+          <div className="flex gap-2 pt-1">
             <button
-              onClick={handleRemove}
+              onClick={handleSave}
               disabled={saving}
-              className="px-3 py-1.5 text-xs text-semantic-red bg-semantic-red/10 border border-semantic-red/20 rounded hover:bg-semantic-red/20 transition-colors disabled:opacity-50"
+              className="flex-1 px-3 py-1.5 text-xs bg-primary/20 text-primary border border-primary/30 rounded hover:bg-primary/30 transition-colors disabled:opacity-50"
             >
-              Remove
+              {saving ? "Saving…" : "Save"}
             </button>
-          )}
-          <button
-            onClick={() => setOpen(false)}
-            className="px-3 py-1.5 text-xs text-slate-400 bg-white/5 border border-white/10 rounded hover:text-white transition-colors"
-          >
-            Cancel
-          </button>
+            {existingRule && (
+              <button
+                onClick={handleRemove}
+                disabled={saving}
+                className="px-3 py-1.5 text-xs text-semantic-red bg-semantic-red/10 border border-semantic-red/20 rounded hover:bg-semantic-red/20 transition-colors disabled:opacity-50"
+              >
+                Remove
+              </button>
+            )}
+            <button
+              onClick={() => setOpen(false)}
+              className="px-3 py-1.5 text-xs text-slate-400 bg-white/5 border border-white/10 rounded hover:text-white transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
-      </div>
-    </div>
+      </PopoverContent>
+    </Popover>
   );
 }

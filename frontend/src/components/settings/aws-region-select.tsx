@@ -1,4 +1,9 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverAnchor,
+} from "@/components/ui/popover";
 
 // Common AWS regions — covers ~95% of MSK deployments
 const AWS_REGIONS = [
@@ -30,23 +35,11 @@ interface AwsRegionSelectProps {
 export function AwsRegionSelect({ value, onChange }: AwsRegionSelectProps) {
   const [inputText, setInputText] = useState(value);
   const [showDropdown, setShowDropdown] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   // Sync input text when value changes externally (e.g. form load)
   useEffect(() => {
     setInputText(value);
   }, [value]);
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setShowDropdown(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
 
   const filtered = inputText
     ? AWS_REGIONS.filter((r) => r.label.toLowerCase().includes(inputText.toLowerCase()))
@@ -69,51 +62,62 @@ export function AwsRegionSelect({ value, onChange }: AwsRegionSelectProps) {
     setInputText("");
   };
 
+  const hasDropdown = showDropdown && filtered.length > 0;
+
   return (
-    <div ref={containerRef}>
+    <Popover open={hasDropdown} onOpenChange={(open) => { if (!open) setShowDropdown(false); }}>
       <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">
         AWS Region
       </label>
-      <div className="relative">
-        <input
-          type="text"
-          value={inputText}
-          onChange={(e) => handleInputChange(e.target.value)}
-          onFocus={() => setShowDropdown(true)}
-          placeholder="From AWS Config (Default)"
-          className="w-full h-9 px-3 pr-8 bg-white/5 border border-white/10 rounded-lg text-sm text-white font-mono focus:outline-none focus:ring-1 focus:ring-primary/50 placeholder:text-slate-500 placeholder:font-sans placeholder:not-italic"
-        />
-        {inputText && (
+      <PopoverAnchor asChild>
+        <div className="relative">
+          <input
+            type="text"
+            value={inputText}
+            onChange={(e) => handleInputChange(e.target.value)}
+            onFocus={() => setShowDropdown(true)}
+            placeholder="From AWS Config (Default)"
+            className="w-full h-9 px-3 pr-8 bg-white/5 border border-white/10 rounded-lg text-sm text-white font-mono focus:outline-none focus:ring-1 focus:ring-primary/50 placeholder:text-slate-500 placeholder:font-sans placeholder:not-italic"
+          />
+          {inputText && (
+            <button
+              type="button"
+              onClick={handleClear}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 text-xs"
+              title="Clear — use region from AWS config"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      </PopoverAnchor>
+
+      <PopoverContent
+        className="w-[var(--radix-popover-trigger-width)] p-0 max-h-48 overflow-y-auto"
+        align="start"
+        sideOffset={4}
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        onCloseAutoFocus={(e) => e.preventDefault()}
+      >
+        {filtered.map((r) => (
           <button
+            key={r.value}
             type="button"
-            onClick={handleClear}
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 text-xs"
-            title="Clear — use region from AWS config"
+            onClick={() => handleSelect(r.value)}
+            className={`w-full px-3 py-1.5 text-left text-xs font-mono cursor-pointer transition-colors ${
+              r.value === value
+                ? "text-primary bg-primary/10"
+                : "text-slate-300 hover:bg-white/10"
+            }`}
           >
-            ✕
+            {r.label}
           </button>
-        )}
-        {showDropdown && filtered.length > 0 && (
-          <ul className="absolute z-20 top-full mt-1 w-full max-h-48 overflow-y-auto bg-slate-800 border border-white/10 rounded-lg shadow-xl">
-            {filtered.map((r) => (
-              <li
-                key={r.value}
-                onClick={() => handleSelect(r.value)}
-                className={`px-3 py-1.5 text-xs font-mono cursor-pointer transition-colors ${
-                  r.value === value
-                    ? "text-primary bg-primary/10"
-                    : "text-slate-300 hover:bg-white/10"
-                }`}
-              >
-                {r.label}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+        ))}
+      </PopoverContent>
+
       <p className="text-[10px] text-slate-500 mt-1">
         Leave empty to use region from ~/.aws/config or AWS_REGION env var.
       </p>
-    </div>
+    </Popover>
   );
 }

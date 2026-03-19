@@ -1,5 +1,13 @@
 import { lazy, Suspense } from "react";
+import { Slider } from "@/components/ui/slider";
 import { useSettingsStore } from "@/store/settings";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const MonacoEditor = lazy(() => import("@monaco-editor/react"));
 
@@ -28,28 +36,30 @@ export function AppearanceForm() {
         <div className="space-y-4">
           <div>
             <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">Theme</label>
-            <select
-              value={theme}
-              onChange={(e) => setTheme(e.target.value as "dark" | "light" | "system")}
-              className="w-48 h-9 px-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/50"
-            >
-              <option value="dark">Dark</option>
-              <option value="light" disabled>Light (Coming Soon)</option>
-              <option value="system" disabled>System (Coming Soon)</option>
-            </select>
+            <Select value={theme} onValueChange={(v) => setTheme(v as "dark" | "light" | "system")}>
+              <SelectTrigger className="w-48">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="dark">Dark</SelectItem>
+                <SelectItem value="light" disabled>Light (Coming Soon)</SelectItem>
+                <SelectItem value="system" disabled>System (Coming Soon)</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div>
             <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">UI Density</label>
-            <select
-              value={density}
-              onChange={(e) => setDensity(e.target.value as "compact" | "comfortable" | "spacious")}
-              className="w-48 h-9 px-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/50"
-            >
-              <option value="compact">Compact</option>
-              <option value="comfortable">Comfortable</option>
-              <option value="spacious">Spacious</option>
-            </select>
+            <Select value={density} onValueChange={(v) => setDensity(v as "compact" | "comfortable" | "spacious")}>
+              <SelectTrigger className="w-48">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="compact">Compact</SelectItem>
+                <SelectItem value="comfortable">Comfortable</SelectItem>
+                <SelectItem value="spacious">Spacious</SelectItem>
+              </SelectContent>
+            </Select>
             <p className="text-xs text-slate-500 mt-1">Controls row height and padding in tables</p>
           </div>
 
@@ -65,13 +75,13 @@ export function AppearanceForm() {
             </div>
             <div>
               <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">Font Size ({codeFontSize}px)</label>
-              <input
-                type="range"
+              <Slider
+                value={[codeFontSize]}
+                onValueChange={([v]) => setCodeFontSize(v)}
                 min={12}
                 max={16}
-                value={codeFontSize}
-                onChange={(e) => setCodeFontSize(Number(e.target.value))}
-                className="w-full accent-primary"
+                step={1}
+                className="w-full mt-2"
               />
             </div>
           </div>

@@ -14,6 +14,13 @@ import { useAnnotations } from "@/hooks/use-annotations";
 import { AnnotationSummaryTable } from "./annotation-summary-table";
 import { AnnotationJsonViewer } from "./annotation-json-viewer";
 import { AnnotationEditorModal } from "./annotation-editor-modal";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 /**
  * Annotation management panel for Settings overlay.
@@ -130,20 +137,24 @@ export function AnnotationSettingsPanel() {
       {/* Cluster selector */}
       <div className="flex items-center gap-3">
         <label className="text-xs text-slate-400">Cluster:</label>
-        <select
+        <Select
           value={effectiveClusterId ?? ""}
-          onChange={(e) => setViewingClusterId(e.target.value || null)}
-          className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white font-mono outline-none focus:ring-1 focus:ring-primary/30 transition-colors"
+          onValueChange={(v) => setViewingClusterId(v || null)}
         >
-          {clusters.length === 0 && (
-            <option value="">No clusters configured</option>
-          )}
-          {clusters.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger className="w-auto">
+            <SelectValue placeholder="No clusters configured" />
+          </SelectTrigger>
+          <SelectContent>
+            {clusters.length === 0 && (
+              <SelectItem value="__none__" disabled>No clusters configured</SelectItem>
+            )}
+            {clusters.map((c) => (
+              <SelectItem key={c.id} value={c.id}>
+                {c.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <span className="text-xs font-mono text-slate-400">
           <span className="text-primary">{annotatedCount}</span> annotated
         </span>

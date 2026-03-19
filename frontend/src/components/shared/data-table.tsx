@@ -47,18 +47,19 @@ export function DataTable<T>({
 
   return (
     <div className={cn("glass-panel overflow-hidden", className)}>
-      {/* max-h keeps horizontal scrollbar visible without scrolling to bottom */}
       <div className="overflow-auto max-h-[calc(100vh-320px)]">
         <table className="w-full">
-          <thead className="sticky top-0 z-10 [backface-visibility:hidden] [transform:translateZ(0)]">
+          {/* No position:sticky — avoids WKWebView text-corruption bug.
+              Pagination keeps tables short enough that sticky is unnecessary. */}
+          <thead className="bg-[#141414]">
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="bg-[#141414]">
+              <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
                     className={cn(
                       "px-4 py-3 text-left text-[11px] font-mono font-semibold",
-                      "text-slate-400 uppercase tracking-wider",
+                      "text-slate-400 uppercase tracking-wider whitespace-nowrap",
                       header.column.getCanSort() && "cursor-pointer select-none"
                     )}
                     onClick={header.column.getToggleSortingHandler()}

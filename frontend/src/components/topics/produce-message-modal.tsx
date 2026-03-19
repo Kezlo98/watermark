@@ -1,9 +1,17 @@
 import { useState, useRef, useEffect } from "react";
-import { X, Loader2, CheckCircle2, XCircle, RotateCcw } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, RotateCcw } from "lucide-react";
 import { ProduceMessage, ProduceMessages } from "@/lib/wails-client";
 import type { Message } from "@/types/kafka";
 import type { kafka } from "../../../wailsjs/go/models";
 import { BatchReplayProgress } from "./batch-replay-progress";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface ProduceMessageModalProps {
   isOpen: boolean;
@@ -114,104 +122,102 @@ export function ProduceMessageModal({ isOpen, onClose, topicName, replaySource, 
     }
   };
 
-  if (!isOpen) return null;
   const isReplay = !!replaySource;
   const isDone = isBatch && status === "success";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-      <div className="glass-panel w-full max-w-lg p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-display font-bold text-white uppercase tracking-wider">
+    <Dialog open={isOpen} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="text-lg">
             {isBatch ? "Replay Messages" : isReplay ? "Replay Message" : "Produce Message"}
-          </h2>
-          <button onClick={onClose} className="p-1 text-slate-400 hover:text-white transition-colors">
-            <X className="size-5" />
-          </button>
-        </div>
+          </DialogTitle>
+        </DialogHeader>
 
-        <p className="text-xs text-slate-500 font-mono mb-4">Topic: {topicName}</p>
+        <DialogBody className="space-y-4">
+          <p className="text-xs text-slate-500 font-mono">Topic: {topicName}</p>
 
-        {/* Batch mode UI */}
-        {isBatch ? (
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/5 border border-primary/10">
-              <RotateCcw className="size-3.5 text-primary" />
-              <span className="text-xs font-mono text-primary">
-                Replaying {batchReplaySource!.length} messages
-              </span>
-            </div>
-            {batchReplaySource!.length >= 10 && status === "idle" && (
-              <div className="px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs font-mono text-amber-400">
-                You are about to replay {batchReplaySource!.length} messages to {topicName}. Continue?
-              </div>
-            )}
-            {(status === "sending" || status === "success") && (
-              <BatchReplayProgress
-                total={batchState.total}
-                completed={batchState.completed}
-                failed={batchState.failed}
-                results={batchState.results}
-                isSending={status === "sending"}
-              />
-            )}
-            {status === "error" && (
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-semantic-red/10 text-semantic-red text-xs font-mono">
-                <XCircle className="size-3.5" />
-                {statusMessage}
-              </div>
-            )}
-          </div>
-        ) : (
-          /* Single produce/replay UI */
-          <>
-            {isReplay && (
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/5 border border-primary/10 mb-4">
+          {/* Batch mode UI */}
+          {isBatch ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/5 border border-primary/10">
                 <RotateCcw className="size-3.5 text-primary" />
                 <span className="text-xs font-mono text-primary">
-                  Replaying from P:{replaySource!.partition} O:{replaySource!.offset}
+                  Replaying {batchReplaySource!.length} messages
                 </span>
               </div>
-            )}
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">Partition (-1 for auto)</label>
-                <input type="number" value={form.partition} onChange={(e) => setForm({ ...form, partition: Number(e.target.value) })}
-                  className="w-full h-9 px-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white font-mono focus:outline-none focus:ring-1 focus:ring-primary/50" />
-              </div>
-              <div>
-                <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">Key (optional)</label>
-                <input type="text" value={form.key} onChange={(e) => setForm({ ...form, key: e.target.value })} placeholder="message-key"
-                  className="w-full h-9 px-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white font-mono placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-primary/50" />
-              </div>
-              <div>
-                <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">Value</label>
-                <textarea value={form.value} onChange={(e) => { setForm({ ...form, value: e.target.value }); if (status === "error") { setStatus("idle"); setStatusMessage(""); } }}
-                  placeholder='{"key": "value"}' rows={6}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white font-mono placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-primary/50 resize-none" />
-              </div>
-              <div>
-                <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">Headers (optional, JSON)</label>
-                <input type="text" value={form.headers} onChange={(e) => setForm({ ...form, headers: e.target.value })} placeholder='{"Content-Type": "application/json"}'
-                  className="w-full h-9 px-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white font-mono placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-primary/50" />
-              </div>
+              {batchReplaySource!.length >= 10 && status === "idle" && (
+                <div className="px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs font-mono text-amber-400">
+                  You are about to replay {batchReplaySource!.length} messages to {topicName}. Continue?
+                </div>
+              )}
+              {(status === "sending" || status === "success") && (
+                <BatchReplayProgress
+                  total={batchState.total}
+                  completed={batchState.completed}
+                  failed={batchState.failed}
+                  results={batchState.results}
+                  isSending={status === "sending"}
+                />
+              )}
+              {status === "error" && (
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-semantic-red/10 text-semantic-red text-xs font-mono">
+                  <XCircle className="size-3.5" />
+                  {statusMessage}
+                </div>
+              )}
             </div>
-            {status !== "idle" && (
-              <div className={`mt-4 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-mono ${
-                status === "sending" ? "bg-primary/10 text-primary" :
-                status === "success" ? "bg-status-healthy/10 text-status-healthy" :
-                "bg-semantic-red/10 text-semantic-red"
-              }`}>
-                {status === "sending" && <Loader2 className="size-3.5 animate-spin" />}
-                {status === "success" && <CheckCircle2 className="size-3.5" />}
-                {status === "error" && <XCircle className="size-3.5" />}
-                <span>{status === "sending" ? "Sending message..." : statusMessage}</span>
+          ) : (
+            /* Single produce/replay UI */
+            <>
+              {isReplay && (
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/5 border border-primary/10">
+                  <RotateCcw className="size-3.5 text-primary" />
+                  <span className="text-xs font-mono text-primary">
+                    Replaying from P:{replaySource!.partition} O:{replaySource!.offset}
+                  </span>
+                </div>
+              )}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">Partition (-1 for auto)</label>
+                  <input type="number" value={form.partition} onChange={(e) => setForm({ ...form, partition: Number(e.target.value) })}
+                    className="w-full h-9 px-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white font-mono focus:outline-none focus:ring-1 focus:ring-primary/50" />
+                </div>
+                <div>
+                  <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">Key (optional)</label>
+                  <input type="text" value={form.key} onChange={(e) => setForm({ ...form, key: e.target.value })} placeholder="message-key"
+                    className="w-full h-9 px-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white font-mono placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-primary/50" />
+                </div>
+                <div>
+                  <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">Value</label>
+                  <textarea value={form.value} onChange={(e) => { setForm({ ...form, value: e.target.value }); if (status === "error") { setStatus("idle"); setStatusMessage(""); } }}
+                    placeholder='{"key": "value"}' rows={6}
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white font-mono placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-primary/50 resize-none" />
+                </div>
+                <div>
+                  <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">Headers (optional, JSON)</label>
+                  <input type="text" value={form.headers} onChange={(e) => setForm({ ...form, headers: e.target.value })} placeholder='{"Content-Type": "application/json"}'
+                    className="w-full h-9 px-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white font-mono placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-primary/50" />
+                </div>
               </div>
-            )}
-          </>
-        )}
+              {status !== "idle" && (
+                <div className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-mono ${
+                  status === "sending" ? "bg-primary/10 text-primary" :
+                  status === "success" ? "bg-status-healthy/10 text-status-healthy" :
+                  "bg-semantic-red/10 text-semantic-red"
+                }`}>
+                  {status === "sending" && <Loader2 className="size-3.5 animate-spin" />}
+                  {status === "success" && <CheckCircle2 className="size-3.5" />}
+                  {status === "error" && <XCircle className="size-3.5" />}
+                  <span>{status === "sending" ? "Sending message..." : statusMessage}</span>
+                </div>
+              )}
+            </>
+          )}
+        </DialogBody>
 
-        <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-white/5">
+        <DialogFooter>
           <button onClick={onClose} className="px-4 py-2 text-sm text-slate-400 hover:text-white bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors">
             {isDone ? "Close" : "Cancel"}
           </button>
@@ -225,8 +231,8 @@ export function ProduceMessageModal({ isOpen, onClose, topicName, replaySource, 
               {isBatch ? "Replay All" : isReplay ? "Replay" : "Send Message"}
             </button>
           )}
-        </div>
-      </div>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

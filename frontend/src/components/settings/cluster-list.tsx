@@ -13,6 +13,14 @@ const COLOR_DOTS: Record<string, string> = {
   purple: "bg-primary",
 };
 
+/** Lighter shades for text readability on dark backgrounds */
+const COLOR_TEXT: Record<string, string> = {
+  red: "text-red-400",
+  orange: "text-orange-400",
+  green: "text-green-400",
+  purple: "text-violet-400",
+};
+
 export function ClusterList() {
   const [editingClusterId, setEditingClusterId] = useState<string | null>(null);
   const queryClient = useQueryClient();
@@ -112,10 +120,13 @@ export function ClusterList() {
                       ? "bg-status-healthy animate-pulse"
                       : isConnecting
                         ? "bg-primary animate-pulse"
-                        : COLOR_DOTS[cluster.color] ?? "bg-primary"
+                        : "bg-slate-500"
                   )}
                 />
-                <span className="text-sm font-medium text-white">{cluster.name}</span>
+                <span className={cn(
+                    "text-sm font-medium",
+                    COLOR_TEXT[cluster.color] ?? "text-white"
+                  )}>{cluster.name}</span>
                 {cluster.readOnly && (
                   <span className="text-[10px] font-mono text-slate-500 px-1.5 py-0.5 bg-white/5 rounded border border-white/10">
                     Read-Only
