@@ -29,7 +29,7 @@ export function SettingsOverlay() {
 
   return (
     <Dialog open={isSettingsOpen} onOpenChange={(open) => !open && closeSettings()}>
-      <DialogContent className="max-w-4xl h-[80vh] flex flex-col gap-0 p-0">
+      <DialogContent className="sm:min-w-[60vw] sm:max-w-5xl h-[80vh] flex flex-col gap-0 p-0">
         {/* Header */}
         <DialogHeader className="px-6 py-4 border-b border-white/5">
           <DialogTitle>⚙️ Preferences</DialogTitle>
