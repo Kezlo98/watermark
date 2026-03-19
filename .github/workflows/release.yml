@@ -23,13 +23,15 @@ env:
 jobs:
   # ─── macOS Build (Universal: Apple Silicon + Intel) ─────
   build-macos:
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Select Xcode (fix CGo Obj-C headers)
-        run: sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
+        run: |
+          sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
+          echo "SDKROOT=$(xcrun --show-sdk-path)" >> $GITHUB_ENV
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -64,6 +66,7 @@ jobs:
         env:
           TAG: ${{ steps.tag.outputs.tag }}
         run: |
+          echo "Using SDK: $SDKROOT"
           wails build -clean -platform darwin/universal \
             -ldflags "-X main.version=${TAG}"
 
