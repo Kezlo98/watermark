@@ -26,7 +26,7 @@ function relativeTime(iso: string): string {
  * Uses shadcn Popover — no manual mousedown/Escape handlers needed.
  */
 export function NotificationPanel() {
-  const { alerts, unreadCount, isNotificationPanelOpen, togglePanel, closePanel, markAllRead } = useLagAlertsStore();
+  const { alerts, unreadCount, isNotificationPanelOpen, openPanel, closePanel, markAllRead } = useLagAlertsStore();
   const { activeClusterId } = useSettingsStore();
   const navigate = useNavigate();
 
@@ -54,7 +54,7 @@ export function NotificationPanel() {
   return (
     <Popover
       open={isNotificationPanelOpen}
-      onOpenChange={(open) => { if (open) togglePanel(); else closePanel(); }}
+      onOpenChange={(open) => { if (open) openPanel(); else closePanel(); }}
     >
       <PopoverTrigger asChild>
         <button
