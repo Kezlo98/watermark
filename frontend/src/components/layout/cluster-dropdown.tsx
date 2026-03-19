@@ -148,7 +148,7 @@ export function ClusterDropdown() {
                     "size-2 rounded-full shrink-0",
                     isThisConnected
                       ? "bg-status-healthy animate-pulse"
-                      : "bg-slate-500"
+                      : (COLOR_DOTS[cluster.color] ?? "bg-slate-500")
                   )}
                 />
                 <div className="flex-1 min-w-0">
