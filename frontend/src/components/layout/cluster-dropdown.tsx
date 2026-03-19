@@ -19,6 +19,14 @@ const COLOR_DOTS: Record<string, string> = {
   purple: "bg-primary",
 };
 
+/** Lighter shades for text readability on dark backgrounds */
+const COLOR_TEXT: Record<string, string> = {
+  red: "text-red-400",
+  orange: "text-orange-400",
+  green: "text-green-400",
+  purple: "text-violet-400",
+};
+
 export function ClusterDropdown() {
   const {
     activeClusterId,
@@ -97,7 +105,10 @@ export function ClusterDropdown() {
           ) : (
             <span className={cn("size-2 rounded-full", statusDot())} />
           )}
-          <span className="text-sm font-medium text-white max-w-[140px] truncate">
+          <span className={cn(
+            "text-sm font-medium max-w-[140px] truncate",
+            activeCluster ? (COLOR_TEXT[activeCluster.color] ?? "text-white") : "text-white"
+          )}>
             {statusLabel()}
           </span>
           <ChevronDown className="size-3 text-slate-400" />
@@ -137,11 +148,14 @@ export function ClusterDropdown() {
                     "size-2 rounded-full shrink-0",
                     isThisConnected
                       ? "bg-status-healthy animate-pulse"
-                      : COLOR_DOTS[cluster.color] ?? "bg-primary"
+                      : "bg-slate-500"
                   )}
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">{cluster.name}</p>
+                  <p className={cn(
+                    "text-sm font-medium truncate",
+                    COLOR_TEXT[cluster.color] ?? "text-white"
+                  )}>{cluster.name}</p>
                   <p className="text-[10px] text-slate-500 font-mono truncate">
                     {cluster.bootstrapServers}
                   </p>
