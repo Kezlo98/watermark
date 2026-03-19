@@ -7,6 +7,8 @@ export function ApplyUpdate():Promise<void>;
 
 export function CheckForUpdate():Promise<updater.UpdateInfo>;
 
+export function GetChangelog():Promise<Array<updater.ReleaseNote>>;
+
 export function GetCurrentVersion():Promise<string>;
 
 export function SetContext(arg1:context.Context):Promise<void>;

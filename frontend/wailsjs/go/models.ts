@@ -318,6 +318,42 @@ export namespace kafka {
 	        this.highWatermark = source["highWatermark"];
 	    }
 	}
+	export class ProduceMessageRequest {
+	    partition: number;
+	    key: string;
+	    value: string;
+	    headers?: Record<string, string>;
+	
+	    static createFrom(source: any = {}) {
+	        return new ProduceMessageRequest(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.partition = source["partition"];
+	        this.key = source["key"];
+	        this.value = source["value"];
+	        this.headers = source["headers"];
+	    }
+	}
+	export class ProduceResult {
+	    index: number;
+	    partition: number;
+	    offset: number;
+	    error?: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ProduceResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.index = source["index"];
+	        this.partition = source["partition"];
+	        this.offset = source["offset"];
+	        this.error = source["error"];
+	    }
+	}
 	export class Topic {
 	    name: string;
 	    partitions: number;
@@ -359,6 +395,123 @@ export namespace kafka {
 	        this.isOverridden = source["isOverridden"];
 	        this.description = source["description"];
 	    }
+	}
+
+}
+
+export namespace lagalert {
+	
+	export class AlertEvent {
+	    id: string;
+	    clusterId: string;
+	    groupId: string;
+	    matchedRule: string;
+	    rulePattern: string;
+	    level: string;
+	    lag: number;
+	    threshold: number;
+	    // Go type: time
+	    timestamp: any;
+	    resolved: boolean;
+	    // Go type: time
+	    resolvedAt?: any;
+	    read: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new AlertEvent(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
+	        this.clusterId = source["clusterId"];
+	        this.groupId = source["groupId"];
+	        this.matchedRule = source["matchedRule"];
+	        this.rulePattern = source["rulePattern"];
+	        this.level = source["level"];
+	        this.lag = source["lag"];
+	        this.threshold = source["threshold"];
+	        this.timestamp = this.convertValues(source["timestamp"], null);
+	        this.resolved = source["resolved"];
+	        this.resolvedAt = this.convertValues(source["resolvedAt"], null);
+	        this.read = source["read"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class AlertRule {
+	    id: string;
+	    groupPattern: string;
+	    warningLag: number;
+	    criticalLag: number;
+	    enabled: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new AlertRule(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
+	        this.groupPattern = source["groupPattern"];
+	        this.warningLag = source["warningLag"];
+	        this.criticalLag = source["criticalLag"];
+	        this.enabled = source["enabled"];
+	    }
+	}
+	export class ClusterAlertConfig {
+	    enabled: boolean;
+	    pollIntervalSec: number;
+	    notifyOS: boolean;
+	    notificationSound: boolean;
+	    rules: AlertRule[];
+	
+	    static createFrom(source: any = {}) {
+	        return new ClusterAlertConfig(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.enabled = source["enabled"];
+	        this.pollIntervalSec = source["pollIntervalSec"];
+	        this.notifyOS = source["notifyOS"];
+	        this.notificationSound = source["notificationSound"];
+	        this.rules = this.convertValues(source["rules"], AlertRule);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 
 }
@@ -408,10 +561,60 @@ export namespace schema {
 
 }
 
+export namespace templates {
+	
+	export class TopicTemplate {
+	    id: string;
+	    name: string;
+	    description?: string;
+	    pattern?: string;
+	    partitions: number;
+	    replicationFactor: number;
+	    configs: Record<string, string>;
+	    createdAt: string;
+	    updatedAt: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new TopicTemplate(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
+	        this.name = source["name"];
+	        this.description = source["description"];
+	        this.pattern = source["pattern"];
+	        this.partitions = source["partitions"];
+	        this.replicationFactor = source["replicationFactor"];
+	        this.configs = source["configs"];
+	        this.createdAt = source["createdAt"];
+	        this.updatedAt = source["updatedAt"];
+	    }
+	}
+
+}
+
 export namespace updater {
 	
+	export class ReleaseNote {
+	    version: string;
+	    date: string;
+	    notes: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ReleaseNote(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.version = source["version"];
+	        this.date = source["date"];
+	        this.notes = source["notes"];
+	    }
+	}
 	export class UpdateInfo {
 	    available: boolean;
+	    skipped: boolean;
 	    currentVersion: string;
 	    latestVersion: string;
 	    releaseUrl: string;
@@ -425,6 +628,7 @@ export namespace updater {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.available = source["available"];
+	        this.skipped = source["skipped"];
 	        this.currentVersion = source["currentVersion"];
 	        this.latestVersion = source["latestVersion"];
 	        this.releaseUrl = source["releaseUrl"];

@@ -42,6 +42,10 @@ export function GetSettings() {
   return window['go']['config']['ConfigService']['GetSettings']();
 }
 
+export function GetSkippedVersion() {
+  return window['go']['config']['ConfigService']['GetSkippedVersion']();
+}
+
 export function ImportConfig(arg1) {
   return window['go']['config']['ConfigService']['ImportConfig'](arg1);
 }
@@ -60,6 +64,10 @@ export function SaveSettings(arg1) {
 
 export function SetActiveCluster(arg1) {
   return window['go']['config']['ConfigService']['SetActiveCluster'](arg1);
+}
+
+export function SkipVersion(arg1) {
+  return window['go']['config']['ConfigService']['SkipVersion'](arg1);
 }
 
 export function TestConnection(arg1) {

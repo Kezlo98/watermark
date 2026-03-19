@@ -1,32 +1,27 @@
 import { useEffect, useState, useCallback } from "react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { Download, Upload, Loader2, ArrowDownCircle, CheckCircle2, AlertCircle } from "lucide-react";
-import { GetCurrentVersion, CheckForUpdate, ApplyUpdate } from "@/lib/wails-client";
-import type { UpdateInfo } from "@/components/layout/update-banner";
+import { GetCurrentVersion, CheckForUpdate } from "@/lib/wails-client";
+import { UpdateChangelogModal } from "@/components/layout/update-changelog-modal";
+import type { UpdateInfo } from "@/components/layout/update-changelog-modal";
 
-type CheckState = "idle" | "checking" | "up-to-date" | "available" | "updating" | "done" | "error";
+type CheckState = "idle" | "checking" | "up-to-date" | "available" | "skipped" | "done" | "error";
 
 function AppVersionSection() {
   const [version, setVersion] = useState("");
   const [checkState, setCheckState] = useState<CheckState>("idle");
   const [updateInfo, setUpdateInfo] = useState<UpdateInfo | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     GetCurrentVersion().then(setVersion).catch(() => {});
   }, []);
 
   const handleCheck = useCallback(async () => {
-    if (checkState === "available") {
-      // Trigger update
-      setCheckState("updating");
-      setErrorMsg("");
-      try {
-        await ApplyUpdate();
-        setCheckState("done");
-      } catch (err) {
-        setErrorMsg(err instanceof Error ? err.message : "Update failed");
-        setCheckState("error");
-      }
+    if (checkState === "available" || checkState === "skipped") {
+      setShowModal(true);
       return;
     }
 
@@ -35,8 +30,8 @@ function AppVersionSection() {
     try {
       const info = await CheckForUpdate();
       if (info?.available) {
-        setUpdateInfo(info);
-        setCheckState("available");
+        setUpdateInfo(info as UpdateInfo);
+        setCheckState(info.skipped ? "skipped" : "available");
       } else {
         setCheckState("up-to-date");
       }
@@ -46,20 +41,27 @@ function AppVersionSection() {
     }
   }, [checkState]);
 
+  const handleModalClose = useCallback((reason: "skipped" | "updated" | "cancelled") => {
+    setShowModal(false);
+    if (reason === "skipped") setCheckState("skipped");
+    if (reason === "updated") setCheckState("done");
+  }, []);
+
   const buttonLabel = () => {
     switch (checkState) {
       case "checking": return "Checking…";
       case "up-to-date": return "Up to date";
       case "available": return `Update to ${updateInfo?.latestVersion}`;
-      case "updating": return "Updating…";
+      case "skipped": return `Skipped ${updateInfo?.latestVersion}`;
       case "done": return "Restart to apply";
       case "error": return "Retry";
       default: return "Check for Updates";
     }
   };
 
-  const isLoading = checkState === "checking" || checkState === "updating";
+  const isLoading = checkState === "checking";
   const isAvailable = checkState === "available";
+  const isSkipped = checkState === "skipped";
   const isDone = checkState === "done";
   const isError = checkState === "error";
 
@@ -81,9 +83,11 @@ function AppVersionSection() {
           className={`flex items-center gap-2 px-3 py-1.5 text-xs rounded-lg border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
             isAvailable
               ? "bg-primary/20 border-primary/30 text-primary hover:bg-primary/30"
-              : isError
-                ? "bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20"
-                : "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10"
+              : isSkipped
+                ? "bg-slate-500/10 border-slate-500/20 text-slate-400 hover:bg-slate-500/20"
+                : isError
+                  ? "bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20"
+                  : "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10"
           }`}
         >
           {isLoading && <Loader2 className="size-3 animate-spin" />}
@@ -95,6 +99,14 @@ function AppVersionSection() {
       </div>
       {isError && errorMsg && (
         <p className="text-xs text-red-400/70 mt-2">{errorMsg}</p>
+      )}
+
+      {updateInfo && (
+        <UpdateChangelogModal
+          isOpen={showModal}
+          onClose={handleModalClose}
+          updateInfo={updateInfo}
+        />
       )}
     </section>
   );
@@ -110,28 +122,18 @@ export function DataSystemForm() {
         </h3>
 
         <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="launch-startup"
-              defaultChecked
-              className="size-4 rounded border-white/20 bg-white/5 text-primary focus:ring-primary/50"
-            />
-            <label htmlFor="launch-startup" className="text-sm text-slate-300">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="launch-startup" className="text-sm text-slate-300 font-normal cursor-pointer">
               Start application when computer starts
-            </label>
+            </Label>
+            <Switch id="launch-startup" defaultChecked />
           </div>
 
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="minimize-tray"
-              defaultChecked
-              className="size-4 rounded border-white/20 bg-white/5 text-primary focus:ring-primary/50"
-            />
-            <label htmlFor="minimize-tray" className="text-sm text-slate-300">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="minimize-tray" className="text-sm text-slate-300 font-normal cursor-pointer">
               Minimize to system tray when closed
-            </label>
+            </Label>
+            <Switch id="minimize-tray" defaultChecked />
           </div>
         </div>
       </section>
@@ -153,14 +155,10 @@ export function DataSystemForm() {
         </div>
 
         <div className="flex items-center gap-2 mt-3">
-          <input
-            type="checkbox"
-            id="include-passwords"
-            className="size-4 rounded border-white/20 bg-white/5 text-primary focus:ring-primary/50"
-          />
-          <label htmlFor="include-passwords" className="text-xs text-semantic-red">
+          <Switch id="include-passwords" />
+          <Label htmlFor="include-passwords" className="text-xs text-semantic-red font-normal cursor-pointer">
             Include passwords in export — <strong>⚠️ stored as plaintext, keep file secure</strong>
-          </label>
+          </Label>
         </div>
       </section>
 

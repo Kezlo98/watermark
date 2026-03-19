@@ -10,6 +10,10 @@ export function CheckForUpdate() {
   return window['go']['updater']['UpdaterService']['CheckForUpdate']();
 }
 
+export function GetChangelog() {
+  return window['go']['updater']['UpdaterService']['GetChangelog']();
+}
+
 export function GetCurrentVersion() {
   return window['go']['updater']['UpdaterService']['GetCurrentVersion']();
 }

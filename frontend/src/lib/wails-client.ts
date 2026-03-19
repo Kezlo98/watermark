@@ -22,6 +22,7 @@ export {
   ConsumeMessages,
   ConsumeMessagesFromTimestamp,
   ProduceMessage,
+  ProduceMessages,
   StartLiveTail,
   StopLiveTail,
   GetConsumerGroups,
@@ -31,6 +32,7 @@ export {
 } from "../../wailsjs/go/kafka/KafkaService";
 
 // --- Config Service ---
+// NOTE: GetDecryptedPassword intentionally NOT exported — decryption stays server-side only
 export {
   GetClusters,
   GetCluster,
@@ -41,11 +43,12 @@ export {
   SaveSettings,
   GetActiveClusterID,
   SetActiveCluster,
-  GetDecryptedPassword,
   TestConnection,
   ExportConfig,
   ImportConfig,
   ListAWSProfiles,
+  GetSkippedVersion,
+  SkipVersion,
 } from "../../wailsjs/go/config/ConfigService";
 
 // --- Schema Service ---
@@ -78,5 +81,33 @@ export {
   GetCurrentVersion,
   CheckForUpdate,
   ApplyUpdate,
+  GetChangelog,
 } from "../../wailsjs/go/updater/UpdaterService";
+
+// --- Lag Alert Service ---
+export {
+  GetAlertConfig,
+  SaveAlertConfig,
+  AddRule,
+  UpdateRule,
+  DeleteRule,
+  GetAlerts,
+  GetUnreadCount,
+  MarkAllRead,
+  ClearAlerts,
+  RestartMonitoring,
+} from "../../wailsjs/go/lagalert/LagAlertService";
+
+// --- Template Service ---
+export {
+  GetTemplates,
+  GetTemplate,
+  SaveTemplate,
+  UpdateTemplate,
+  DeleteTemplate,
+  ExportTemplates,
+  ImportTemplates,
+  ExportToFile as ExportTemplatesToFile,
+  ImportFromFile as ImportTemplatesFromFile,
+} from "../../wailsjs/go/templates/TemplateService";
 

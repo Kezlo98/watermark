@@ -22,6 +22,8 @@ export function GetDecryptedSchemaRegistryPassword(arg1:string):Promise<string>;
 
 export function GetSettings():Promise<config.AppSettings>;
 
+export function GetSkippedVersion():Promise<string>;
+
 export function ImportConfig(arg1:string):Promise<void>;
 
 export function ListAWSProfiles():Promise<Array<string>>;
@@ -31,5 +33,7 @@ export function SaveCluster(arg1:config.ClusterProfile):Promise<void>;
 export function SaveSettings(arg1:config.AppSettings):Promise<void>;
 
 export function SetActiveCluster(arg1:string):Promise<void>;
+
+export function SkipVersion(arg1:string):Promise<void>;
 
 export function TestConnection(arg1:string):Promise<void>;

@@ -1,51 +1,39 @@
-import { useEffect, useState } from "react";
-import { X } from "lucide-react";
+import { useState } from "react";
 import { useSettingsStore } from "@/store/settings";
 import { TabNavigation } from "@/components/shared/tab-navigation";
 import { ClusterList } from "./cluster-list";
 import { AppearanceForm } from "./appearance-form";
 import { DataSystemForm } from "./data-system-form";
 import { AnnotationSettingsPanel } from "@/components/annotations/annotation-settings-panel";
+import { TemplateSettingsPanel } from "@/components/templates/template-settings-panel";
+import { AlertsForm } from "./alerts-form";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const SETTINGS_TABS = [
   { id: "clusters", label: "🌐 Clusters" },
   { id: "appearance", label: "🎨 Appearance" },
   { id: "annotations", label: "🏷️ Annotations" },
+  { id: "templates", label: "📋 Templates" },
   { id: "system", label: "💻 System" },
+  { id: "alerts", label: "🔔 Alerts" },
 ];
 
 export function SettingsOverlay() {
   const { isSettingsOpen, closeSettings } = useSettingsStore();
   const [activeTab, setActiveTab] = useState("clusters");
 
-  /* Escape key to close */
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeSettings();
-    };
-    if (isSettingsOpen) {
-      window.addEventListener("keydown", handler);
-      return () => window.removeEventListener("keydown", handler);
-    }
-  }, [isSettingsOpen, closeSettings]);
-
-  if (!isSettingsOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-      <div className="glass-panel w-full max-w-4xl h-[80vh] flex flex-col">
+    <Dialog open={isSettingsOpen} onOpenChange={(open) => !open && closeSettings()}>
+      <DialogContent className="sm:min-w-[60vw] sm:max-w-5xl h-[80vh] flex flex-col gap-0 p-0">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
-          <h2 className="text-lg font-display font-bold text-white">
-            ⚙️ Preferences
-          </h2>
-          <button
-            onClick={closeSettings}
-            className="p-1 text-slate-400 hover:text-white transition-colors"
-          >
-            <X className="size-5" />
-          </button>
-        </div>
+        <DialogHeader className="px-6 py-4 border-b border-white/5">
+          <DialogTitle>⚙️ Preferences</DialogTitle>
+        </DialogHeader>
 
         {/* Body: left tabs + content */}
         <div className="flex flex-1 overflow-hidden">
@@ -62,11 +50,12 @@ export function SettingsOverlay() {
             {activeTab === "clusters" && <ClusterList />}
             {activeTab === "appearance" && <AppearanceForm />}
             {activeTab === "annotations" && <AnnotationSettingsPanel />}
+            {activeTab === "templates" && <TemplateSettingsPanel />}
             {activeTab === "system" && <DataSystemForm />}
+            {activeTab === "alerts" && <AlertsForm />}
           </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
-

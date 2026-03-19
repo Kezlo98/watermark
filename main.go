@@ -6,7 +6,9 @@ import (
 	"watermark-01/internal/annotations"
 	"watermark-01/internal/config"
 	"watermark-01/internal/kafka"
+	"watermark-01/internal/lagalert"
 	"watermark-01/internal/schema"
+	"watermark-01/internal/templates"
 	"watermark-01/internal/updater"
 
 	"github.com/wailsapp/wails/v2"
@@ -37,9 +39,16 @@ func main() {
 		return
 	}
 
-	updaterSvc := updater.NewUpdaterService(version)
+	updaterSvc := updater.NewUpdaterService(version, configSvc)
+	lagAlertSvc := lagalert.NewLagAlertService(kafkaSvc, configSvc.GetConfigDir())
 
-	app := NewApp(configSvc, kafkaSvc, schemaSvc, annotationSvc, updaterSvc)
+	templateSvc, err := templates.NewTemplateService(configSvc.GetConfigDir())
+	if err != nil {
+		println("Templates error:", err.Error())
+		return
+	}
+
+	app := NewApp(configSvc, kafkaSvc, schemaSvc, annotationSvc, updaterSvc, lagAlertSvc, templateSvc)
 
 	err = wails.Run(&options.App{
 		Title:  "Watermark",
@@ -58,6 +67,8 @@ func main() {
 			schemaSvc,
 			annotationSvc,
 			updaterSvc,
+			lagAlertSvc,
+			templateSvc,
 		},
 	})
 

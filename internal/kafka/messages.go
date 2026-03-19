@@ -3,6 +3,7 @@ package kafka
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/twmb/franz-go/pkg/kgo"
@@ -217,12 +218,34 @@ func resolveStartOffsetFromEndOffsets(endOffset int64, startOffset int64, limit 
 	return actual
 }
 
-// ProduceMessage sends a single message to a topic.
+// ProduceMessages sends a batch of messages to a topic concurrently and returns per-message results.
+// Partial failures are reported individually — successful messages are not rolled back.
+// Delegates to ProduceMessage for each item to avoid duplicated record-building logic.
+func (k *KafkaService) ProduceMessages(topicName string, messages []ProduceMessageRequest) ([]ProduceResult, error) {
+	results := make([]ProduceResult, len(messages))
+	var wg sync.WaitGroup
+
+	for i, msg := range messages {
+		wg.Add(1)
+		go func(idx int, m ProduceMessageRequest) {
+			defer wg.Done()
+			err := k.ProduceMessage(topicName, m.Partition, m.Key, m.Value, m.Headers)
+			if err != nil {
+				results[idx] = ProduceResult{Index: idx, Error: err.Error()}
+				return
+			}
+			results[idx] = ProduceResult{Index: idx, Partition: m.Partition}
+		}(i, msg)
+	}
+
+	wg.Wait()
+	return results, nil
+}
 func (k *KafkaService) ProduceMessage(topicName string, partition int32, key string, value string, headers map[string]string) error {
 	k.mu.RLock()
 	defer k.mu.RUnlock()
 
-	if err := k.ensureConnected(); err != nil {
+	if err := k.ensureWritable(); err != nil {
 		return err
 	}
 

@@ -1,4 +1,5 @@
 import { type ColumnDef } from "@tanstack/react-table";
+import { Checkbox } from "@/components/ui/checkbox";
 import { DataTable } from "@/components/shared/data-table";
 import { formatBytes } from "@/lib/utils";
 import type { Topic } from "@/types/kafka";
@@ -9,15 +10,16 @@ import { useAnnotationUIStore } from "@/store/annotations";
 import { OwnershipBadges } from "@/components/annotations/ownership-badges";
 import { AnnotationEditorModal } from "@/components/annotations/annotation-editor-modal";
 import { BatchTagModal } from "@/components/annotations/batch-tag-modal";
-import { Pencil, Tag } from "lucide-react";
+import { Pencil, Tag, Copy } from "lucide-react";
 
 interface TopicListTableProps {
   onTopicClick: (topicName: string) => void;
+  onCloneTopic: (topicName: string) => void;
   searchFilter: string;
   hideInternal: boolean;
 }
 
-export function TopicListTable({ onTopicClick, searchFilter, hideInternal }: TopicListTableProps) {
+export function TopicListTable({ onTopicClick, onCloneTopic, searchFilter, hideInternal }: TopicListTableProps) {
   const { data: topics = [] } = useKafkaQuery(["topics"], GetTopics);
   const { annotations } = useAnnotations();
   const {
@@ -57,21 +59,19 @@ export function TopicListTable({ onTopicClick, searchFilter, hideInternal }: Top
     {
       id: "select",
       header: () => (
-        <input
-          type="checkbox"
+        <Checkbox
           checked={allSelected}
-          onChange={toggleAll}
-          className="size-3.5 rounded border-white/20 bg-white/5 text-primary focus:ring-primary/50 cursor-pointer"
+          onCheckedChange={toggleAll}
           onClick={(e) => e.stopPropagation()}
+          className="size-3.5"
         />
       ),
       cell: ({ row }) => (
-        <input
-          type="checkbox"
+        <Checkbox
           checked={selectedTopicsForTag.includes(row.original.name)}
-          onChange={() => toggleTopicForTag(row.original.name)}
-          className="size-3.5 rounded border-white/20 bg-white/5 text-primary focus:ring-primary/50 cursor-pointer"
+          onCheckedChange={() => toggleTopicForTag(row.original.name)}
           onClick={(e) => e.stopPropagation()}
+          className="size-3.5"
         />
       ),
       enableSorting: false,
@@ -135,6 +135,23 @@ export function TopicListTable({ onTopicClick, searchFilter, hideInternal }: Top
       cell: ({ row }) => formatBytes(row.original.size),
     },
     { accessorKey: "retention", header: "Retention" },
+    {
+      id: "actions",
+      header: "",
+      cell: ({ row }) => (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onCloneTopic(row.original.name);
+          }}
+          className="p-1.5 text-slate-500 hover:text-primary transition-colors rounded hover:bg-white/5"
+          title="Clone topic"
+        >
+          <Copy className="size-3.5" />
+        </button>
+      ),
+      enableSorting: false,
+    },
   ];
 
   return (

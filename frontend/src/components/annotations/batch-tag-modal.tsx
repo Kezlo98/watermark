@@ -1,9 +1,16 @@
 import { useState } from "react";
-import { X } from "lucide-react";
 import { useAnnotations } from "@/hooks/use-annotations";
 import { ServiceNameInput } from "./service-name-input";
 import { useAnnotationUIStore } from "@/store/annotations";
 import { annotations } from "../../../wailsjs/go/models";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface BatchTagModalProps {
   topicNames: string[];
@@ -18,8 +25,6 @@ export function BatchTagModal({ topicNames, open, onClose }: BatchTagModalProps)
   const [producers, setProducers] = useState<string[]>([]);
   const [consumers, setConsumers] = useState<string[]>([]);
   const [mode, setMode] = useState<"merge" | "replace">("merge");
-
-  if (!open) return null;
 
   const handleApply = () => {
     const ann = new annotations.TopicAnnotation({
@@ -44,25 +49,17 @@ export function BatchTagModal({ topicNames, open, onClose }: BatchTagModalProps)
   const isSaving = batchSetAnnotation.isPending;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-      <div className="glass-panel w-full max-w-lg">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
-          <h2 className="text-sm font-display font-bold text-white">
+    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>
             Tag{" "}
             <span className="text-primary">{topicNames.length}</span>{" "}
             Topic{topicNames.length > 1 ? "s" : ""}
-          </h2>
-          <button
-            onClick={onClose}
-            className="p-1 text-slate-400 hover:text-white transition-colors"
-          >
-            <X className="size-4" />
-          </button>
-        </div>
+          </DialogTitle>
+        </DialogHeader>
 
-        {/* Body */}
-        <div className="p-6 space-y-5">
+        <DialogBody className="space-y-5">
           {/* Selected topics preview */}
           <div className="space-y-1">
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
@@ -125,10 +122,9 @@ export function BatchTagModal({ topicNames, open, onClose }: BatchTagModalProps)
               variant="consumer"
             />
           </div>
-        </div>
+        </DialogBody>
 
-        {/* Footer */}
-        <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-white/5">
+        <DialogFooter>
           <button
             onClick={onClose}
             className="px-4 py-2 text-sm text-slate-400 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors"
@@ -142,8 +138,8 @@ export function BatchTagModal({ topicNames, open, onClose }: BatchTagModalProps)
           >
             {isSaving ? "Applying..." : "Apply"}
           </button>
-        </div>
-      </div>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

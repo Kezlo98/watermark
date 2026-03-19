@@ -1,8 +1,15 @@
 import { useState, useEffect } from "react";
-import { X } from "lucide-react";
 import { useAnnotations } from "@/hooks/use-annotations";
 import { ServiceNameInput } from "./service-name-input";
 import { annotations } from "../../../wailsjs/go/models";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface AnnotationEditorModalProps {
   topicName: string;
@@ -37,8 +44,6 @@ export function AnnotationEditorModal({
     }
   }, [open, existing?.producers, existing?.consumers, existing?.notes]);
 
-  if (!open) return null;
-
   const handleSave = () => {
     const ann = new annotations.TopicAnnotation({
       producers,
@@ -65,24 +70,16 @@ export function AnnotationEditorModal({
   const isSaving = setAnnotation.isPending;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-      <div className="glass-panel w-full max-w-lg">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
-          <h2 className="text-sm font-display font-bold text-white">
+    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>
             Edit Annotations:{" "}
             <span className="text-primary font-mono">{topicName}</span>
-          </h2>
-          <button
-            onClick={onClose}
-            className="p-1 text-slate-400 hover:text-white transition-colors"
-          >
-            <X className="size-4" />
-          </button>
-        </div>
+          </DialogTitle>
+        </DialogHeader>
 
-        {/* Body */}
-        <div className="p-6 space-y-5">
+        <DialogBody className="space-y-5">
           {/* Producers */}
           <div className="space-y-2">
             <label className="block text-xs font-semibold text-purple-300 uppercase tracking-wider">
@@ -124,10 +121,9 @@ export function AnnotationEditorModal({
               className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-slate-300 font-mono placeholder:text-slate-500 outline-none focus:ring-1 focus:ring-primary/30 transition-all"
             />
           </div>
-        </div>
+        </DialogBody>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-white/5">
+        <DialogFooter className="justify-between">
           <div>
             {hasAnnotation && (
               <button
@@ -154,8 +150,8 @@ export function AnnotationEditorModal({
               {isSaving ? "Saving..." : "Save"}
             </button>
           </div>
-        </div>
-      </div>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

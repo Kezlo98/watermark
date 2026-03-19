@@ -1,7 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Message } from "@/types/kafka";
+import { MessageContextMenu } from "./message-context-menu";
 
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 100] as const;
 
@@ -9,10 +11,15 @@ interface MessagesTableProps {
   messages: Message[];
   selectedMessage: Message | null;
   onSelectMessage: (msg: Message) => void;
+  onReplay?: (msg: Message) => void;
   inspectorOpen?: boolean;
+  selectMode?: boolean;
+  selectedIds?: Set<string>;
+  onToggleSelect?: (msg: Message) => void;
+  onToggleAll?: (msgs: Message[]) => void;
 }
 
-export function MessagesTable({ messages, selectedMessage, onSelectMessage, inspectorOpen = false }: MessagesTableProps) {
+export function MessagesTable({ messages, selectedMessage, onSelectMessage, onReplay, inspectorOpen = false, selectMode, selectedIds, onToggleSelect, onToggleAll }: MessagesTableProps) {
   const [pageSize, setPageSize] = useState(20);
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -20,7 +27,9 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, insp
 
   // Reset page if it's out of bounds after data/pageSize change
   const safePage = Math.min(currentPage, totalPages - 1);
-  if (safePage !== currentPage) setCurrentPage(safePage);
+  useEffect(() => {
+    if (safePage !== currentPage) setCurrentPage(safePage);
+  }, [safePage, currentPage]);
 
   const paginatedMessages = useMemo(() => {
     const start = safePage * pageSize;
@@ -39,6 +48,15 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, insp
         <table className="w-full">
           <thead>
             <tr className="bg-white/5">
+              {selectMode && (
+                <th className="px-3 py-3 w-8">
+                  <Checkbox
+                    checked={paginatedMessages.length > 0 && paginatedMessages.every(m => selectedIds?.has(`${m.partition}-${m.offset}`))}
+                    onCheckedChange={() => onToggleAll?.(paginatedMessages)}
+                    className="size-4"
+                  />
+                </th>
+              )}
               <th className="px-4 py-3 text-left text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wider">P</th>
               <th className="px-4 py-3 text-left text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wider">Offset</th>
               <th className="px-4 py-3 text-left text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wider">Timestamp</th>
@@ -49,29 +67,51 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, insp
           <tbody className="divide-y divide-white/5">
             {paginatedMessages.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-sm text-slate-500 font-mono">
+                <td colSpan={selectMode ? 6 : 5} className="px-4 py-8 text-center text-sm text-slate-500 font-mono">
                   No messages found. Click Refresh to fetch.
                 </td>
               </tr>
             )}
-            {paginatedMessages.map((msg) => (
-              <tr
-                key={`${msg.partition}-${msg.offset}`}
-                onClick={() => onSelectMessage(msg)}
-                className={cn(
-                  "cursor-pointer transition-colors",
-                  selectedMessage?.partition === msg.partition && selectedMessage?.offset === msg.offset
-                    ? "bg-primary/10"
-                    : "hover:bg-white/5"
-                )}
-              >
-                <td className="px-4 py-3 text-sm font-mono text-slate-300">{msg.partition}</td>
-                <td className="px-4 py-3 text-sm font-mono text-slate-300">{msg.offset}</td>
-                <td className="px-4 py-3 text-sm font-mono text-slate-400">{msg.timestamp}</td>
-                <td className="px-4 py-3 text-sm font-mono text-semantic-cyan">{msg.key}</td>
-                <td className="px-4 py-3 text-sm font-mono text-slate-300 truncate max-w-xs">{msg.value}</td>
-              </tr>
-            ))}
+            {paginatedMessages.map((msg) => {
+              const msgKey = `${msg.partition}-${msg.offset}`;
+              const isChecked = selectedIds?.has(msgKey) ?? false;
+              return (
+                <MessageContextMenu
+                  key={msgKey}
+                  onReplay={() => onReplay?.(msg)}
+                  onCopyValue={() => navigator.clipboard.writeText(msg.value)}
+                  onCopyKey={() => navigator.clipboard.writeText(msg.key ?? "")}
+                >
+                  <tr
+                    onClick={() => selectMode ? onToggleSelect?.(msg) : onSelectMessage(msg)}
+                    className={cn(
+                      "cursor-pointer transition-colors",
+                      !selectMode && selectedMessage?.partition === msg.partition && selectedMessage?.offset === msg.offset
+                        ? "bg-primary/10"
+                        : selectMode && isChecked
+                          ? "bg-primary/5"
+                          : "hover:bg-white/5"
+                    )}
+                  >
+                    {selectMode && (
+                      <td className="px-3 py-3 w-8">
+                        <Checkbox
+                          checked={isChecked}
+                          onCheckedChange={() => onToggleSelect?.(msg)}
+                          onClick={(e) => e.stopPropagation()}
+                          className="size-4"
+                        />
+                      </td>
+                    )}
+                    <td className="px-4 py-3 text-sm font-mono text-slate-300">{msg.partition}</td>
+                    <td className="px-4 py-3 text-sm font-mono text-slate-300">{msg.offset}</td>
+                    <td className="px-4 py-3 text-sm font-mono text-slate-400">{msg.timestamp}</td>
+                    <td className="px-4 py-3 text-sm font-mono text-semantic-cyan">{msg.key}</td>
+                    <td className="px-4 py-3 text-sm font-mono text-slate-300 truncate max-w-xs">{msg.value}</td>
+                  </tr>
+                </MessageContextMenu>
+              );
+            })}
           </tbody>
         </table>
       </div>

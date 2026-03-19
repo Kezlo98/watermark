@@ -103,7 +103,7 @@ func (k *KafkaService) CreateTopic(name string, partitions int32, replicas int16
 	k.mu.RLock()
 	defer k.mu.RUnlock()
 
-	if err := k.ensureConnected(); err != nil {
+	if err := k.ensureWritable(); err != nil {
 		return err
 	}
 
@@ -131,7 +131,7 @@ func (k *KafkaService) DeleteTopic(name string) error {
 	k.mu.RLock()
 	defer k.mu.RUnlock()
 
-	if err := k.ensureConnected(); err != nil {
+	if err := k.ensureWritable(); err != nil {
 		return err
 	}
 
