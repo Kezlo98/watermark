@@ -123,18 +123,6 @@
 }
 
 @layer utilities {
-  .font-display {
-    font-family: "Space Grotesk", "Inter", sans-serif;
-  }
-
-  .font-body {
-    font-family: "Inter", sans-serif;
-  }
-
-  .font-mono {
-    font-family: "JetBrains Mono", monospace;
-  }
-
   /* ⌘K Command Palette entrance animation */
   .palette-enter {
     animation: palette-in 150ms ease-out;

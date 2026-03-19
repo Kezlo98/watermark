@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 
 const FETCH_LIMIT_OPTIONS = [50, 100, 200, 500] as const;
 
@@ -143,7 +144,7 @@ export function MessagesFilterBar({
       </div>
 
       {/* Divider */}
-      <div className="h-6 w-px bg-white/10" />
+      <Separator orientation="vertical" className="h-6" />
 
       {/* Refresh */}
       <button
