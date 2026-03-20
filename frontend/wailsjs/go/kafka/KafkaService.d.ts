@@ -13,6 +13,10 @@ export function ConsumeMessagesFromTimestamp(arg1:string,arg2:number,arg3:number
 
 export function CreateTopic(arg1:string,arg2:number,arg3:number,arg4:Record<string, string>):Promise<void>;
 
+export function DeleteRecordsBefore(arg1:string,arg2:number,arg3:number):Promise<Array<kafka.DeleteRecordsResult>>;
+
+export function DeleteRecordsBeforeTimestamp(arg1:string,arg2:number):Promise<Array<kafka.DeleteRecordsResult>>;
+
 export function DeleteTopic(arg1:string):Promise<void>;
 
 export function Disconnect():Promise<void>;
@@ -46,6 +50,8 @@ export function IsConnected():Promise<boolean>;
 export function ProduceMessage(arg1:string,arg2:number,arg3:string,arg4:string,arg5:Record<string, string>):Promise<void>;
 
 export function ProduceMessages(arg1:string,arg2:Array<kafka.ProduceMessageRequest>):Promise<Array<kafka.ProduceResult>>;
+
+export function PurgeTopic(arg1:string):Promise<Array<kafka.DeleteRecordsResult>>;
 
 export function ResetConsumerGroupOffsets(arg1:string,arg2:string):Promise<void>;
 
