@@ -17,9 +17,11 @@ interface MessagesTableProps {
   selectedIds?: Set<string>;
   onToggleSelect?: (msg: Message) => void;
   onToggleAll?: (msgs: Message[]) => void;
+  onDeleteBefore?: (msg: Message) => void;
+  onDeleteBeforeTimestamp?: (msg: Message) => void;
 }
 
-export function MessagesTable({ messages, selectedMessage, onSelectMessage, onReplay, inspectorOpen = false, selectMode, selectedIds, onToggleSelect, onToggleAll }: MessagesTableProps) {
+export function MessagesTable({ messages, selectedMessage, onSelectMessage, onReplay, inspectorOpen = false, selectMode, selectedIds, onToggleSelect, onToggleAll, onDeleteBefore, onDeleteBeforeTimestamp }: MessagesTableProps) {
   const [pageSize, setPageSize] = useState(20);
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -81,6 +83,8 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, onRe
                   onReplay={() => onReplay?.(msg)}
                   onCopyValue={() => navigator.clipboard.writeText(msg.value)}
                   onCopyKey={() => navigator.clipboard.writeText(msg.key ?? "")}
+                  onDeleteBefore={onDeleteBefore ? () => onDeleteBefore(msg) : undefined}
+                  onDeleteBeforeTimestamp={onDeleteBeforeTimestamp ? () => onDeleteBeforeTimestamp(msg) : undefined}
                 >
                   <tr
                     onClick={() => selectMode ? onToggleSelect?.(msg) : onSelectMessage(msg)}

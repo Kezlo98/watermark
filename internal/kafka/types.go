@@ -115,3 +115,10 @@ type ProduceResult struct {
 	Offset    int64  `json:"offset"`
 	Error     string `json:"error,omitempty"`
 }
+
+// DeleteRecordsResult reports the outcome per partition after a delete records call.
+type DeleteRecordsResult struct {
+	Partition    int32  `json:"partition"`
+	NewLowOffset int64  `json:"newLowOffset"`
+	Error        string `json:"error,omitempty"`
+}

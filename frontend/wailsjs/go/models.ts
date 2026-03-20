@@ -274,6 +274,22 @@ export namespace kafka {
 		    return a;
 		}
 	}
+	export class DeleteRecordsResult {
+	    partition: number;
+	    newLowOffset: number;
+	    error?: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new DeleteRecordsResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.partition = source["partition"];
+	        this.newLowOffset = source["newLowOffset"];
+	        this.error = source["error"];
+	    }
+	}
 	export class Message {
 	    partition: number;
 	    offset: number;

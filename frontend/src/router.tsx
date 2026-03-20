@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Toaster } from "sonner";
 import {
   createRootRoute,
@@ -9,7 +9,7 @@ import {
   useParams,
   useRouter,
 } from "@tanstack/react-router";
-import { Plus, Send, ChevronLeft } from "lucide-react";
+import { Plus, ChevronLeft } from "lucide-react";
 import { Sidebar } from "@/components/layout/sidebar";
 import { AppHeader } from "@/components/layout/app-header";
 import { SettingsOverlay } from "@/components/settings/settings-overlay";
@@ -18,6 +18,7 @@ import { usePrefetchOnConnect } from "@/hooks/use-prefetch-on-connect";
 import { useLagAlerts } from "@/hooks/use-lag-alerts";
 import { GetClusters } from "@/lib/wails-client";
 import { useReadOnly } from "@/hooks/use-read-only";
+import { useQueryClient } from "@tanstack/react-query";
 
 /* ====== Dashboard imports ====== */
 import { DashboardMetricCards, BrokerTable } from "@/components/dashboard/dashboard-widgets";
@@ -27,6 +28,8 @@ import { TopicListTable } from "@/components/topics/topic-list-table";
 import { CreateTopicModal } from "@/components/topics/create-topic-modal";
 import { TopicTabs } from "@/components/topics/topic-tabs";
 import { ProduceMessageModal } from "@/components/topics/produce-message-modal";
+import { MessagesActionDropdown } from "@/components/topics/messages-action-dropdown";
+import { DeleteRecordsDialog, type DeleteMode } from "@/components/topics/delete-records-dialog";
 import { SearchInput } from "@/components/shared/search-input";
 import { RefreshButton } from "@/components/shared/refresh-button";
 import { TopicsPage } from "@/pages/topics-page";
@@ -148,7 +151,16 @@ function TopicDetailPage() {
   const router = useRouter();
   const [produceOpen, setProduceOpen] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
+  const [deleteMode, setDeleteMode] = useState<DeleteMode | null>(null);
   const isReadOnly = useReadOnly();
+  const queryClient = useQueryClient();
+
+  const handleDeleteSuccess = useCallback(() => {
+    setDeleteMode(null);
+    // Invalidate all topic-related queries so child tabs refresh
+    queryClient.invalidateQueries({ queryKey: ["messages", topicId] });
+    queryClient.invalidateQueries({ queryKey: ["topic-partitions", topicId] });
+  }, [queryClient, topicId]);
 
   return (
     <div className="space-y-6">
@@ -172,13 +184,11 @@ function TopicDetailPage() {
         <div className="flex items-center gap-2">
           <RefreshButton queryKeys={[["topic-config", topicId], ["topic-partitions", topicId]]} />
           {!isReadOnly && (
-            <button
-              onClick={() => setProduceOpen(true)}
-              className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors"
-            >
-              <Send className="size-3.5" />
-              Produce Message
-            </button>
+            <MessagesActionDropdown
+              onProduce={() => setProduceOpen(true)}
+              onDeleteBeforeDate={() => setDeleteMode({ type: "beforeTimestamp", topicName: topicId, timestampMs: 0, timestampLabel: "" })}
+              onPurgeTopic={() => setDeleteMode({ type: "purge", topicName: topicId })}
+            />
           )}
         </div>
       </div>
@@ -189,6 +199,12 @@ function TopicDetailPage() {
         isOpen={produceOpen}
         onClose={() => setProduceOpen(false)}
         topicName={topicId}
+      />
+
+      <DeleteRecordsDialog
+        mode={deleteMode}
+        onClose={() => setDeleteMode(null)}
+        onSuccess={handleDeleteSuccess}
       />
 
       <AnnotationEditorModal

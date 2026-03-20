@@ -9,7 +9,7 @@
 | **Dashboard** | Cluster health metrics, broker table, controller highlight |
 | **Topics Index** | Searchable grid, create/delete, hide internal toggle |
 | **Topic Detail** | 5 tabs: Messages, Consumers, Partitions, Config, ACLs |
-| **Messages** | Live-tail, produce, Monaco inspector, filters (offset/date/body) |
+| **Messages** | Live-tail, produce, Monaco inspector, filters (offset/date/body); delete records (offset-based, timestamp-based, purge) |
 | **Consumer Groups** | Index + detail with lag, members, reset offsets, drop group |
 | **Schema Registry** | Subject list, version history, compatibility badge, Monaco viewer |
 | **Settings** | Clusters (SASL/SCRAM/SSL/AWS MSK IAM), appearance, import/export |

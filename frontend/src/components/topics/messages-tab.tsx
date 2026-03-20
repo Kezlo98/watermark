@@ -9,6 +9,7 @@ import { MessagesTable } from "./messages-table";
 import { MessageInspector } from "./message-inspector";
 import { MessagesFilterBar } from "./messages-filter-bar";
 import { ProduceMessageModal } from "./produce-message-modal";
+import { DeleteRecordsDialog, type DeleteMode } from "./delete-records-dialog";
 import { useReadOnly } from "@/hooks/use-read-only";
 
 const LIVE_TAIL_MAX_MESSAGES = 500;
@@ -48,9 +49,29 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const [replayMessage, setReplayMessage] = useState<Message | null>(null);
   const [batchReplayMessages, setBatchReplayMessages] = useState<Message[] | null>(null);
+  const [produceOpen, setProduceOpen] = useState(false);
+  const [deleteMode, setDeleteMode] = useState<DeleteMode | null>(null);
 
   const openSingleReplay = (msg: Message) => { setBatchReplayMessages(null); setReplayMessage(msg); };
   const openBatchReplay = (msgs: Message[]) => { setReplayMessage(null); setBatchReplayMessages(msgs); };
+
+  // --- Delete handlers ---
+  const handleDeleteBefore = (msg: Message) => {
+    setDeleteMode({ type: "beforeOffset", topicName, partition: msg.partition, offset: msg.offset });
+  };
+  const handleDeleteBeforeTimestamp = (msg: Message) => {
+    setDeleteMode({ type: "beforeTimestamp", topicName, timestampMs: new Date(msg.timestamp).getTime(), timestampLabel: msg.timestamp });
+  };
+  const handleDeleteBeforeDate = () => {
+    setDeleteMode({ type: "beforeTimestamp", topicName, timestampMs: 0, timestampLabel: "" });
+  };
+  const handlePurgeTopic = () => {
+    setDeleteMode({ type: "purge", topicName });
+  };
+  const handleDeleteSuccess = () => {
+    setDeleteMode(null);
+    refetch();
+  };
 
   // --- Select mode state ---
   const [selectMode, setSelectMode] = useState(false);
@@ -277,6 +298,8 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
         selectedIds={selectedIds}
         onToggleSelect={toggleSelection}
         onToggleAll={toggleSelectAll}
+        onDeleteBefore={!isReadOnly && !liveTailActive ? handleDeleteBefore : undefined}
+        onDeleteBeforeTimestamp={!isReadOnly && !liveTailActive ? handleDeleteBeforeTimestamp : undefined}
       />
 
       {selectedMessage && (
@@ -290,11 +313,17 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
       )}
 
       <ProduceMessageModal
-        isOpen={!!replayMessage || !!batchReplayMessages}
-        onClose={() => { setReplayMessage(null); setBatchReplayMessages(null); }}
+        isOpen={produceOpen || !!replayMessage || !!batchReplayMessages}
+        onClose={() => { setProduceOpen(false); setReplayMessage(null); setBatchReplayMessages(null); }}
         topicName={topicName}
         replaySource={replayMessage ?? undefined}
         batchReplaySource={batchReplayMessages ?? undefined}
+      />
+
+      <DeleteRecordsDialog
+        mode={deleteMode}
+        onClose={() => setDeleteMode(null)}
+        onSuccess={handleDeleteSuccess}
       />
     </div>
   );
