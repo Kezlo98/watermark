@@ -46,6 +46,10 @@ export function DeleteRecordsDialog({ mode, onClose, onSuccess }: DeleteRecordsD
         results = await DeleteRecordsBefore(mode.topicName, mode.partition, mode.offset);
       } else if (mode.type === "beforeTimestamp") {
         const tsMs = mode.timestampMs === 0 ? new Date(pickedDate).getTime() : mode.timestampMs;
+        if (mode.timestampMs === 0 && !isFinite(tsMs)) {
+          toast.error("Invalid date — please select a valid date and time.");
+          return;
+        }
         results = await DeleteRecordsBeforeTimestamp(mode.topicName, tsMs);
       } else {
         results = await PurgeTopic(mode.topicName);
@@ -59,6 +63,7 @@ export function DeleteRecordsDialog({ mode, onClose, onSuccess }: DeleteRecordsD
 
       if (!results || results.length === 0) {
         toast.info("No records matched — nothing was deleted.");
+        onSuccess();
       } else if (failed.length === 0) {
         if (mode.type === "beforeOffset") {
           toast.success(`Deleted records before offset ${mode.offset} on partition ${mode.partition}`);
@@ -68,9 +73,9 @@ export function DeleteRecordsDialog({ mode, onClose, onSuccess }: DeleteRecordsD
         } else {
           toast.success(`Topic "${mode.topicName}" purged`);
         }
+        onSuccess();
       }
-
-      onSuccess();
+      // If failed.length > 0, do NOT call onSuccess — keep dialog open for retry
     } catch (err) {
       // Keep dialog open so user can retry — only show error toast
       toast.error(`Delete failed: ${err instanceof Error ? err.message : String(err)}`);

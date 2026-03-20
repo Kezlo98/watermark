@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Toaster } from "sonner";
 import {
   createRootRoute,
@@ -18,6 +18,7 @@ import { usePrefetchOnConnect } from "@/hooks/use-prefetch-on-connect";
 import { useLagAlerts } from "@/hooks/use-lag-alerts";
 import { GetClusters } from "@/lib/wails-client";
 import { useReadOnly } from "@/hooks/use-read-only";
+import { useQueryClient } from "@tanstack/react-query";
 
 /* ====== Dashboard imports ====== */
 import { DashboardMetricCards, BrokerTable } from "@/components/dashboard/dashboard-widgets";
@@ -152,6 +153,14 @@ function TopicDetailPage() {
   const [editorOpen, setEditorOpen] = useState(false);
   const [deleteMode, setDeleteMode] = useState<DeleteMode | null>(null);
   const isReadOnly = useReadOnly();
+  const queryClient = useQueryClient();
+
+  const handleDeleteSuccess = useCallback(() => {
+    setDeleteMode(null);
+    // Invalidate all topic-related queries so child tabs refresh
+    queryClient.invalidateQueries({ queryKey: ["messages", topicId] });
+    queryClient.invalidateQueries({ queryKey: ["topic-partitions", topicId] });
+  }, [queryClient, topicId]);
 
   return (
     <div className="space-y-6">
@@ -195,7 +204,7 @@ function TopicDetailPage() {
       <DeleteRecordsDialog
         mode={deleteMode}
         onClose={() => setDeleteMode(null)}
-        onSuccess={() => setDeleteMode(null)}
+        onSuccess={handleDeleteSuccess}
       />
 
       <AnnotationEditorModal

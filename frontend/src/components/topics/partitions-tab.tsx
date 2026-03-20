@@ -76,7 +76,7 @@ interface PartitionsTabProps {
 }
 
 export function PartitionsTab({ topicName }: PartitionsTabProps) {
-  const { data: partitions = [] } = useKafkaQuery(
+  const { data: partitions = [], refetch } = useKafkaQuery(
     ["topic-partitions", topicName],
     () => GetTopicPartitions(topicName),
   );
@@ -106,7 +106,7 @@ export function PartitionsTab({ topicName }: PartitionsTabProps) {
       <DeleteRecordsDialog
         mode={deleteMode}
         onClose={() => setDeleteMode(null)}
-        onSuccess={() => setDeleteMode(null)}
+        onSuccess={() => { setDeleteMode(null); refetch(); }}
       />
     </>
   );
