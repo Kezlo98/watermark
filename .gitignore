@@ -5,3 +5,5 @@ frontend/dist
 .idea
 
 plans
+# AI agent session data
+.claude/
