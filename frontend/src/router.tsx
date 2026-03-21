@@ -53,6 +53,9 @@ import { SubjectList } from "@/components/schemas/subject-list";
 import { SchemaViewer } from "@/components/schemas/schema-viewer";
 import { VersionHistory } from "@/components/schemas/version-history";
 
+/* ====== Alerts imports ====== */
+import { AlertsPage } from "@/components/alerts/alerts-page";
+
 /* ========================================================================= */
 /*  Root layout — App Shell                                                  */
 /* ========================================================================= */
@@ -375,6 +378,15 @@ const schemasRoute = createRoute({
 });
 
 /* ========================================================================= */
+/*  Alerts                                                                    */
+/* ========================================================================= */
+const alertsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/alerts",
+  component: AlertsPage,
+});
+
+/* ========================================================================= */
 /*  Router tree                                                               */
 /* ========================================================================= */
 const routeTree = rootRoute.addChildren([
@@ -383,6 +395,7 @@ const routeTree = rootRoute.addChildren([
   topicDetailRoute,
   consumersRoute,
   consumerDetailRoute,
+  alertsRoute,
   schemasRoute,
 ]);
 

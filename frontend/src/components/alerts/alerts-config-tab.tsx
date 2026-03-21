@@ -12,25 +12,19 @@ import {
   GetConsumerGroups,
   GetCluster,
 } from "@/lib/wails-client";
+import { globMatch } from "@/lib/glob-match";
 import type { AlertRule, ClusterAlertConfig } from "@/types/lag-alerts";
 
 const POLL_INTERVALS = [
-  { label: "15s", value: 15 },
+  { label: "10s", value: 10 },
   { label: "30s", value: 30 },
-  { label: "60s", value: 60 },
-  { label: "120s", value: 120 },
+  { label: "1min", value: 60 },
+  { label: "2min", value: 120 },
+  { label: "5min", value: 300 },
 ];
 
-/** Glob-match a pattern against a string (client-side preview). */
-function globMatch(pattern: string, str: string): boolean {
-  const escaped = pattern.replace(/[.+^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*").replace(/\?/g, ".");
-  return new RegExp(`^${escaped}$`).test(str);
-}
-
-/**
- * Alerts settings tab — manage per-cluster lag alert rules and global toggles.
- */
-export function AlertsForm() {
+/** Alerts config tab — migrated from settings alerts-form with recording toggle. */
+export function AlertsConfigTab() {
   const { activeClusterId, connectionStatus } = useSettingsStore();
   const { alertConfig, loadConfig } = useLagAlertsStore();
   const [groups, setGroups] = useState<string[]>([]);
@@ -39,7 +33,6 @@ export function AlertsForm() {
 
   const connected = connectionStatus === "connected" && !!activeClusterId;
 
-  // Load config and consumer groups for live preview
   useEffect(() => {
     if (!activeClusterId) return;
     loadConfig(activeClusterId);
@@ -147,6 +140,13 @@ export function AlertsForm() {
           onChange={() => handleToggle("notificationSound")}
           disabled={saving || !cfg.notifyOS}
         />
+        <Toggle
+          label="Record Lag for Charts"
+          description="Enable time-series recording for the Charts tab"
+          checked={cfg.recordingEnabled}
+          onChange={() => handleToggle("recordingEnabled")}
+          disabled={saving || !cfg.enabled}
+        />
       </div>
 
       {/* Poll interval */}
@@ -191,7 +191,6 @@ export function AlertsForm() {
           </p>
         ) : (
           <div className="space-y-3">
-            {/* Column headers */}
             <div className="flex items-center gap-2 px-3 text-[10px] text-slate-500 uppercase tracking-wider">
               <span className="w-2 shrink-0" />
               <span className="flex-1">Pattern</span>
@@ -238,12 +237,7 @@ function Toggle({
         <Label htmlFor={id} className="text-sm text-white font-normal cursor-pointer">{label}</Label>
         <div className="text-xs text-slate-500">{description}</div>
       </div>
-      <Switch
-        id={id}
-        checked={checked}
-        onCheckedChange={onChange}
-        disabled={disabled}
-      />
+      <Switch id={id} checked={checked} onCheckedChange={onChange} disabled={disabled} />
     </div>
   );
 }
@@ -264,7 +258,7 @@ function RuleRow({
   const [local, setLocal] = useState(rule);
   const [error, setError] = useState("");
 
-  const matched = groups.filter((g) => globMatch(local.groupPattern, g));
+  const matched = groups.filter((g) => globMatch(g, local.groupPattern));
 
   const handleBlur = () => {
     if (local.warningLag <= 0 || local.criticalLag <= 0) {
@@ -282,15 +276,12 @@ function RuleRow({
   return (
     <div className="p-3 bg-white/3 border border-white/8 rounded-lg space-y-2">
       <div className="flex items-center gap-2">
-        {/* Enabled toggle */}
         <button
           onClick={() => { const u = { ...local, enabled: !local.enabled }; setLocal(u); onUpdate(u); }}
           disabled={disabled}
           className={`w-2 h-2 rounded-full shrink-0 ${local.enabled ? "bg-primary" : "bg-white/20"}`}
           title={local.enabled ? "Enabled" : "Disabled"}
         />
-
-        {/* Pattern */}
         <input
           value={local.groupPattern}
           onChange={(e) => setLocal({ ...local, groupPattern: e.target.value })}
@@ -298,8 +289,6 @@ function RuleRow({
           placeholder="Group pattern (e.g. payment-*)"
           className="flex-1 px-2 py-1 text-xs bg-white/5 border border-white/10 rounded text-white placeholder-slate-600 focus:outline-none focus:border-white/30 font-mono"
         />
-
-        {/* Warning */}
         <input
           type="number"
           min={1}
@@ -309,8 +298,6 @@ function RuleRow({
           title="Warning lag threshold"
           className="w-20 px-2 py-1 text-xs bg-white/5 border border-white/10 rounded text-yellow-400 focus:outline-none focus:border-white/30"
         />
-
-        {/* Critical */}
         <input
           type="number"
           min={1}
@@ -320,8 +307,6 @@ function RuleRow({
           title="Critical lag threshold"
           className="w-20 px-2 py-1 text-xs bg-white/5 border border-white/10 rounded text-semantic-red focus:outline-none focus:border-white/30"
         />
-
-        {/* Delete */}
         <button
           onClick={onDelete}
           disabled={disabled}
@@ -331,10 +316,7 @@ function RuleRow({
           ✕
         </button>
       </div>
-
       {error && <p className="text-xs text-semantic-red">{error}</p>}
-
-      {/* Live preview */}
       {local.groupPattern && (
         <div className="text-xs text-slate-500">
           {matched.length === 0

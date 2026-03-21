@@ -1,8 +1,10 @@
+import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Tab {
   id: string;
   label: string;
+  icon?: LucideIcon;
   count?: number;
 }
 
@@ -35,6 +37,7 @@ export function TabNavigation({
                 : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
             )}
           >
+            {tab.icon && <tab.icon className="size-3.5 shrink-0" />}
             {tab.label}
             {tab.count !== undefined && (
               <span className="text-xs text-slate-500 font-mono">({tab.count})</span>
@@ -52,12 +55,13 @@ export function TabNavigation({
           key={tab.id}
           onClick={() => onTabChange(tab.id)}
           className={cn(
-            "relative px-4 py-2.5 text-sm font-medium transition-colors",
+            "relative flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium transition-colors",
             activeTab === tab.id
               ? "text-primary"
               : "text-slate-400 hover:text-slate-200"
           )}
         >
+          {tab.icon && <tab.icon className="size-3.5 shrink-0" />}
           {tab.label}
           {tab.count !== undefined && (
             <span className="ml-1 text-xs text-slate-500 font-mono">({tab.count})</span>
@@ -70,3 +74,4 @@ export function TabNavigation({
     </nav>
   );
 }
+
