@@ -54,7 +54,7 @@ export function LagMonitorTab() {
     <div className="flex flex-col gap-4 h-full min-h-0">
       <div className="flex justify-between items-center text-xs shrink-0">
         <p className="text-slate-500">
-          Showing {filtered.length} of {groups?.length ?? 0} groups — auto-refreshing every 10s
+          Showing {filtered.length} of {groups?.length ?? 0} groups
         </p>
         <button
           onClick={() => setShowFilters(!showFilters)}

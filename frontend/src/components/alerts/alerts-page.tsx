@@ -6,6 +6,9 @@ import { LagRankingTab } from "./lag-ranking-tab";
 import { AlertHistoryTab } from "./alert-history-tab";
 import { LagChartsTab } from "./lag-charts-tab";
 import { AlertsConfigTab } from "./alerts-config-tab";
+import { AlertRefreshControls } from "./alert-refresh-controls";
+import { useAlertRefreshPrefs } from "@/hooks/use-alert-refresh-prefs";
+import { useRefreshCountdown } from "@/hooks/use-refresh-countdown";
 import { useSettingsStore } from "@/store/settings";
 import { useLagAlertsStore } from "@/store/lag-alerts";
 
@@ -16,10 +19,18 @@ const ALERT_TABS = [
   { id: "config", label: "Config", icon: Settings },
 ];
 
+/** Tabs that have auto-refreshing data queries. */
+const REFRESHABLE_TABS = new Set(["monitor", "charts"]);
+
 export function AlertsPage() {
   const [activeTab, setActiveTab] = useState("monitor");
   const { activeClusterId } = useSettingsStore();
   const { loadConfig } = useLagAlertsStore();
+  const prefs = useAlertRefreshPrefs();
+  const { secondsLeft, refresh } = useRefreshCountdown(
+    prefs.intervalMs,
+    prefs.enabled,
+  );
 
   useEffect(() => {
     if (activeClusterId) {
@@ -29,9 +40,21 @@ export function AlertsPage() {
 
   return (
     <div className="h-[calc(100vh-128px)] flex flex-col">
-      <h1 className="text-3xl font-mono font-bold uppercase tracking-wider mb-4 shrink-0">
-        Alerts
-      </h1>
+      <div className="flex items-center justify-between mb-4 shrink-0">
+        <h1 className="text-3xl font-mono font-bold uppercase tracking-wider">
+          Alerts
+        </h1>
+        {REFRESHABLE_TABS.has(activeTab) && (
+          <AlertRefreshControls
+            enabled={prefs.enabled}
+            intervalMs={prefs.intervalMs}
+            secondsLeft={secondsLeft}
+            onToggle={prefs.toggle}
+            onIntervalChange={prefs.setIntervalMs}
+            onRefresh={refresh}
+          />
+        )}
+      </div>
 
       <TabNavigation
         tabs={ALERT_TABS}
@@ -66,4 +89,6 @@ export function AlertsPage() {
     </div>
   );
 }
+
+
 
