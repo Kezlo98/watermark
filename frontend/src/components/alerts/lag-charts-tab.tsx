@@ -1,68 +1,45 @@
-import { useState, useMemo } from "react";
-import {
-  Area,
-  AreaChart,
-  Line,
-  LineChart,
-  Bar,
-  BarChart,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-} from "recharts";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@/components/ui/chart";
+/**
+ * Charts tab — multi-entity interactive time-series lag charts.
+ * Supports up to 5 overlaid entities with persistence, color picker, and visibility toggles.
+ */
+
+import { useMemo, useEffect } from "react";
 import { useKafkaQuery } from "@/hooks/use-kafka-query";
-import { useLagTimeSeries } from "@/hooks/use-lag-time-series";
+import { useMultiLagTimeSeries } from "@/hooks/use-multi-lag-time-series";
+import { useChartPreferences } from "@/hooks/use-chart-preferences";
 import { useLagAlertsStore } from "@/store/lag-alerts";
+import { useSettingsStore } from "@/store/settings";
 import {
   GetAllGroupsLagDetail,
   GetConsumerGroups,
 } from "@/lib/wails-client";
-import {
-  ChartControls,
-  type ChartType,
-  type TimeWindow,
-  type ViewMode,
-} from "./chart-controls";
+import { ChartControls } from "./chart-controls";
+import { ChartAreaRenderer } from "./chart-area-renderer";
+import { ChartLineRenderer } from "./chart-line-renderer";
+import { ChartBarRenderer } from "./chart-bar-renderer";
+import { ChartFooterLegend } from "./chart-footer-legend";
 import { BarChart3 } from "lucide-react";
 import type { TopicLagSummary } from "@/types/lag-alerts";
-
-const chartConfig: ChartConfig = {
-  lag: {
-    label: "Lag",
-    color: "var(--primary)",
-  },
-};
-
-function formatTimestamp(ts: string, window: string): string {
-  const date = new Date(ts);
-  if (["1h", "12h", "1d"].includes(window)) {
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  }
-  return date.toLocaleDateString([], { month: "short", day: "numeric" });
-}
-
-function formatLag(value: number): string {
-  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
-  if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
-  return String(value);
-}
 
 /** Charts tab — interactive time-series lag charts. */
 export function LagChartsTab() {
   const { alertConfig } = useLagAlertsStore();
   const recordingEnabled = alertConfig?.recordingEnabled ?? false;
   const pollInterval = (alertConfig?.pollIntervalSec ?? 30) * 1000;
+  const clusterId = useSettingsStore((s) => s.activeClusterId);
 
-  const [mode, setMode] = useState<ViewMode>("topic");
-  const [selectedEntity, setSelectedEntity] = useState("");
-  const [timeWindow, setTimeWindow] = useState<TimeWindow>("1h");
-  const [chartType, setChartType] = useState<ChartType>("area");
+  // Persistent chart preferences (entities stored per mode)
+  const {
+    prefs,
+    entities,
+    updatePrefs,
+    addEntity,
+    removeEntity,
+    toggleVisibility,
+    swapColor,
+    setMode,
+    validateEntities,
+  } = useChartPreferences(clusterId);
 
   // Fetch entity lists for selector dropdown
   const { data: topicLags } = useKafkaQuery<TopicLagSummary[]>(
@@ -76,35 +53,37 @@ export function LagChartsTab() {
     { refetchInterval: 30_000 },
   );
 
-  const entities = useMemo(() => {
-    if (mode === "topic") {
+  const availableEntities = useMemo(() => {
+    if (prefs.mode === "topic") {
       return (topicLags ?? []).map((t) => t.topic).sort();
     }
     return (consumerGroups ?? []).map((g) => g.groupId).sort();
-  }, [mode, topicLags, consumerGroups]);
+  }, [prefs.mode, topicLags, consumerGroups]);
 
-  // Fetch time-series data
-  const { data: tsData } = useLagTimeSeries({
-    mode,
-    name: selectedEntity,
-    window: timeWindow,
+  // Validate persisted entities against current available list
+  useEffect(() => {
+    if (availableEntities.length > 0) {
+      validateEntities(availableEntities);
+    }
+  }, [availableEntities, validateEntities]);
+
+  // Multi-entity time-series data
+  const { data: mergedData, isLoading } = useMultiLagTimeSeries({
+    mode: prefs.mode,
+    entities,
+    window: prefs.timeWindow,
     refreshInterval: pollInterval,
-    enabled: recordingEnabled && !!selectedEntity,
+    enabled: recordingEnabled && entities.length > 0,
   });
 
-  const chartData = useMemo(() => {
-    if (!tsData) return [];
-    return (tsData as Array<{ timestamp: string; lag: number }>).map((p) => ({
-      timestamp: p.timestamp,
-      lag: p.lag,
-    }));
-  }, [tsData]);
-
-  // Handle mode change — reset entity
-  const handleModeChange = (m: ViewMode) => {
-    setMode(m);
-    setSelectedEntity("");
-  };
+  // Visible entities for chart rendering
+  const visibleEntities = useMemo(
+    () =>
+      entities
+        .map((e, i) => ({ ...e, originalIndex: i }))
+        .filter((e) => e.visible),
+    [entities],
+  );
 
   // Empty states
   if (alertConfig === null) {
@@ -136,158 +115,60 @@ export function LagChartsTab() {
   return (
     <div className="space-y-4">
       <ChartControls
-        mode={mode}
-        onModeChange={handleModeChange}
-        entities={entities}
-        selectedEntity={selectedEntity}
-        onEntityChange={setSelectedEntity}
-        timeWindow={timeWindow}
-        onTimeWindowChange={setTimeWindow}
-        chartType={chartType}
-        onChartTypeChange={setChartType}
+        mode={prefs.mode}
+        onModeChange={setMode}
+        entities={availableEntities}
+        selectedEntities={entities}
+        onAddEntity={addEntity}
+        timeWindow={prefs.timeWindow}
+        onTimeWindowChange={(w) => updatePrefs({ timeWindow: w })}
+        chartType={prefs.chartType}
+        onChartTypeChange={(t) => updatePrefs({ chartType: t })}
       />
 
-      {!selectedEntity ? (
+      {entities.length === 0 ? (
         <div className="py-16 text-center text-sm text-slate-500">
-          Select a {mode} to view its lag chart.
-        </div>
-      ) : chartData.length === 0 ? (
-        <div className="py-16 text-center text-sm text-slate-500">
-          Recording started — waiting for data...
+          Add a {prefs.mode} to start charting.
         </div>
       ) : (
-        <ChartContainer config={chartConfig} className="h-[400px] w-full">
-          {chartType === "area" ? (
-            <AreaChart 
-              accessibilityLayer 
-              data={chartData}
-              margin={{ left: 12, right: 12 }}
-            >
-              <defs>
-                <linearGradient id="fillLag" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--color-lag)" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="var(--color-lag)" stopOpacity={0.1} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeOpacity={0.5} />
-              <XAxis
-                dataKey="timestamp"
-                tickFormatter={(t) => formatTimestamp(t, timeWindow)}
-                stroke="hsl(var(--muted-foreground))"
-                fontSize={11}
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                minTickGap={32}
-              />
-              <YAxis
-                tickFormatter={formatLag}
-                stroke="hsl(var(--muted-foreground))"
-                fontSize={11}
-                tickLine={false}
-                axisLine={false}
-              />
-              <ChartTooltip 
-                cursor={false}
-                content={
-                  <ChartTooltipContent 
-                    indicator="dot" 
-                    labelFormatter={(value) => new Date(value).toLocaleString()}
-                  />
-                } 
-              />
-              <Area
-                type="monotone"
-                dataKey="lag"
-                fill="url(#fillLag)"
-                stroke="var(--color-lag)"
-                strokeWidth={2}
-                activeDot={{ r: 4 }}
-              />
-            </AreaChart>
-          ) : chartType === "line" ? (
-            <LineChart 
-              accessibilityLayer 
-              data={chartData}
-              margin={{ left: 12, right: 12 }}
-            >
-              <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeOpacity={0.5} />
-              <XAxis
-                dataKey="timestamp"
-                tickFormatter={(t) => formatTimestamp(t, timeWindow)}
-                stroke="hsl(var(--muted-foreground))"
-                fontSize={11}
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                minTickGap={32}
-              />
-              <YAxis
-                tickFormatter={formatLag}
-                stroke="hsl(var(--muted-foreground))"
-                fontSize={11}
-                tickLine={false}
-                axisLine={false}
-              />
-              <ChartTooltip 
-                cursor={false}
-                content={
-                  <ChartTooltipContent 
-                    indicator="dot" 
-                    labelFormatter={(value) => new Date(value).toLocaleString()}
-                  />
-                } 
-              />
-              <Line
-                type="monotone"
-                dataKey="lag"
-                stroke="var(--color-lag)"
-                strokeWidth={2}
-                dot={false}
-                activeDot={{ r: 4 }}
-              />
-            </LineChart>
+        <>
+          {isLoading && mergedData.length === 0 ? (
+            <div className="py-16 text-center text-sm text-slate-500">
+              Recording started — waiting for data...
+            </div>
+          ) : mergedData.length === 0 ? (
+            <div className="py-16 text-center text-sm text-slate-500">
+              No lag data available for the selected {prefs.mode === "topic" ? "topics" : "groups"} in this time window.
+            </div>
+          ) : prefs.chartType === "area" ? (
+            <ChartAreaRenderer
+              data={mergedData}
+              entities={visibleEntities}
+              allEntities={entities}
+              timeWindow={prefs.timeWindow}
+            />
+          ) : prefs.chartType === "line" ? (
+            <ChartLineRenderer
+              data={mergedData}
+              entities={visibleEntities}
+              allEntities={entities}
+              timeWindow={prefs.timeWindow}
+            />
           ) : (
-            <BarChart 
-              accessibilityLayer 
-              data={chartData}
-              margin={{ left: 12, right: 12 }}
-            >
-              <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeOpacity={0.5} />
-              <XAxis
-                dataKey="timestamp"
-                tickFormatter={(t) => formatTimestamp(t, timeWindow)}
-                stroke="hsl(var(--muted-foreground))"
-                fontSize={11}
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                minTickGap={32}
-              />
-              <YAxis
-                tickFormatter={formatLag}
-                stroke="hsl(var(--muted-foreground))"
-                fontSize={11}
-                tickLine={false}
-                axisLine={false}
-              />
-              <ChartTooltip 
-                cursor={false}
-                content={
-                  <ChartTooltipContent 
-                    indicator="dot" 
-                    labelFormatter={(value) => new Date(value).toLocaleString()}
-                  />
-                } 
-              />
-              <Bar
-                dataKey="lag"
-                fill="var(--color-lag)"
-                radius={[2, 2, 0, 0]}
-              />
-            </BarChart>
+            <ChartBarRenderer
+              data={mergedData}
+              entities={visibleEntities}
+              allEntities={entities}
+              timeWindow={prefs.timeWindow}
+            />
           )}
-        </ChartContainer>
+          <ChartFooterLegend
+            entities={entities}
+            onToggleVisibility={toggleVisibility}
+            onRemove={removeEntity}
+            onSwapColor={swapColor}
+          />
+        </>
       )}
     </div>
   );

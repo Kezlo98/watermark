@@ -15,13 +15,6 @@ import {
 import { globMatch } from "@/lib/glob-match";
 import type { AlertRule, ClusterAlertConfig } from "@/types/lag-alerts";
 
-const POLL_INTERVALS = [
-  { label: "10s", value: 10 },
-  { label: "30s", value: 30 },
-  { label: "1min", value: 60 },
-  { label: "2min", value: 120 },
-  { label: "5min", value: 300 },
-];
 
 /** Alerts config tab — migrated from settings alerts-form with recording toggle. */
 export function AlertsConfigTab() {
@@ -69,9 +62,6 @@ export function AlertsConfigTab() {
     saveConfig({ ...cfg, [field]: !cfg[field as keyof typeof cfg] });
   };
 
-  const handlePollInterval = (v: number) => {
-    saveConfig({ ...cfg, pollIntervalSec: v });
-  };
 
   const handleAddRule = async () => {
     if (!activeClusterId) return;
@@ -149,26 +139,6 @@ export function AlertsConfigTab() {
         />
       </div>
 
-      {/* Poll interval */}
-      <div>
-        <label className="block text-xs text-slate-400 mb-2">Poll Interval</label>
-        <div className="flex gap-2">
-          {POLL_INTERVALS.map((opt) => (
-            <button
-              key={opt.value}
-              onClick={() => handlePollInterval(opt.value)}
-              disabled={saving}
-              className={`px-3 py-1.5 text-xs rounded border transition-colors ${
-                cfg.pollIntervalSec === opt.value
-                  ? "bg-primary/20 text-primary border-primary/40"
-                  : "bg-white/5 text-slate-400 border-white/10 hover:border-white/20"
-              }`}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
-      </div>
 
       {/* Rules table */}
       <div>

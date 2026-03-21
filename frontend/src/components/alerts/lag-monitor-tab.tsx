@@ -2,8 +2,14 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Filter } from "lucide-react";
 import { useKafkaQuery } from "@/hooks/use-kafka-query";
+import { Activity } from "lucide-react";
 import { GetConsumerGroups } from "@/lib/wails-client";
 import { cn } from "@/lib/utils";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { globMatch } from "@/lib/glob-match";
 import { useSettingsStore } from "@/store/settings";
 import { useGroupLagConfig } from "@/hooks/use-group-lag-config";
@@ -51,31 +57,36 @@ export function LagMonitorTab() {
   }, [groups, config]);
 
   return (
-    <div className="flex flex-col gap-4 h-full min-h-0">
+    <div className="flex flex-col gap-3 h-[256px]">
       <div className="flex justify-between items-center text-xs shrink-0">
-        <p className="text-slate-500">
-          Showing {filtered.length} of {groups?.length ?? 0} groups — auto-refreshing every 10s
-        </p>
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className={cn(
-            "flex items-center gap-1.5 px-2.5 py-1 text-slate-400 hover:text-white rounded border border-transparent hover:border-white/10 hover:bg-white/5 transition-all",
-            showFilters && "bg-white/5 border-white/10 text-white"
-          )}
-        >
-          <Filter className="size-3" />
-          {showFilters ? "Hide Filters" : "Filter Config"}
-        </button>
+        <h2 className="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+          <Activity className="size-4 text-emerald-400" />
+          Consumer Lag Ranking
+        </h2>
+        <Popover open={showFilters} onOpenChange={setShowFilters}>
+          <PopoverTrigger asChild>
+            <button
+              className={cn(
+                "flex items-center gap-1.5 px-2.5 py-1 text-slate-400 hover:text-white rounded border border-transparent hover:border-white/10 hover:bg-white/5 transition-all outline-none",
+                showFilters && "bg-white/5 border-white/10 text-white"
+              )}
+            >
+              <Filter className="size-3" />
+              Filter Config
+            </button>
+          </PopoverTrigger>
+          <PopoverContent align="end" className="w-[400px] p-0 border-white/10 bg-[#0c0c0c]">
+            <RankingConfigPanel config={config} onUpdate={updateConfig} />
+          </PopoverContent>
+        </Popover>
       </div>
 
-      {showFilters && <RankingConfigPanel config={config} onUpdate={updateConfig} />}
-
       {!isSuccess ? (
-        <div className="py-12 text-center text-slate-500 text-sm">
+        <div className="flex-1 flex items-center justify-center text-slate-500 text-sm glass-panel py-8">
           Connect to a cluster to view consumer group lag.
         </div>
       ) : filtered.length === 0 ? (
-        <div className="py-12 text-center text-slate-500 text-sm">
+        <div className="flex-1 flex items-center justify-center text-slate-500 text-sm glass-panel py-8">
           No consumer groups match current filters.
         </div>
       ) : (
@@ -84,15 +95,15 @@ export function LagMonitorTab() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-white/5 text-xs text-slate-500 uppercase tracking-wider">
-                  <th className="px-4 py-3 text-center font-medium w-12">#</th>
-                  <th className="px-4 py-3 text-left font-medium">Group ID</th>
-                  <th className="px-4 py-3 text-left font-medium">State</th>
-                  <th className="px-4 py-3 text-right font-medium">Members</th>
-                  <th className="px-4 py-3 text-right font-medium">Total Lag</th>
+                  <th className="px-3 py-2 text-center font-medium w-12">#</th>
+                  <th className="px-3 py-2 text-left font-medium">Group ID</th>
+                  <th className="px-3 py-2 text-left font-medium">State</th>
+                  <th className="px-3 py-2 text-right font-medium">Members</th>
+                  <th className="px-3 py-2 text-right font-medium">Total Lag</th>
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((g, idx) => (
+                {filtered.slice(0, 5).map((g, idx) => (
                   <tr
                     key={g.groupId}
                     onClick={() =>
@@ -103,13 +114,13 @@ export function LagMonitorTab() {
                     }
                     className="border-b border-white/5 cursor-pointer hover:bg-white/3 transition-colors"
                   >
-                    <td className="px-4 py-3 text-center text-slate-500 font-mono text-xs">
+                    <td className="px-3 py-2 text-center text-slate-500 font-mono text-xs">
                       {idx + 1}
                     </td>
-                    <td className="px-4 py-3 font-mono text-white truncate max-w-[300px]">
+                    <td className="px-3 py-2 font-mono text-white truncate max-w-[300px]" title={g.groupId}>
                       {g.groupId}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-3 py-2">
                       <span
                         className={cn(
                           "inline-flex px-2 py-0.5 text-xs font-medium rounded border",
@@ -119,10 +130,10 @@ export function LagMonitorTab() {
                         {g.state}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-right text-slate-400 font-mono">
+                    <td className="px-3 py-2 text-right text-slate-400 font-mono">
                       {g.members}
                     </td>
-                    <td className="px-4 py-3 text-right font-mono">
+                    <td className="px-3 py-2 text-right font-mono">
                       <span
                         className={cn(
                           g.totalLag > 10000
@@ -141,7 +152,7 @@ export function LagMonitorTab() {
             </table>
           </div>
           <div className="px-4 py-2 text-xs text-slate-500 border-t border-white/5 shrink-0 bg-black/20">
-            Showing {filtered.length} of {groups?.length ?? 0} groups
+            Showing top {Math.min(filtered.length, 5)} of {groups?.length ?? 0} groups
           </div>
         </div>
       )}
