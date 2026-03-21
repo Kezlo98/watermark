@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"watermark-01/internal/kafka"
+	"watermark-01/internal/lagrecorder"
 
 	wailsRuntime "github.com/wailsapp/wails/v2/pkg/runtime"
 	"github.com/google/uuid"
@@ -21,6 +22,7 @@ type LagAlertService struct {
 	kafkaSvc    *kafka.KafkaService
 	store       *HistoryStore
 	notifier    *Notifier
+	recorder    *lagrecorder.Recorder
 	ctx         context.Context
 	cancel      context.CancelFunc
 	running     bool
@@ -39,6 +41,7 @@ func NewLagAlertService(kafkaSvc *kafka.KafkaService, configDir string) *LagAler
 		kafkaSvc:    kafkaSvc,
 		store:       store,
 		notifier:    NewNotifier(),
+		recorder:    lagrecorder.NewRecorder(configDir),
 		breachState: make(map[string]AlertLevel),
 	}
 }
@@ -56,9 +59,17 @@ func (s *LagAlertService) Start(clusterID string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
+	// Load persisted time-series data for charting
+	if err := s.recorder.Load(clusterID); err != nil {
+		log.Printf("lagalert: load recorder data: %v", err)
+	}
+
 	// Opt-in gate: check config before spawning any goroutine
 	cfg := s.store.GetClusterConfig(clusterID)
-	if cfg == nil || !cfg.Enabled || !hasEnabledRules(cfg.Rules) {
+	if cfg == nil || !cfg.Enabled {
+		return
+	}
+	if !cfg.RecordingEnabled && !hasEnabledRules(cfg.Rules) {
 		return
 	}
 
@@ -134,13 +145,35 @@ func (s *LagAlertService) pollLoop(ctx context.Context, clusterID string, interv
 // pollOnce fetches lag, matches rules, detects transitions, and emits events.
 func (s *LagAlertService) pollOnce(clusterID string) error {
 	cfg := s.store.GetClusterConfig(clusterID)
-	if cfg == nil || !cfg.Enabled || !hasEnabledRules(cfg.Rules) {
+	if cfg == nil || !cfg.Enabled {
+		return nil
+	}
+	if !cfg.RecordingEnabled && !hasEnabledRules(cfg.Rules) {
 		return nil
 	}
 
 	groups, err := s.kafkaSvc.GetConsumerGroups()
 	if err != nil {
 		return fmt.Errorf("get consumer groups: %w", err)
+	}
+
+	// Record lag snapshot for charting (piggyback on poll loop)
+	if cfg.RecordingEnabled && s.recorder != nil {
+		snapshot := lagrecorder.LagSnapshot{
+			Timestamp: time.Now().UTC(),
+			Groups:    make(map[string]int64),
+			Topics:    make(map[string]int64),
+		}
+		for _, g := range groups {
+			snapshot.Groups[g.GroupID] = g.TotalLag
+		}
+		// Use GetAllGroupsLagDetail for per-topic lag
+		if topicLags, err := s.kafkaSvc.GetAllGroupsLagDetail(); err == nil {
+			for _, tl := range topicLags {
+				snapshot.Topics[tl.Topic] = tl.TotalLag
+			}
+		}
+		s.recorder.Record(snapshot)
 	}
 
 	var newAlerts []AlertEvent
@@ -303,6 +336,22 @@ func (s *LagAlertService) MarkAllRead(clusterID string) error {
 // ClearAlerts removes all alerts for a cluster.
 func (s *LagAlertService) ClearAlerts(clusterID string) error {
 	return s.store.ClearAll(clusterID)
+}
+
+// GetTopicTimeSeries delegates to recorder — returns lag data points for a topic.
+func (s *LagAlertService) GetTopicTimeSeries(topic string, window string) []lagrecorder.LagDataPoint {
+	if s.recorder == nil {
+		return nil
+	}
+	return s.recorder.GetTopicTimeSeries(topic, window)
+}
+
+// GetGroupTimeSeries delegates to recorder — returns lag data points for a consumer group.
+func (s *LagAlertService) GetGroupTimeSeries(groupID string, window string) []lagrecorder.LagDataPoint {
+	if s.recorder == nil {
+		return nil
+	}
+	return s.recorder.GetGroupTimeSeries(groupID, window)
 }
 
 // --- Helpers ---

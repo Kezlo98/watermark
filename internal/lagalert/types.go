@@ -25,6 +25,7 @@ type ClusterAlertConfig struct {
 	PollIntervalSec   int         `json:"pollIntervalSec"`
 	NotifyOS          bool        `json:"notifyOS"`
 	NotificationSound bool        `json:"notificationSound"`
+	RecordingEnabled  bool        `json:"recordingEnabled"`
 	Rules             []AlertRule `json:"rules"`
 }
 

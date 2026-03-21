@@ -122,3 +122,10 @@ type DeleteRecordsResult struct {
 	NewLowOffset int64  `json:"newLowOffset"`
 	Error        string `json:"error,omitempty"`
 }
+
+// TopicLagSummary represents aggregated lag for a topic across all consumer groups.
+type TopicLagSummary struct {
+	Topic    string `json:"topic"`
+	TotalLag int64  `json:"totalLag"`
+	Groups   int    `json:"groups"`
+}
