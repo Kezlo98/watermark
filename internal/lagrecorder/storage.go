@@ -35,14 +35,19 @@ func (r *Recorder) Load(clusterID string) error {
 	r.clusterID = clusterID
 	path := r.filePath()
 
+	log.Printf("lagrecorder: loading data from %s", path)
+
 	raw, err := os.ReadFile(path)
 	if err != nil {
 		if os.IsNotExist(err) {
+			log.Printf("lagrecorder: no data file found, starting fresh")
 			r.data = &TimeSeriesData{}
 			return nil
 		}
 		return err
 	}
+
+	log.Printf("lagrecorder: read %d bytes from disk", len(raw))
 
 	var data TimeSeriesData
 	if err := json.Unmarshal(raw, &data); err != nil {
@@ -52,6 +57,8 @@ func (r *Recorder) Load(clusterID string) error {
 	}
 
 	r.data = &data
+	log.Printf("lagrecorder: loaded — raw=%d min1=%d min5=%d min15=%d lastCompaction=%v",
+		len(r.data.Raw), len(r.data.Min1), len(r.data.Min5), len(r.data.Min15), r.data.LastCompaction)
 	return nil
 }
 

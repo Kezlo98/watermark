@@ -59,6 +59,8 @@ func (s *LagAlertService) Start(clusterID string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
+	log.Printf("lagalert: Start() called for cluster=%s", clusterID)
+
 	// Load persisted time-series data for charting
 	if err := s.recorder.Load(clusterID); err != nil {
 		log.Printf("lagalert: load recorder data: %v", err)
@@ -67,11 +69,16 @@ func (s *LagAlertService) Start(clusterID string) {
 	// Opt-in gate: check config before spawning any goroutine
 	cfg := s.store.GetClusterConfig(clusterID)
 	if cfg == nil || !cfg.Enabled {
+		log.Printf("lagalert: Start() skipped — cfg nil=%v enabled=%v", cfg == nil, cfg != nil && cfg.Enabled)
 		return
 	}
 	if !cfg.RecordingEnabled && !hasEnabledRules(cfg.Rules) {
+		log.Printf("lagalert: Start() skipped — recording=%v enabledRules=%v", cfg.RecordingEnabled, hasEnabledRules(cfg.Rules))
 		return
 	}
+
+	log.Printf("lagalert: Start() launching poll loop — recording=%v interval=%ds rules=%d",
+		cfg.RecordingEnabled, cfg.PollIntervalSec, len(cfg.Rules))
 
 	// Stop any existing poller first
 	s.stopLocked()
@@ -115,13 +122,29 @@ func (s *LagAlertService) stopLocked() {
 }
 
 // pollLoop runs the periodic lag check. Uses panic recovery like consumers.go.
+// Executes an immediate first poll before waiting for the ticker.
 func (s *LagAlertService) pollLoop(ctx context.Context, clusterID string, interval time.Duration) {
+	log.Printf("lagalert: pollLoop started for cluster=%s interval=%v", clusterID, interval)
+
+	// Immediate first poll so data appears without waiting for full interval
+	func() {
+		defer func() {
+			if r := recover(); r != nil {
+				log.Printf("lagalert: recovered panic in initial poll: %v", r)
+			}
+		}()
+		if err := s.pollOnce(clusterID); err != nil {
+			log.Printf("lagalert: initial poll error: %v", err)
+		}
+	}()
+
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 
 	for {
 		select {
 		case <-ctx.Done():
+			log.Printf("lagalert: pollLoop stopped for cluster=%s", clusterID)
 			return
 		case <-ticker.C:
 			func() {
@@ -173,6 +196,7 @@ func (s *LagAlertService) pollOnce(clusterID string) error {
 				snapshot.Topics[tl.Topic] = tl.TotalLag
 			}
 		}
+		log.Printf("lagalert: recording snapshot — topics=%d groups=%d", len(snapshot.Topics), len(snapshot.Groups))
 		s.recorder.Record(snapshot)
 	}
 
