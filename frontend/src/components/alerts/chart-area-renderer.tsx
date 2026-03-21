@@ -100,7 +100,7 @@ export function ChartAreaRenderer({
           return (
             <Area
               key={key}
-              type="monotone"
+              type="natural"
               dataKey={key}
               fill={`url(#fill-${key})`}
               stroke={`var(--color-${key})`}

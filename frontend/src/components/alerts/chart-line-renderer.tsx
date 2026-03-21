@@ -88,7 +88,7 @@ export function ChartLineRenderer({
           return (
             <Line
               key={key}
-              type="monotone"
+              type="natural"
               dataKey={key}
               stroke={`var(--color-${key})`}
               strokeWidth={2}

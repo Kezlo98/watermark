@@ -4,7 +4,7 @@ import { useLagAlertsStore } from "@/store/lag-alerts";
 import { useSettingsStore } from "@/store/settings";
 import { cn } from "@/lib/utils";
 
-type FilterMode = "all" | "active" | "resolved";
+type FilterMode = "all" | "unread";
 
 /** Returns a human-readable relative time string. */
 function relativeTime(iso: string): string {
@@ -26,8 +26,7 @@ export function AlertHistoryTab() {
   const [filter, setFilter] = useState<FilterMode>("all");
 
   const filtered = alerts.filter((a) => {
-    if (filter === "active") return !a.resolved;
-    if (filter === "resolved") return a.resolved;
+    if (filter === "unread") return !a.read;
     return true;
   });
 
@@ -48,7 +47,7 @@ export function AlertHistoryTab() {
       {/* Header with filter + actions */}
       <div className="flex items-center justify-between">
         <div className="flex gap-1">
-          {(["all", "active", "resolved"] as FilterMode[]).map((mode) => (
+          {(["all", "unread"] as FilterMode[]).map((mode) => (
             <button
               key={mode}
               onClick={() => setFilter(mode)}
