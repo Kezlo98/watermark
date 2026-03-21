@@ -35,7 +35,7 @@ import type { TopicLagSummary } from "@/types/lag-alerts";
 const chartConfig: ChartConfig = {
   lag: {
     label: "Lag",
-    color: "#3b82f6", // Vibrant blue
+    color: "var(--primary)",
   },
 };
 
@@ -158,14 +158,18 @@ export function LagChartsTab() {
       ) : (
         <ChartContainer config={chartConfig} className="h-[400px] w-full">
           {chartType === "area" ? (
-            <AreaChart data={chartData}>
+            <AreaChart 
+              accessibilityLayer 
+              data={chartData}
+              margin={{ left: 12, right: 12 }}
+            >
               <defs>
                 <linearGradient id="fillLag" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="var(--color-lag)" stopOpacity={0.8} />
                   <stop offset="95%" stopColor="var(--color-lag)" stopOpacity={0.1} />
                 </linearGradient>
               </defs>
-              <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeDasharray="3 3" />
+              <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeOpacity={0.5} />
               <XAxis
                 dataKey="timestamp"
                 tickFormatter={(t) => formatTimestamp(t, timeWindow)}
@@ -183,9 +187,17 @@ export function LagChartsTab() {
                 tickLine={false}
                 axisLine={false}
               />
-              <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
+              <ChartTooltip 
+                cursor={false}
+                content={
+                  <ChartTooltipContent 
+                    indicator="dot" 
+                    labelFormatter={(value) => new Date(value).toLocaleString()}
+                  />
+                } 
+              />
               <Area
-                type="natural"
+                type="monotone"
                 dataKey="lag"
                 fill="url(#fillLag)"
                 stroke="var(--color-lag)"
@@ -194,8 +206,12 @@ export function LagChartsTab() {
               />
             </AreaChart>
           ) : chartType === "line" ? (
-            <LineChart data={chartData}>
-              <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeDasharray="3 3" />
+            <LineChart 
+              accessibilityLayer 
+              data={chartData}
+              margin={{ left: 12, right: 12 }}
+            >
+              <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeOpacity={0.5} />
               <XAxis
                 dataKey="timestamp"
                 tickFormatter={(t) => formatTimestamp(t, timeWindow)}
@@ -213,19 +229,31 @@ export function LagChartsTab() {
                 tickLine={false}
                 axisLine={false}
               />
-              <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
+              <ChartTooltip 
+                cursor={false}
+                content={
+                  <ChartTooltipContent 
+                    indicator="dot" 
+                    labelFormatter={(value) => new Date(value).toLocaleString()}
+                  />
+                } 
+              />
               <Line
-                type="natural"
+                type="monotone"
                 dataKey="lag"
                 stroke="var(--color-lag)"
                 strokeWidth={2}
-                dot={{ r: 2, fill: "var(--color-lag)" }}
+                dot={false}
                 activeDot={{ r: 4 }}
               />
             </LineChart>
           ) : (
-            <BarChart data={chartData}>
-              <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeDasharray="3 3" />
+            <BarChart 
+              accessibilityLayer 
+              data={chartData}
+              margin={{ left: 12, right: 12 }}
+            >
+              <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeOpacity={0.5} />
               <XAxis
                 dataKey="timestamp"
                 tickFormatter={(t) => formatTimestamp(t, timeWindow)}
@@ -243,11 +271,19 @@ export function LagChartsTab() {
                 tickLine={false}
                 axisLine={false}
               />
-              <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
+              <ChartTooltip 
+                cursor={false}
+                content={
+                  <ChartTooltipContent 
+                    indicator="dot" 
+                    labelFormatter={(value) => new Date(value).toLocaleString()}
+                  />
+                } 
+              />
               <Bar
                 dataKey="lag"
                 fill="var(--color-lag)"
-                radius={[4, 4, 0, 0]}
+                radius={[2, 2, 0, 0]}
               />
             </BarChart>
           )}
