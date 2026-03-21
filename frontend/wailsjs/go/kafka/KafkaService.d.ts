@@ -23,6 +23,8 @@ export function Disconnect():Promise<void>;
 
 export function GetActiveCluster():Promise<string>;
 
+export function GetAllGroupsLagDetail():Promise<Array<kafka.TopicLagSummary>>;
+
 export function GetBrokers():Promise<Array<kafka.Broker>>;
 
 export function GetClusterHealth():Promise<kafka.ClusterHealth>;

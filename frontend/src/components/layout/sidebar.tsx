@@ -5,11 +5,13 @@ import {
   Layers,
   Users,
   FileCode2,
+  AlertTriangle,
 } from "lucide-react";
 import logoImg from "@/assets/images/logo-universal.png";
 import { cn } from "@/lib/utils";
 import { GetCurrentVersion } from "@/lib/wails-client";
 import { UpdateBanner } from "./update-banner";
+import { useLagAlertsStore } from "@/store/lag-alerts";
 
 interface NavItem {
   id: string;
@@ -22,12 +24,17 @@ const NAV_ITEMS: NavItem[] = [
   { id: "overview", label: "Overview", icon: BarChart3, path: "/" },
   { id: "topics", label: "Topics", icon: Layers, path: "/topics" },
   { id: "consumers", label: "Consumers", icon: Users, path: "/consumers" },
+  { id: "alerts", label: "Alerts", icon: AlertTriangle, path: "/alerts" },
   { id: "schemas", label: "Schemas", icon: FileCode2, path: "/schemas" },
 ];
 
 export function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { unreadCount, alerts } = useLagAlertsStore();
+  const hasCritical = alerts.some(
+    (a) => !a.resolved && !a.read && a.level === "critical",
+  );
 
   // Fetch real version from Go backend (never changes during runtime)
   const { data: version = "dev" } = useQuery({
@@ -76,7 +83,15 @@ export function Sidebar() {
               >
                 <item.icon className={cn("size-4", active && "text-primary")} />
                 {item.label}
-                {active && (
+                {item.id === "alerts" && unreadCount > 0 && (
+                  <span className={cn(
+                    "ml-auto flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-semantic-red text-white text-[10px] font-bold",
+                    hasCritical && "animate-pulse",
+                  )}>
+                    {unreadCount > 99 ? "99+" : unreadCount}
+                  </span>
+                )}
+                {active && item.id !== "alerts" && (
                   <span className="ml-auto size-1.5 rounded-full bg-primary" />
                 )}
               </button>

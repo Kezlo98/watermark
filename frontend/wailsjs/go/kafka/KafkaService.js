@@ -42,6 +42,10 @@ export function GetActiveCluster() {
   return window['go']['kafka']['KafkaService']['GetActiveCluster']();
 }
 
+export function GetAllGroupsLagDetail() {
+  return window['go']['kafka']['KafkaService']['GetAllGroupsLagDetail']();
+}
+
 export function GetBrokers() {
   return window['go']['kafka']['KafkaService']['GetBrokers']();
 }
