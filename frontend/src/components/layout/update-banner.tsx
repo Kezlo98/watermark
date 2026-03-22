@@ -5,6 +5,7 @@ import { CheckForUpdate } from "@/lib/wails-client";
 import { UpdateChangelogModal } from "@/components/layout/update-changelog-modal";
 import type { UpdateInfo } from "@/components/layout/update-changelog-modal";
 import { cn } from "@/lib/utils";
+import { waitForWails } from "@/lib/wails-ready";
 
 /**
  * Sidebar update banner — shows when a new version is available.
@@ -17,13 +18,15 @@ export function UpdateBanner() {
   const [dismissed, setDismissed] = useState(false);
   const [restartReady, setRestartReady] = useState(false);
 
-  // Startup check
+  // Startup check — wait for Wails runtime first
   useEffect(() => {
-    CheckForUpdate().then((info) => {
-      if (info?.available && !info?.skipped) {
-        setUpdateInfo(info as UpdateInfo);
-        setDismissed(false);
-      }
+    waitForWails().then(() => {
+      CheckForUpdate().then((info) => {
+        if (info?.available && !info?.skipped) {
+          setUpdateInfo(info as UpdateInfo);
+          setDismissed(false);
+        }
+      }).catch(() => {});
     }).catch(() => {});
   }, []);
 

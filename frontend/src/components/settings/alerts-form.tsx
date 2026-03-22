@@ -58,6 +58,8 @@ export function AlertsForm() {
     notificationSound: false,
     recordingEnabled: false,
     rules: [],
+    trackedTopics: [],
+    trackedGroups: [],
   };
 
   const saveConfig = async (updated: ClusterAlertConfig) => {

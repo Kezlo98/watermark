@@ -24,7 +24,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: "overview", label: "Overview", icon: BarChart3, path: "/" },
   { id: "topics", label: "Topics", icon: Layers, path: "/topics" },
   { id: "consumers", label: "Consumers", icon: Users, path: "/consumers" },
-  { id: "alerts", label: "Alerts", icon: AlertTriangle, path: "/alerts" },
+  { id: "monitoring", label: "Monitoring", icon: AlertTriangle, path: "/monitoring" },
   { id: "schemas", label: "Schemas", icon: FileCode2, path: "/schemas" },
 ];
 
@@ -83,7 +83,7 @@ export function Sidebar() {
               >
                 <item.icon className={cn("size-4", active && "text-primary")} />
                 {item.label}
-                {item.id === "alerts" && unreadCount > 0 && (
+                {item.id === "monitoring" && unreadCount > 0 && (
                   <span className={cn(
                     "ml-auto flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-semantic-red text-white text-[10px] font-bold",
                     hasCritical && "animate-pulse",
@@ -91,7 +91,7 @@ export function Sidebar() {
                     {unreadCount > 99 ? "99+" : unreadCount}
                   </span>
                 )}
-                {active && item.id !== "alerts" && (
+                {active && item.id !== "monitoring" && (
                   <span className="ml-auto size-1.5 rounded-full bg-primary" />
                 )}
               </button>

@@ -20,7 +20,10 @@ export function useRefreshCountdown(intervalMs: number, enabled: boolean) {
     setSecondsLeft(intervalSec);
   }, [intervalSec]);
 
-  // Tick every 1s when enabled
+  // Keep a stable ref so the interval closure always calls the latest invalidateAll
+  const invalidateRef = useRef<() => void>(() => {});
+
+  // Tick every 1s when enabled, fire invalidateAll on countdown end
   useEffect(() => {
     if (!enabled) {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -30,7 +33,11 @@ export function useRefreshCountdown(intervalMs: number, enabled: boolean) {
 
     timerRef.current = setInterval(() => {
       setSecondsLeft((prev) => {
-        if (prev <= 1) return intervalSec; // auto-reset on zero
+        if (prev <= 1) {
+          // Fire invalidation when countdown reaches zero
+          invalidateRef.current();
+          return intervalSec;
+        }
         return prev - 1;
       });
     }, 1000);
@@ -40,7 +47,7 @@ export function useRefreshCountdown(intervalMs: number, enabled: boolean) {
     };
   }, [intervalSec, enabled]);
 
-  // Invalidate all cluster queries
+  // Invalidate all cluster queries (including chart time-series)
   const invalidateAll = useCallback(() => {
     if (clusterId) {
       queryClient.invalidateQueries({
@@ -51,6 +58,9 @@ export function useRefreshCountdown(intervalMs: number, enabled: boolean) {
       });
     }
   }, [queryClient, clusterId]);
+
+  // Keep ref in sync so interval closure always has the latest callback
+  invalidateRef.current = invalidateAll;
 
   // Manual refresh — always works
   const refresh = useCallback(() => {

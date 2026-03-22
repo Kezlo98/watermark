@@ -3,8 +3,8 @@ import type {
   ChartPreferences,
   ChartEntity,
   ViewMode,
-} from "@/components/alerts/chart-entity-types";
-import { MAX_CHART_ENTITIES, CHART_COLORS } from "@/components/alerts/chart-entity-types";
+} from "@/components/monitoring/chart-entity-types";
+import { MAX_CHART_ENTITIES, CHART_COLORS } from "@/components/monitoring/chart-entity-types";
 
 const STORAGE_KEY_PREFIX = "chart-prefs-";
 
@@ -22,6 +22,7 @@ function parseEntities(raw: unknown): ChartEntity[] {
     name: String(e.name ?? ""),
     colorIndex: typeof e.colorIndex === "number" ? e.colorIndex : 0,
     visible: e.visible !== false,
+    tracked: false, // tracked status is enriched at runtime, not persisted
   }));
 }
 
@@ -119,7 +120,7 @@ export function useChartPreferences(clusterID: string | null) {
         for (let i = 0; i < CHART_COLORS.length; i++) {
           if (!usedColors.has(i)) { colorIndex = i; break; }
         }
-        const next = withEntities(prev, [...current, { name, colorIndex, visible: true }]);
+        const next = withEntities(prev, [...current, { name, colorIndex, visible: true, tracked: false }]);
         save(next);
         return next;
       });

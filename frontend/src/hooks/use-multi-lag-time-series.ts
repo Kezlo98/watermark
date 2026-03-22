@@ -1,13 +1,16 @@
 /**
  * Parallel time-series fetching for multiple chart entities.
  * Uses TanStack useQueries for idiomatic dynamic parallel queries.
+ *
+ * Charts have their own auto-refresh (tied to backend pollIntervalSec)
+ * to ensure continuous data accumulation for visualization.
  */
 
 import { useQueries } from "@tanstack/react-query";
 import { GetTopicTimeSeries, GetGroupTimeSeries } from "@/lib/wails-client";
 import { useSettingsStore } from "@/store/settings";
-import type { ChartEntity, ViewMode } from "@/components/alerts/chart-entity-types";
-import { mergeTimeSeries, type RawDataPoint } from "@/components/alerts/chart-data-merger";
+import type { ChartEntity, ViewMode } from "@/components/monitoring/chart-entity-types";
+import { mergeTimeSeries, type RawDataPoint } from "@/components/monitoring/chart-data-merger";
 
 interface UseMultiTimeSeriesOptions {
   mode: ViewMode;
@@ -41,10 +44,11 @@ export function useMultiLagTimeSeries({
   });
 
   const isLoading = queries.some((q) => q.isLoading);
+  const isFetching = queries.some((q) => q.isFetching);
   const dataSets = queries.map(
     (q) => q.data as RawDataPoint[] | undefined,
   );
   const mergedData = mergeTimeSeries(entities, dataSets);
 
-  return { data: mergedData, isLoading };
+  return { data: mergedData, isLoading, isFetching };
 }

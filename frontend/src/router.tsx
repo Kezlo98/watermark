@@ -19,6 +19,7 @@ import { useLagAlerts } from "@/hooks/use-lag-alerts";
 import { GetClusters } from "@/lib/wails-client";
 import { useReadOnly } from "@/hooks/use-read-only";
 import { useQueryClient } from "@tanstack/react-query";
+import { waitForWails } from "@/lib/wails-ready";
 
 /* ====== Dashboard imports ====== */
 import { DashboardMetricCards, BrokerTable } from "@/components/dashboard/dashboard-widgets";
@@ -53,8 +54,8 @@ import { SubjectList } from "@/components/schemas/subject-list";
 import { SchemaViewer } from "@/components/schemas/schema-viewer";
 import { VersionHistory } from "@/components/schemas/version-history";
 
-/* ====== Alerts imports ====== */
-import { AlertsPage } from "@/components/alerts/alerts-page";
+/* ====== Monitoring imports ====== */
+import { MonitoringPage } from "@/components/monitoring/monitoring-page";
 
 /* ========================================================================= */
 /*  Root layout — App Shell                                                  */
@@ -66,16 +67,17 @@ function AppShell() {
   useLagAlerts(activeClusterId);
 
   useEffect(() => {
-    // Auto-connect to saved active cluster on app mount
-    initializeConnection();
+    // Wait for Wails runtime before touching Go bindings
+    waitForWails().then(() => {
+      initializeConnection();
 
-    // Auto-open settings if no clusters configured (first-run)
-    GetClusters().then((clusters) => {
-      if (!clusters || clusters.length === 0) {
-        openSettings();
-      }
+      GetClusters().then((clusters) => {
+        if (!clusters || clusters.length === 0) {
+          openSettings();
+        }
+      }).catch(() => {});
     }).catch(() => {
-      // ignore — backend may not be ready yet
+      // Wails runtime never became ready — should not happen in normal use
     });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -378,12 +380,12 @@ const schemasRoute = createRoute({
 });
 
 /* ========================================================================= */
-/*  Alerts                                                                    */
+/*  Monitoring                                                                */
 /* ========================================================================= */
-const alertsRoute = createRoute({
+const monitoringRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/alerts",
-  component: AlertsPage,
+  path: "/monitoring",
+  component: MonitoringPage,
 });
 
 /* ========================================================================= */
@@ -395,7 +397,7 @@ const routeTree = rootRoute.addChildren([
   topicDetailRoute,
   consumersRoute,
   consumerDetailRoute,
-  alertsRoute,
+  monitoringRoute,
   schemasRoute,
 ]);
 
