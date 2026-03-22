@@ -22,6 +22,14 @@ export function GetAlerts(arg1) {
   return window['go']['lagalert']['LagAlertService']['GetAlerts'](arg1);
 }
 
+export function GetGroupTimeSeries(arg1, arg2) {
+  return window['go']['lagalert']['LagAlertService']['GetGroupTimeSeries'](arg1, arg2);
+}
+
+export function GetTopicTimeSeries(arg1, arg2) {
+  return window['go']['lagalert']['LagAlertService']['GetTopicTimeSeries'](arg1, arg2);
+}
+
 export function GetUnreadCount(arg1) {
   return window['go']['lagalert']['LagAlertService']['GetUnreadCount'](arg1);
 }

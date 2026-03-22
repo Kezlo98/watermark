@@ -30,6 +30,7 @@ export {
   StopLiveTail,
   GetConsumerGroups,
   GetConsumerGroupDetail,
+  GetAllGroupsLagDetail,
   ResetConsumerGroupOffsets,
   ClearCache,
 } from "../../wailsjs/go/kafka/KafkaService";
@@ -99,6 +100,8 @@ export {
   MarkAllRead,
   ClearAlerts,
   RestartMonitoring,
+  GetTopicTimeSeries,
+  GetGroupTimeSeries,
 } from "../../wailsjs/go/lagalert/LagAlertService";
 
 // --- Template Service ---

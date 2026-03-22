@@ -210,3 +210,67 @@ func mapGroupState(state string) string {
 		return "Unknown"
 	}
 }
+
+// GetAllGroupsLagDetail returns per-topic lag summary across all consumer groups.
+// Single Lag() call — aggregates by topic instead of by group.
+func (k *KafkaService) GetAllGroupsLagDetail() ([]TopicLagSummary, error) {
+	k.mu.RLock()
+	defer k.mu.RUnlock()
+
+	if err := k.ensureConnected(); err != nil {
+		return nil, err
+	}
+
+	ctx := k.getCtx()
+	groups, err := k.admin.ListGroups(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("list groups: %w", err)
+	}
+
+	if len(groups) == 0 {
+		return []TopicLagSummary{}, nil
+	}
+
+	groupIDs := make([]string, 0, len(groups))
+	for _, g := range groups {
+		groupIDs = append(groupIDs, g.Group)
+	}
+
+	lags, err := k.admin.Lag(ctx, groupIDs...)
+	if err != nil {
+		return []TopicLagSummary{}, nil // graceful fallback
+	}
+
+	// Aggregate by topic
+	type topicAgg struct {
+		totalLag int64
+		groups   map[string]bool // unique group IDs consuming this topic
+	}
+	agg := make(map[string]*topicAgg)
+
+	lags.Each(func(gl kadm.DescribedGroupLag) {
+		for _, ml := range gl.Lag.Sorted() {
+			entry, ok := agg[ml.Topic]
+			if !ok {
+				entry = &topicAgg{groups: make(map[string]bool)}
+				agg[ml.Topic] = entry
+			}
+			entry.totalLag += ml.Lag
+			entry.groups[gl.Group] = true
+		}
+	})
+
+	result := make([]TopicLagSummary, 0, len(agg))
+	for topic, entry := range agg {
+		result = append(result, TopicLagSummary{
+			Topic:    topic,
+			TotalLag: entry.totalLag,
+			Groups:   len(entry.groups),
+		})
+	}
+
+	if len(result) == 0 {
+		return []TopicLagSummary{}, nil
+	}
+	return result, nil
+}

@@ -29,13 +29,14 @@ export function useLagAlerts(clusterID: string | null) {
 
       if (payload.type === "breach") {
         addAlerts(payload.alerts);
-        // Show toast for each new breach alert
+        // Only toast for critical alerts (warning toasts removed per validation)
         for (const alert of payload.alerts) {
-          const icon = alert.level === "critical" ? "🔴" : "🟡";
-          toast.warning(`${icon} Lag alert: ${alert.groupId}`, {
-            description: `Lag ${alert.lag.toLocaleString()} ≥ threshold ${alert.threshold.toLocaleString()}`,
-            duration: 5000,
-          });
+          if (alert.level === "critical") {
+            toast.error(`🔴 Critical lag alert: ${alert.groupId}`, {
+              description: `Lag ${alert.lag.toLocaleString()} ≥ threshold ${alert.threshold.toLocaleString()}`,
+              duration: 5000,
+            });
+          }
         }
       } else if (payload.type === "recovery") {
         markResolved(payload.alerts.map((a) => a.id));
