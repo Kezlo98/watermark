@@ -30,6 +30,10 @@ type LagAlertService struct {
 	clusterID   string
 	// breachState tracks current alert level per group (empty = healthy)
 	breachState map[string]AlertLevel
+	// activeChartTopics/Groups are ephemeral entity lists set by frontend
+	// for recording untracked entities currently shown on chart.
+	activeChartTopics []string
+	activeChartGroups []string
 }
 
 // NewLagAlertService creates a new LagAlertService.
@@ -119,6 +123,8 @@ func (s *LagAlertService) stopLocked() {
 	}
 	s.running = false
 	s.notifier.Reset()
+	s.activeChartTopics = nil
+	s.activeChartGroups = nil
 }
 
 // pollLoop runs the periodic lag check. Uses panic recovery like consumers.go.
@@ -181,23 +187,45 @@ func (s *LagAlertService) pollOnce(clusterID string) error {
 	}
 
 	// Record lag snapshot for charting (piggyback on poll loop)
+	// Uses two-tier recording: tracked (persistent config) ∪ active (ephemeral frontend)
 	if cfg.RecordingEnabled && s.recorder != nil {
 		snapshot := lagrecorder.LagSnapshot{
 			Timestamp: time.Now().UTC(),
 			Groups:    make(map[string]int64),
 			Topics:    make(map[string]int64),
 		}
+
+		// Read ephemeral active entities under lock
+		s.mu.Lock()
+		activeTopics := append([]string{}, s.activeChartTopics...)
+		activeGroups := append([]string{}, s.activeChartGroups...)
+		s.mu.Unlock()
+
+		// Filter groups: empty TrackedGroups = record all (backward compat)
 		for _, g := range groups {
-			snapshot.Groups[g.GroupID] = g.TotalLag
-		}
-		// Use GetAllGroupsLagDetail for per-topic lag
-		if topicLags, err := s.kafkaSvc.GetAllGroupsLagDetail(); err == nil {
-			for _, tl := range topicLags {
-				snapshot.Topics[tl.Topic] = tl.TotalLag
+			tracked := len(cfg.TrackedGroups) == 0 || matchesAnyGlob(g.GroupID, cfg.TrackedGroups)
+			active := contains(activeGroups, g.GroupID)
+			if tracked || active {
+				snapshot.Groups[g.GroupID] = g.TotalLag
 			}
 		}
-		log.Printf("lagalert: recording snapshot — topics=%d groups=%d", len(snapshot.Topics), len(snapshot.Groups))
-		s.recorder.Record(snapshot)
+
+		// Filter topics: empty TrackedTopics = record nothing (opt-in)
+		if topicLags, err := s.kafkaSvc.GetAllGroupsLagDetail(); err == nil {
+			for _, tl := range topicLags {
+				tracked := len(cfg.TrackedTopics) > 0 && matchesAnyGlob(tl.Topic, cfg.TrackedTopics)
+				active := contains(activeTopics, tl.Topic)
+				if tracked || active {
+					snapshot.Topics[tl.Topic] = tl.TotalLag
+				}
+			}
+		}
+
+		// Only record if we have data
+		if len(snapshot.Topics) > 0 || len(snapshot.Groups) > 0 {
+			log.Printf("lagalert: recording snapshot — topics=%d groups=%d", len(snapshot.Topics), len(snapshot.Groups))
+			s.recorder.Record(snapshot)
+		}
 	}
 
 	var newAlerts []AlertEvent
@@ -378,12 +406,41 @@ func (s *LagAlertService) GetGroupTimeSeries(groupID string, window string) []la
 	return s.recorder.GetGroupTimeSeries(groupID, window)
 }
 
+// SetActiveChartEntities updates the ephemeral chart entity list.
+// Called by frontend whenever chart selection changes.
+func (s *LagAlertService) SetActiveChartEntities(topics []string, groups []string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.activeChartTopics = topics
+	s.activeChartGroups = groups
+}
+
 // --- Helpers ---
 
 // hasEnabledRules returns true if at least one rule is enabled.
 func hasEnabledRules(rules []AlertRule) bool {
 	for _, r := range rules {
 		if r.Enabled {
+			return true
+		}
+	}
+	return false
+}
+
+// matchesAnyGlob returns true if name matches any glob pattern.
+func matchesAnyGlob(name string, patterns []string) bool {
+	for _, p := range patterns {
+		if matched, _ := path.Match(p, name); matched {
+			return true
+		}
+	}
+	return false
+}
+
+// contains returns true if slice contains item.
+func contains(slice []string, item string) bool {
+	for _, s := range slice {
+		if s == item {
 			return true
 		}
 	}

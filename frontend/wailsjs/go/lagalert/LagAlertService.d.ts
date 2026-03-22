@@ -26,6 +26,8 @@ export function RestartMonitoring(arg1:string):Promise<void>;
 
 export function SaveAlertConfig(arg1:string,arg2:lagalert.ClusterAlertConfig):Promise<void>;
 
+export function SetActiveChartEntities(arg1:Array<string>,arg2:Array<string>):Promise<void>;
+
 export function SetContext(arg1:context.Context):Promise<void>;
 
 export function Start(arg1:string):Promise<void>;

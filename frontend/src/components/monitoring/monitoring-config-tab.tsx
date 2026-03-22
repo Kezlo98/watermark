@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useSettingsStore } from "@/store/settings";
@@ -14,10 +15,11 @@ import {
 } from "@/lib/wails-client";
 import { globMatch } from "@/lib/glob-match";
 import type { AlertRule, ClusterAlertConfig } from "@/types/lag-alerts";
+import { TrackedEntitiesConfig } from "./tracked-entities-config";
 
 
-/** Alerts config tab — migrated from settings alerts-form with recording toggle. */
-export function AlertsConfigTab() {
+/** Monitoring config tab — alerts + tracked entities configuration. */
+export function MonitoringConfigTab() {
   const { activeClusterId, connectionStatus } = useSettingsStore();
   const { alertConfig, loadConfig } = useLagAlertsStore();
   const [groups, setGroups] = useState<string[]>([]);
@@ -67,33 +69,58 @@ export function AlertsConfigTab() {
 
   const handleAddRule = async () => {
     if (!activeClusterId) return;
-    const rule: AlertRule = {
-      id: crypto.randomUUID(),
-      groupPattern: "*",
-      warningLag: 1000,
-      criticalLag: 5000,
-      enabled: true,
-    };
-    await AddRule(activeClusterId, rule);
-    await loadConfig(activeClusterId);
+    setSaving(true);
+    try {
+      const rule: AlertRule = {
+        id: crypto.randomUUID(),
+        groupPattern: "*",
+        warningLag: 1000,
+        criticalLag: 5000,
+        enabled: true,
+      };
+      await AddRule(activeClusterId, rule);
+      await loadConfig(activeClusterId);
+    } catch {
+      toast.error("Failed to add rule");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleUpdateRule = async (rule: AlertRule) => {
     if (!activeClusterId) return;
-    await UpdateRule(activeClusterId, rule);
-    await loadConfig(activeClusterId);
+    setSaving(true);
+    try {
+      await UpdateRule(activeClusterId, rule);
+      await loadConfig(activeClusterId);
+    } catch {
+      toast.error("Failed to update rule");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleDeleteRule = async (ruleId: string) => {
     if (!activeClusterId) return;
-    await DeleteRule(activeClusterId, ruleId);
-    await loadConfig(activeClusterId);
+    setSaving(true);
+    try {
+      await DeleteRule(activeClusterId, ruleId);
+      await loadConfig(activeClusterId);
+    } catch {
+      toast.error("Failed to delete rule");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleTrackedUpdate = async (trackedTopics: string[], trackedGroups: string[]) => {
+    await saveConfig({ ...cfg, trackedTopics, trackedGroups });
   };
 
   if (!connected) {
     return (
       <div className="flex items-center justify-center h-40 text-slate-500 text-sm">
-        Connect to a cluster to configure alerts.
+        Connect to a cluster to configure monitoring.
       </div>
     );
   }
@@ -102,7 +129,7 @@ export function AlertsConfigTab() {
     <div className="space-y-6">
       <div>
         <h3 className="text-sm font-semibold text-white mb-1">
-          Alerts for: <span className="text-primary">{clusterName}</span>
+          Monitoring for: <span className="text-primary">{clusterName}</span>
         </h3>
         <p className="text-xs text-slate-500">
           Fully opt-in — no polling until you enable monitoring and add rules.
@@ -141,6 +168,15 @@ export function AlertsConfigTab() {
         />
       </div>
 
+      {/* Tracked Entities Config (only shown when recording is enabled) */}
+      {cfg.recordingEnabled && (
+        <TrackedEntitiesConfig
+          trackedTopics={cfg.trackedTopics ?? []}
+          trackedGroups={cfg.trackedGroups ?? []}
+          onUpdate={handleTrackedUpdate}
+          disabled={saving}
+        />
+      )}
 
       {/* Rules table */}
       <div>

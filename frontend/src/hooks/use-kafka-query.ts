@@ -16,6 +16,7 @@ import { useSettingsStore } from "@/store/settings";
  * - Prepends activeClusterId to queryKey for per-cluster cache isolation.
  * - Disabled when not connected to prevent queries during connecting state.
  * - Defaults: 30s staleTime + 30s refetchInterval.
+ * - Monitoring page components opt out of refetchInterval (driven by page-level controls).
  * - The Go backend has a 15s cache for expensive calls (LogDirs, Metadata),
  *   so polling faster than 15s adds no value.
  */
