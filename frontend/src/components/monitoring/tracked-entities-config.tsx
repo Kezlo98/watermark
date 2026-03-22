@@ -87,7 +87,7 @@ export function TrackedEntitiesConfig({
   };
 
   return (
-    <div className="space-y-3 border border-white/8 rounded-lg p-4 bg-white/2">
+    <div className="space-y-3">
       <div className="flex items-center justify-between">
         <span className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
           Chart Tracking

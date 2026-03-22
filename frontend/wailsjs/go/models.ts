@@ -529,8 +529,8 @@ export namespace lagalert {
 	        this.notificationSound = source["notificationSound"];
 	        this.recordingEnabled = source["recordingEnabled"];
 	        this.rules = this.convertValues(source["rules"], AlertRule);
-	        this.trackedTopics = source["trackedTopics"];
-	        this.trackedGroups = source["trackedGroups"];
+	        this.trackedTopics = source["trackedTopics"] ?? [];
+	        this.trackedGroups = source["trackedGroups"] ?? [];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

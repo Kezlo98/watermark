@@ -43,7 +43,7 @@ export function LagMonitorTab() {
   const { config, updateConfig } = useGroupLagConfig(clusterId);
   const [showFilters, setShowFilters] = useState(false);
 
-  const { data: groups, isSuccess, isFetching, dataUpdatedAt } = useKafkaQuery(
+  const { data: groups } = useKafkaQuery(
     ["consumer-groups"],
     GetConsumerGroups,
     { refetchInterval: false },

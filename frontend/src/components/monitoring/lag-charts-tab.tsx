@@ -4,7 +4,7 @@
  * and two-tier tracked/ephemeral entity recording.
  */
 
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useRef } from "react";
 import { useKafkaQuery } from "@/hooks/use-kafka-query";
 import { useMultiLagTimeSeries } from "@/hooks/use-multi-lag-time-series";
 import { useChartPreferences } from "@/hooks/use-chart-preferences";
@@ -116,20 +116,21 @@ export function LagChartsTab() {
   }, [enrichedEntities, prefs.mode]);
 
   // Re-sync active entities on reconnect
+  const enrichedRef = useRef(enrichedEntities);
+  enrichedRef.current = enrichedEntities;
+  const modeRef = useRef(prefs.mode);
+  modeRef.current = prefs.mode;
+
   useEffect(() => {
-    if (!isWailsReady()) return;
-    if (connectionStatus === "connected" && enrichedEntities.length > 0) {
-      const untrackedNames = enrichedEntities
-        .filter((e) => !e.tracked)
-        .map((e) => e.name);
-      if (untrackedNames.length > 0) {
-        SetActiveChartEntities(
-          prefs.mode === "topic" ? untrackedNames : [],
-          prefs.mode === "group" ? untrackedNames : [],
-        ).catch(() => {});
-      }
+    if (!isWailsReady() || connectionStatus !== "connected") return;
+    const untracked = enrichedRef.current.filter((e) => !e.tracked).map((e) => e.name);
+    if (untracked.length > 0) {
+      SetActiveChartEntities(
+        modeRef.current === "topic" ? untracked : [],
+        modeRef.current === "group" ? untracked : [],
+      ).catch(() => {});
     }
-  }, [connectionStatus]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [connectionStatus]);
 
   // Wrap addEntity to show toast for untracked entities
   const handleAddEntity = (name: string) => {

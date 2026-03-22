@@ -34,7 +34,7 @@ export function LagRankingTab() {
   const { config, updateConfig } = useRankingConfig(clusterId);
   const [showFilters, setShowFilters] = useState(false);
 
-  const { data: topicLags, isSuccess, isFetching, dataUpdatedAt } = useKafkaQuery<TopicLagSummary[]>(
+  const { data: topicLags } = useKafkaQuery<TopicLagSummary[]>(
     ["all-groups-lag-detail"],
     GetAllGroupsLagDetail as () => Promise<TopicLagSummary[]>,
     { refetchInterval: false },

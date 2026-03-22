@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useSettingsStore } from "@/store/settings";
@@ -68,27 +69,48 @@ export function MonitoringConfigTab() {
 
   const handleAddRule = async () => {
     if (!activeClusterId) return;
-    const rule: AlertRule = {
-      id: crypto.randomUUID(),
-      groupPattern: "*",
-      warningLag: 1000,
-      criticalLag: 5000,
-      enabled: true,
-    };
-    await AddRule(activeClusterId, rule);
-    await loadConfig(activeClusterId);
+    setSaving(true);
+    try {
+      const rule: AlertRule = {
+        id: crypto.randomUUID(),
+        groupPattern: "*",
+        warningLag: 1000,
+        criticalLag: 5000,
+        enabled: true,
+      };
+      await AddRule(activeClusterId, rule);
+      await loadConfig(activeClusterId);
+    } catch {
+      toast.error("Failed to add rule");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleUpdateRule = async (rule: AlertRule) => {
     if (!activeClusterId) return;
-    await UpdateRule(activeClusterId, rule);
-    await loadConfig(activeClusterId);
+    setSaving(true);
+    try {
+      await UpdateRule(activeClusterId, rule);
+      await loadConfig(activeClusterId);
+    } catch {
+      toast.error("Failed to update rule");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleDeleteRule = async (ruleId: string) => {
     if (!activeClusterId) return;
-    await DeleteRule(activeClusterId, ruleId);
-    await loadConfig(activeClusterId);
+    setSaving(true);
+    try {
+      await DeleteRule(activeClusterId, ruleId);
+      await loadConfig(activeClusterId);
+    } catch {
+      toast.error("Failed to delete rule");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleTrackedUpdate = async (trackedTopics: string[], trackedGroups: string[]) => {
