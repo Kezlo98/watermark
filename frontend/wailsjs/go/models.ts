@@ -514,6 +514,8 @@ export namespace lagalert {
 	    notificationSound: boolean;
 	    recordingEnabled: boolean;
 	    rules: AlertRule[];
+	    trackedTopics: string[];
+	    trackedGroups: string[];
 	
 	    static createFrom(source: any = {}) {
 	        return new ClusterAlertConfig(source);
@@ -527,6 +529,8 @@ export namespace lagalert {
 	        this.notificationSound = source["notificationSound"];
 	        this.recordingEnabled = source["recordingEnabled"];
 	        this.rules = this.convertValues(source["rules"], AlertRule);
+	        this.trackedTopics = source["trackedTopics"];
+	        this.trackedGroups = source["trackedGroups"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

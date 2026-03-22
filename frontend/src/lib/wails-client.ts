@@ -102,6 +102,7 @@ export {
   RestartMonitoring,
   GetTopicTimeSeries,
   GetGroupTimeSeries,
+  SetActiveChartEntities,
 } from "../../wailsjs/go/lagalert/LagAlertService";
 
 // --- Template Service ---

@@ -17,6 +17,8 @@ export interface ClusterAlertConfig {
   notificationSound: boolean;
   recordingEnabled: boolean;
   rules: AlertRule[];
+  trackedTopics: string[];  // glob patterns; empty = record nothing (opt-in)
+  trackedGroups: string[];  // glob patterns; empty = record all (backward compat)
 }
 
 export interface AlertEvent {
