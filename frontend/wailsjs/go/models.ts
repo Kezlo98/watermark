@@ -531,10 +531,10 @@ export namespace lagalert {
 	        this.notificationSound = source["notificationSound"];
 	        this.recordingEnabled = source["recordingEnabled"];
 	        this.rules = this.convertValues(source["rules"], AlertRule);
-	        this.trackedTopics = source["trackedTopics"];
-	        this.trackedGroups = source["trackedGroups"];
-	        this.excludedTopics = source["excludedTopics"];
-	        this.excludedGroups = source["excludedGroups"];
+	        this.trackedTopics = source["trackedTopics"] ?? [];
+	        this.trackedGroups = source["trackedGroups"] ?? [];
+	        this.excludedTopics = source["excludedTopics"] ?? [];
+	        this.excludedGroups = source["excludedGroups"] ?? [];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
