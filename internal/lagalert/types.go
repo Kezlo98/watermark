@@ -25,7 +25,12 @@ type ClusterAlertConfig struct {
 	PollIntervalSec   int         `json:"pollIntervalSec"`
 	NotifyOS          bool        `json:"notifyOS"`
 	NotificationSound bool        `json:"notificationSound"`
+	RecordingEnabled  bool        `json:"recordingEnabled"`
 	Rules             []AlertRule `json:"rules"`
+	TrackedTopics     []string    `json:"trackedTopics"`  // glob patterns; empty = record nothing (opt-in)
+	TrackedGroups     []string    `json:"trackedGroups"`  // glob patterns; empty = record nothing
+	ExcludedTopics    []string    `json:"excludedTopics"` // glob patterns; exclude wins over include
+	ExcludedGroups    []string    `json:"excludedGroups"` // glob patterns; exclude wins over include
 }
 
 // AlertEvent represents a single lag breach or recovery event.

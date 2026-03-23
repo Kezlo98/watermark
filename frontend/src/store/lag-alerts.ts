@@ -12,7 +12,6 @@ const MAX_STORE_ALERTS = 50;
 interface LagAlertsState {
   alerts: AlertEvent[];
   unreadCount: number;
-  isNotificationPanelOpen: boolean;
   alertConfig: ClusterAlertConfig | null;
 
   // Actions
@@ -20,9 +19,6 @@ interface LagAlertsState {
   markResolved: (alertIds: string[]) => void;
   markAllRead: (clusterID: string) => Promise<void>;
   clearAll: (clusterID: string) => Promise<void>;
-  togglePanel: () => void;
-  openPanel: () => void;
-  closePanel: () => void;
   loadAlerts: (clusterID: string) => Promise<void>;
   loadConfig: (clusterID: string) => Promise<void>;
   reset: () => void;
@@ -31,7 +27,6 @@ interface LagAlertsState {
 export const useLagAlertsStore = create<LagAlertsState>((set, get) => ({
   alerts: [],
   unreadCount: 0,
-  isNotificationPanelOpen: false,
   alertConfig: null,
 
   addAlerts: (incoming) => {
@@ -72,17 +67,10 @@ export const useLagAlertsStore = create<LagAlertsState>((set, get) => ({
     });
   },
 
-  togglePanel: () =>
-    set((s) => ({ isNotificationPanelOpen: !s.isNotificationPanelOpen })),
-
-  openPanel: () => set({ isNotificationPanelOpen: true }),
-
-  closePanel: () => set({ isNotificationPanelOpen: false }),
-
   loadAlerts: async (clusterID) => {
     try {
       const raw = await GetAlerts(clusterID);
-      const alerts = raw as unknown as AlertEvent[];
+      const alerts = raw as AlertEvent[];
       const unread = alerts.filter((a: AlertEvent) => !a.read && !a.resolved).length;
       set({ alerts: alerts.slice(0, MAX_STORE_ALERTS), unreadCount: unread });
     } catch {
@@ -93,7 +81,7 @@ export const useLagAlertsStore = create<LagAlertsState>((set, get) => ({
   loadConfig: async (clusterID) => {
     try {
       const config = await GetAlertConfig(clusterID);
-      set({ alertConfig: config });
+      set({ alertConfig: config as ClusterAlertConfig });
     } catch {
       set({ alertConfig: null });
     }
@@ -103,7 +91,7 @@ export const useLagAlertsStore = create<LagAlertsState>((set, get) => ({
     set({
       alerts: [],
       unreadCount: 0,
-      isNotificationPanelOpen: false,
       alertConfig: null,
     }),
 }));
+

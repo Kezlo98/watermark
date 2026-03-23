@@ -6,7 +6,6 @@ import { AppearanceForm } from "./appearance-form";
 import { DataSystemForm } from "./data-system-form";
 import { AnnotationSettingsPanel } from "@/components/annotations/annotation-settings-panel";
 import { TemplateSettingsPanel } from "@/components/templates/template-settings-panel";
-import { AlertsForm } from "./alerts-form";
 import {
   Dialog,
   DialogContent,
@@ -20,7 +19,6 @@ const SETTINGS_TABS = [
   { id: "annotations", label: "🏷️ Annotations" },
   { id: "templates", label: "📋 Templates" },
   { id: "system", label: "💻 System" },
-  { id: "alerts", label: "🔔 Alerts" },
 ];
 
 export function SettingsOverlay() {
@@ -52,10 +50,10 @@ export function SettingsOverlay() {
             {activeTab === "annotations" && <AnnotationSettingsPanel />}
             {activeTab === "templates" && <TemplateSettingsPanel />}
             {activeTab === "system" && <DataSystemForm />}
-            {activeTab === "alerts" && <AlertsForm />}
           </div>
         </div>
       </DialogContent>
     </Dialog>
   );
 }
+

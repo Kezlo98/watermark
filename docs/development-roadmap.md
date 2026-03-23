@@ -281,5 +281,5 @@
 | 10 | Auto-Update | ⬜ Not Started | 0.5 wk | 12.5 wk |
 | 11 | Polish & Release | ⬜ Not Started | 1 wk | 13.5 wk |
 
-**Current Status**: Topic Templates & Cloning feature completed (Phase 9)
+**Current Status**: Delete Records feature completed (P1 — offset-based, timestamp-based, and purge topic)
 **Next Phase**: Consumer Groups detail implementation and completion of remaining features

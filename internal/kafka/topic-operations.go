@@ -3,6 +3,7 @@ package kafka
 import (
 	"fmt"
 
+	"github.com/twmb/franz-go/pkg/kadm"
 	"github.com/twmb/franz-go/pkg/kmsg"
 )
 
@@ -147,4 +148,117 @@ func (k *KafkaService) DeleteTopic(name string) error {
 	}
 
 	return nil
+}
+
+// DeleteRecordsBefore truncates all messages before the given offset on a specific partition.
+// Partition is required — offsets are partition-scoped, so -1 (all) is not supported.
+// Use DeleteRecordsBeforeTimestamp or PurgeTopic for cross-partition operations.
+func (k *KafkaService) DeleteRecordsBefore(topicName string, partition int32, beforeOffset int64) ([]DeleteRecordsResult, error) {
+	k.mu.RLock()
+	defer k.mu.RUnlock()
+
+	if err := k.ensureWritable(); err != nil {
+		return nil, err
+	}
+	if partition < 0 {
+		return nil, fmt.Errorf("delete records: partition must be >= 0")
+	}
+
+	ctx := k.getCtx()
+	offsets := make(kadm.Offsets)
+	offsets.Add(kadm.Offset{Topic: topicName, Partition: partition, At: beforeOffset})
+
+	results, err := k.admin.DeleteRecords(ctx, offsets)
+	if err != nil {
+		return nil, fmt.Errorf("delete records: %w", err)
+	}
+
+	return mapDeleteResults(results, topicName), nil
+}
+
+// DeleteRecordsBeforeTimestamp resolves a timestamp to per-partition offsets
+// and truncates all records before those offsets across all partitions.
+func (k *KafkaService) DeleteRecordsBeforeTimestamp(topicName string, timestampMs int64) ([]DeleteRecordsResult, error) {
+	k.mu.RLock()
+	defer k.mu.RUnlock()
+
+	if err := k.ensureWritable(); err != nil {
+		return nil, err
+	}
+
+	ctx := k.getCtx()
+	tsOffsets, err := k.admin.ListOffsetsAfterMilli(ctx, timestampMs, topicName)
+	if err != nil {
+		return nil, fmt.Errorf("delete records: list offsets after milli: %w", err)
+	}
+
+	offsets := make(kadm.Offsets)
+	tsOffsets.Each(func(o kadm.ListedOffset) {
+		if o.Offset >= 0 {
+			offsets.Add(kadm.Offset{Topic: topicName, Partition: o.Partition, At: o.Offset})
+		}
+	})
+
+	if len(offsets) == 0 {
+		return nil, nil // no offsets to delete
+	}
+
+	results, err := k.admin.DeleteRecords(ctx, offsets)
+	if err != nil {
+		return nil, fmt.Errorf("delete records: %w", err)
+	}
+
+	return mapDeleteResults(results, topicName), nil
+}
+
+// PurgeTopic deletes all messages from all partitions by advancing the start offset
+// to the current end offset (HighWatermark), effectively emptying the topic.
+func (k *KafkaService) PurgeTopic(topicName string) ([]DeleteRecordsResult, error) {
+	k.mu.RLock()
+	defer k.mu.RUnlock()
+
+	if err := k.ensureWritable(); err != nil {
+		return nil, err
+	}
+
+	ctx := k.getCtx()
+	endOffsets, err := k.admin.ListEndOffsets(ctx, topicName)
+	if err != nil {
+		return nil, fmt.Errorf("purge topic: list end offsets: %w", err)
+	}
+
+	offsets := make(kadm.Offsets)
+	endOffsets.Each(func(o kadm.ListedOffset) {
+		offsets.Add(kadm.Offset{Topic: topicName, Partition: o.Partition, At: o.Offset})
+	})
+
+	if len(offsets) == 0 {
+		return []DeleteRecordsResult{}, nil
+	}
+
+	results, err := k.admin.DeleteRecords(ctx, offsets)
+	if err != nil {
+		return nil, fmt.Errorf("purge topic: %w", err)
+	}
+
+	return mapDeleteResults(results, topicName), nil
+}
+
+// mapDeleteResults converts kadm.DeleteRecordsResponses to []DeleteRecordsResult for a given topic.
+func mapDeleteResults(results kadm.DeleteRecordsResponses, topicName string) []DeleteRecordsResult {
+	var out []DeleteRecordsResult
+	results.Each(func(r kadm.DeleteRecordsResponse) {
+		if r.Topic != topicName {
+			return
+		}
+		dr := DeleteRecordsResult{
+			Partition:    r.Partition,
+			NewLowOffset: r.LowWatermark,
+		}
+		if r.Err != nil {
+			dr.Error = r.Err.Error()
+		}
+		out = append(out, dr)
+	})
+	return out
 }

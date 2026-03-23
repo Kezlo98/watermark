@@ -23,10 +23,14 @@ export {
   ConsumeMessagesFromTimestamp,
   ProduceMessage,
   ProduceMessages,
+  DeleteRecordsBefore,
+  DeleteRecordsBeforeTimestamp,
+  PurgeTopic,
   StartLiveTail,
   StopLiveTail,
   GetConsumerGroups,
   GetConsumerGroupDetail,
+  GetAllGroupsLagDetail,
   ResetConsumerGroupOffsets,
   ClearCache,
 } from "../../wailsjs/go/kafka/KafkaService";
@@ -85,9 +89,10 @@ export {
 } from "../../wailsjs/go/updater/UpdaterService";
 
 // --- Lag Alert Service ---
+import { SaveAlertConfig as _SaveAlertConfig } from "../../wailsjs/go/lagalert/LagAlertService";
+import type { ClusterAlertConfig } from "@/types/lag-alerts";
 export {
   GetAlertConfig,
-  SaveAlertConfig,
   AddRule,
   UpdateRule,
   DeleteRule,
@@ -96,7 +101,13 @@ export {
   MarkAllRead,
   ClearAlerts,
   RestartMonitoring,
+  GetTopicTimeSeries,
+  GetGroupTimeSeries,
 } from "../../wailsjs/go/lagalert/LagAlertService";
+
+/** Typed wrapper — accepts app interface, bridges to Wails class at boundary. */
+export const SaveAlertConfig = (clusterId: string, cfg: ClusterAlertConfig): Promise<void> =>
+  _SaveAlertConfig(clusterId, cfg as any);
 
 // --- Template Service ---
 export {

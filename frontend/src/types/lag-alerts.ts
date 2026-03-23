@@ -15,7 +15,12 @@ export interface ClusterAlertConfig {
   pollIntervalSec: number;
   notifyOS: boolean;
   notificationSound: boolean;
+  recordingEnabled: boolean;
   rules: AlertRule[];
+  trackedTopics: string[];  // glob patterns; empty = record nothing (opt-in)
+  trackedGroups: string[];  // glob patterns; empty = record nothing
+  excludedTopics: string[]; // glob patterns; exclude wins over include
+  excludedGroups: string[]; // glob patterns; exclude wins over include
 }
 
 export interface AlertEvent {
@@ -37,3 +42,15 @@ export interface LagAlertPayload {
   type: "breach" | "recovery";
   alerts: AlertEvent[];
 }
+
+export interface LagDataPoint {
+  timestamp: string;
+  lag: number;
+}
+
+export interface TopicLagSummary {
+  topic: string;
+  totalLag: number;
+  groups: number;
+}
+

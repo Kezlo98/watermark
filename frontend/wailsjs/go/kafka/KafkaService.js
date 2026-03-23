@@ -22,6 +22,14 @@ export function CreateTopic(arg1, arg2, arg3, arg4) {
   return window['go']['kafka']['KafkaService']['CreateTopic'](arg1, arg2, arg3, arg4);
 }
 
+export function DeleteRecordsBefore(arg1, arg2, arg3) {
+  return window['go']['kafka']['KafkaService']['DeleteRecordsBefore'](arg1, arg2, arg3);
+}
+
+export function DeleteRecordsBeforeTimestamp(arg1, arg2) {
+  return window['go']['kafka']['KafkaService']['DeleteRecordsBeforeTimestamp'](arg1, arg2);
+}
+
 export function DeleteTopic(arg1) {
   return window['go']['kafka']['KafkaService']['DeleteTopic'](arg1);
 }
@@ -32,6 +40,10 @@ export function Disconnect() {
 
 export function GetActiveCluster() {
   return window['go']['kafka']['KafkaService']['GetActiveCluster']();
+}
+
+export function GetAllGroupsLagDetail() {
+  return window['go']['kafka']['KafkaService']['GetAllGroupsLagDetail']();
 }
 
 export function GetBrokers() {
@@ -88,6 +100,10 @@ export function ProduceMessage(arg1, arg2, arg3, arg4, arg5) {
 
 export function ProduceMessages(arg1, arg2) {
   return window['go']['kafka']['KafkaService']['ProduceMessages'](arg1, arg2);
+}
+
+export function PurgeTopic(arg1) {
+  return window['go']['kafka']['KafkaService']['PurgeTopic'](arg1);
 }
 
 export function ResetConsumerGroupOffsets(arg1, arg2) {
