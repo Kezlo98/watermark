@@ -134,7 +134,7 @@ export function LagChartsTab() {
           ...alertConfig,
           trackedTopics: updatedTopics,
           trackedGroups: updatedGroups,
-        } as any);
+        });
         await loadConfig(clusterId);
         await RestartMonitoring(clusterId);
         toast.info(`"${name}" added to tracking list.`, { duration: 3000 });
