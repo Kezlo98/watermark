@@ -5,6 +5,29 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-03-23
+
+### Added
+
+- Delete records from topic functionality
+- Comprehensive Alerts page with monitor, ranking, history, charts, and config tabs
+- Backend lag recorder service with time-series storage for consumer group monitoring
+- Selective chart tracking for monitor UI with unified and auto-refresh controls
+- Interactive lag charts visualization with shadcn aesthetic and multi-entity support
+
+### Changed
+
+- Revamped monitor UI optimized for 1080p layouts with improved inbox notifications
+- Codebase cleanup: dead code removal, route splitting, component modularization, and file deduplication
+
+### Fixed
+
+- Area chart visualization issues including fill gaps, tooltip color dots, and name truncation
+- Configuration reliability with nullish coalescing fallbacks for array fields in `ClusterAlertConfig`
+- Fix state synchronization issues
+- Clean up lingering background tasks on component teardown
+- Fix async event handling edge cases
+
 ## [1.0.4] - 2026-03-20
 
 ### Added
