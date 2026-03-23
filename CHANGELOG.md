@@ -24,7 +24,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Area chart visualization issues including fill gaps, tooltip color dots, and name truncation
 - Configuration reliability with nullish coalescing fallbacks for array fields in `ClusterAlertConfig`
-- Addressed multiple PR review findings including state synchronization, background tasks cleanup, and async event handling
+- Fix state synchronization issues
 
 ## [1.0.4] - 2026-03-20
 
