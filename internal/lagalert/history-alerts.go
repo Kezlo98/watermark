@@ -164,15 +164,20 @@ func (s *HistoryStore) GetUnreadCount(clusterID string) int {
 	return count
 }
 
-// RunCleanup purges expired alerts and trims to maxAlerts.
-// Should be called on init and periodically (hourly).
-func (s *HistoryStore) RunCleanup() {
+// RunCleanupIfNeeded checks whether cleanup is due and, if so, purges expired
+// alerts and trims to maxAlerts — all in a single lock+disk-read cycle.
+// Should be called on init and periodically (e.g. every poll tick).
+func (s *HistoryStore) RunCleanupIfNeeded() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	h, err := s.loadHistory()
 	if err != nil {
 		return
+	}
+
+	if time.Since(h.LastCleanup) <= cleanupPeriod {
+		return // not due yet
 	}
 
 	now := time.Now().UTC()
@@ -198,16 +203,4 @@ func (s *HistoryStore) RunCleanup() {
 	if err := s.saveHistory(h); err != nil {
 		log.Printf("lagalert: cleanup save error: %v", err)
 	}
-}
-
-// NeedsCleanup returns true if an hourly cleanup is due.
-func (s *HistoryStore) NeedsCleanup() bool {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	h, err := s.loadHistory()
-	if err != nil {
-		return true
-	}
-	return time.Since(h.LastCleanup) > cleanupPeriod
 }

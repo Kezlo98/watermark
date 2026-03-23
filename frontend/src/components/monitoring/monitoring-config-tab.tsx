@@ -65,8 +65,8 @@ export function MonitoringConfigTab() {
     }
   };
 
-  const handleToggle = (field: keyof ClusterAlertConfig) => {
-    saveConfig({ ...cfg, [field]: !cfg[field as keyof typeof cfg] });
+  const handleToggle = async (field: keyof ClusterAlertConfig) => {
+    await saveConfig({ ...cfg, [field]: !cfg[field as keyof typeof cfg] });
   };
 
   const handleAddRule = async () => {

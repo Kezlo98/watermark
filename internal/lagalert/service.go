@@ -32,7 +32,7 @@ type LagAlertService struct {
 func NewLagAlertService(kafkaSvc *kafka.KafkaService, configDir string) *LagAlertService {
 	store := NewHistoryStore(configDir)
 	// Run initial cleanup on startup
-	store.RunCleanup()
+	store.RunCleanupIfNeeded()
 	return &LagAlertService{
 		kafkaSvc:    kafkaSvc,
 		store:       store,

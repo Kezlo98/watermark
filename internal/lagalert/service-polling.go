@@ -47,10 +47,8 @@ func (s *LagAlertService) pollLoop(ctx context.Context, clusterID string, interv
 				if err := s.pollOnce(clusterID); err != nil {
 					log.Printf("lagalert: poll error: %v", err)
 				}
-				// Run hourly cleanup if due
-				if s.store.NeedsCleanup() {
-					s.store.RunCleanup()
-				}
+				// Run hourly cleanup if due (single disk-read)
+				s.store.RunCleanupIfNeeded()
 			}()
 		}
 	}
