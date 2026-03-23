@@ -5,7 +5,6 @@ import {
   GetAlertConfig,
   MarkAllRead,
   ClearAlerts,
-  RestartMonitoring,
 } from "@/lib/wails-client";
 
 const MAX_STORE_ALERTS = 50;
@@ -71,7 +70,7 @@ export const useLagAlertsStore = create<LagAlertsState>((set, get) => ({
   loadAlerts: async (clusterID) => {
     try {
       const raw = await GetAlerts(clusterID);
-      const alerts = raw as unknown as AlertEvent[];
+      const alerts = raw as AlertEvent[];
       const unread = alerts.filter((a: AlertEvent) => !a.read && !a.resolved).length;
       set({ alerts: alerts.slice(0, MAX_STORE_ALERTS), unreadCount: unread });
     } catch {
@@ -82,13 +81,7 @@ export const useLagAlertsStore = create<LagAlertsState>((set, get) => ({
   loadConfig: async (clusterID) => {
     try {
       const config = await GetAlertConfig(clusterID);
-      set({ alertConfig: config as unknown as ClusterAlertConfig });
-      // Ensure the backend poll loop is running when recording is enabled.
-      // Covers cases where wails dev hot-reload or app restart didn't start it.
-      const cfg = config as unknown as ClusterAlertConfig;
-      if (cfg?.enabled && cfg?.recordingEnabled) {
-        RestartMonitoring(clusterID).catch(() => {});
-      }
+      set({ alertConfig: config as ClusterAlertConfig });
     } catch {
       set({ alertConfig: null });
     }

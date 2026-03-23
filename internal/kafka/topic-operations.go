@@ -232,6 +232,10 @@ func (k *KafkaService) PurgeTopic(topicName string) ([]DeleteRecordsResult, erro
 		offsets.Add(kadm.Offset{Topic: topicName, Partition: o.Partition, At: o.Offset})
 	})
 
+	if len(offsets) == 0 {
+		return []DeleteRecordsResult{}, nil
+	}
+
 	results, err := k.admin.DeleteRecords(ctx, offsets)
 	if err != nil {
 		return nil, fmt.Errorf("purge topic: %w", err)

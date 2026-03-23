@@ -49,7 +49,6 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const [replayMessage, setReplayMessage] = useState<Message | null>(null);
   const [batchReplayMessages, setBatchReplayMessages] = useState<Message[] | null>(null);
-  const [produceOpen, setProduceOpen] = useState(false);
   const [deleteMode, setDeleteMode] = useState<DeleteMode | null>(null);
 
   const openSingleReplay = (msg: Message) => { setBatchReplayMessages(null); setReplayMessage(msg); };
@@ -313,8 +312,8 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
       )}
 
       <ProduceMessageModal
-        isOpen={produceOpen || !!replayMessage || !!batchReplayMessages}
-        onClose={() => { setProduceOpen(false); setReplayMessage(null); setBatchReplayMessages(null); }}
+        isOpen={!!replayMessage || !!batchReplayMessages}
+        onClose={() => { setReplayMessage(null); setBatchReplayMessages(null); }}
         topicName={topicName}
         replaySource={replayMessage ?? undefined}
         batchReplaySource={batchReplayMessages ?? undefined}
