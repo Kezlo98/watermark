@@ -60,6 +60,8 @@ export function AlertsForm() {
     rules: [],
     trackedTopics: [],
     trackedGroups: [],
+    excludedTopics: [],
+    excludedGroups: [],
   };
 
   const saveConfig = async (updated: ClusterAlertConfig) => {

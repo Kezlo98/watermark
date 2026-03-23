@@ -61,8 +61,8 @@ export function ChartAreaRenderer({
             const key = entityDataKey(entity.originalIndex);
             return (
               <linearGradient key={key} id={`fill-${key}`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={`var(--color-${key})`} stopOpacity={0.8} />
-                <stop offset="95%" stopColor={`var(--color-${key})`} stopOpacity={0.1} />
+                <stop offset="5%" stopColor={`var(--color-${key})`} stopOpacity={0.4} />
+                <stop offset="95%" stopColor={`var(--color-${key})`} stopOpacity={0.05} />
               </linearGradient>
             );
           })}
@@ -100,11 +100,12 @@ export function ChartAreaRenderer({
           return (
             <Area
               key={key}
-              type="natural"
+              type="monotone"
               dataKey={key}
               fill={`url(#fill-${key})`}
               stroke={`var(--color-${key})`}
               strokeWidth={2}
+              connectNulls
               activeDot={{ r: 4 }}
               dot={data.length === 1 ? { r: 4, fill: `var(--color-${key})` } : false}
             />

@@ -1,10 +1,10 @@
 /**
  * Charts tab — multi-entity interactive time-series lag charts.
- * Supports up to 5 overlaid entities with persistence, color picker, visibility toggles,
- * and two-tier tracked/ephemeral entity recording.
+ * Supports up to 5 overlaid entities with persistence, color picker, visibility toggles.
+ * Auto-adds untracked entities to persistent config on selection.
  */
 
-import { useMemo, useEffect, useRef } from "react";
+import { useMemo, useEffect } from "react";
 import { useKafkaQuery } from "@/hooks/use-kafka-query";
 import { useMultiLagTimeSeries } from "@/hooks/use-multi-lag-time-series";
 import { useChartPreferences } from "@/hooks/use-chart-preferences";
@@ -13,9 +13,9 @@ import { useSettingsStore } from "@/store/settings";
 import {
   GetAllGroupsLagDetail,
   GetConsumerGroups,
-  SetActiveChartEntities,
+  SaveAlertConfig,
+  RestartMonitoring,
 } from "@/lib/wails-client";
-import { isWailsReady } from "@/lib/wails-ready";
 import { globMatch } from "@/lib/glob-match";
 import { ChartControls } from "./chart-controls";
 import { ChartAreaRenderer } from "./chart-area-renderer";
@@ -29,7 +29,7 @@ import type { TimeWindow, ChartType } from "./chart-entity-types";
 
 /** Charts tab — interactive time-series lag charts. */
 export function LagChartsTab() {
-  const { alertConfig } = useLagAlertsStore();
+  const { alertConfig, loadConfig } = useLagAlertsStore();
   const recordingEnabled = alertConfig?.recordingEnabled ?? false;
   const pollInterval = (alertConfig?.pollIntervalSec ?? 30) * 1000;
   const clusterId = useSettingsStore((s) => s.activeClusterId);
@@ -41,6 +41,15 @@ export function LagChartsTab() {
     return {
       topics: alertConfig.trackedTopics ?? [],
       groups: alertConfig.trackedGroups ?? [],
+    };
+  }, [alertConfig]);
+
+  // Excluded patterns from config
+  const excludedPatterns = useMemo(() => {
+    if (!alertConfig) return { topics: [] as string[], groups: [] as string[] };
+    return {
+      topics: alertConfig.excludedTopics ?? [],
+      groups: alertConfig.excludedGroups ?? [],
     };
   }, [alertConfig]);
 
@@ -57,10 +66,13 @@ export function LagChartsTab() {
     validateEntities,
   } = useChartPreferences(clusterId);
 
-  // Current mode tracked patterns
+  // Current mode tracked/excluded patterns
   const currentTrackedPatterns = prefs.mode === "topic"
     ? trackedPatterns.topics
     : trackedPatterns.groups;
+  const currentExcludedPatterns = prefs.mode === "topic"
+    ? excludedPatterns.topics
+    : excludedPatterns.groups;
 
   // Fetch entity lists for selector dropdown
   const { data: topicLags } = useKafkaQuery<TopicLagSummary[]>(
@@ -96,50 +108,39 @@ export function LagChartsTab() {
     }));
   }, [entities, currentTrackedPatterns]);
 
-  // Sync active (untracked) chart entities to backend for ephemeral recording
-  useEffect(() => {
-    if (!isWailsReady()) return;
-
-    const untrackedNames = enrichedEntities
-      .filter((e) => !e.tracked)
-      .map((e) => e.name);
-
-    if (untrackedNames.length > 0) {
-      SetActiveChartEntities(
-        prefs.mode === "topic" ? untrackedNames : [],
-        prefs.mode === "group" ? untrackedNames : [],
-      ).catch(() => { /* ignore — backend may not be ready */ });
-    } else {
-      // Clear active entities when all are tracked
-      SetActiveChartEntities([], []).catch(() => {});
+  // Auto-add untracked entities to persistent config on selection
+  const handleAddEntity = async (name: string) => {
+    // Check if entity matches an exclude pattern
+    const isExcluded = currentExcludedPatterns.some((p: string) => globMatch(name, p));
+    if (isExcluded) {
+      toast.warning(`"${name}" matches an exclude pattern. Remove the exclusion in Settings first.`);
+      return;
     }
-  }, [enrichedEntities, prefs.mode]);
 
-  // Re-sync active entities on reconnect
-  const enrichedRef = useRef(enrichedEntities);
-  enrichedRef.current = enrichedEntities;
-  const modeRef = useRef(prefs.mode);
-  modeRef.current = prefs.mode;
+    addEntity(name); // Add to chart (localStorage preferences)
 
-  useEffect(() => {
-    if (!isWailsReady() || connectionStatus !== "connected") return;
-    const untracked = enrichedRef.current.filter((e) => !e.tracked).map((e) => e.name);
-    if (untracked.length > 0) {
-      SetActiveChartEntities(
-        modeRef.current === "topic" ? untracked : [],
-        modeRef.current === "group" ? untracked : [],
-      ).catch(() => {});
-    }
-  }, [connectionStatus]);
-
-  // Wrap addEntity to show toast for untracked entities
-  const handleAddEntity = (name: string) => {
-    addEntity(name);
+    // Auto-add to tracked config if not already tracked
     const isTracked = currentTrackedPatterns.some((p: string) => globMatch(name, p));
-    if (!isTracked) {
-      toast.info(`Now tracking "${name}". Data builds from now.`, {
-        duration: 3000,
-      });
+    if (!isTracked && alertConfig && clusterId) {
+      const updatedTopics = prefs.mode === "topic"
+        ? [...(alertConfig.trackedTopics ?? []), name]
+        : (alertConfig.trackedTopics ?? []);
+      const updatedGroups = prefs.mode === "group"
+        ? [...(alertConfig.trackedGroups ?? []), name]
+        : (alertConfig.trackedGroups ?? []);
+
+      try {
+        await SaveAlertConfig(clusterId, {
+          ...alertConfig,
+          trackedTopics: updatedTopics,
+          trackedGroups: updatedGroups,
+        } as any);
+        await loadConfig(clusterId);
+        await RestartMonitoring(clusterId);
+        toast.info(`"${name}" added to tracking list.`, { duration: 3000 });
+      } catch {
+        toast.error(`Failed to add "${name}" to tracking list.`);
+      }
     }
   };
 
@@ -201,11 +202,12 @@ export function LagChartsTab() {
         chartType={prefs.chartType}
         onChartTypeChange={(t: ChartType) => updatePrefs({ chartType: t })}
         trackedPatterns={currentTrackedPatterns}
+        excludedPatterns={currentExcludedPatterns}
       />
 
       {enrichedEntities.length === 0 ? (
         <div className="py-16 text-center text-sm text-slate-500">
-          Add a {prefs.mode} to start charting.
+          Select a {prefs.mode} above to start charting.
         </div>
       ) : (
         <>

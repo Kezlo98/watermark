@@ -48,6 +48,8 @@ export function MonitoringConfigTab() {
     rules: [],
     trackedTopics: [],
     trackedGroups: [],
+    excludedTopics: [],
+    excludedGroups: [],
   };
 
   const saveConfig = async (updated: ClusterAlertConfig) => {
@@ -113,8 +115,13 @@ export function MonitoringConfigTab() {
     }
   };
 
-  const handleTrackedUpdate = async (trackedTopics: string[], trackedGroups: string[]) => {
-    await saveConfig({ ...cfg, trackedTopics, trackedGroups });
+  const handleTrackedUpdate = async (
+    trackedTopics: string[],
+    trackedGroups: string[],
+    excludedTopics: string[],
+    excludedGroups: string[],
+  ) => {
+    await saveConfig({ ...cfg, trackedTopics, trackedGroups, excludedTopics, excludedGroups });
   };
 
   if (!connected) {
@@ -168,11 +175,41 @@ export function MonitoringConfigTab() {
         />
       </div>
 
+      {/* Poll interval (only when monitoring enabled) */}
+      {cfg.enabled && (
+        <div>
+          <label className="block text-xs text-slate-400 mb-2">Poll Interval</label>
+          <div className="flex gap-2">
+            {[
+              { label: "15s", value: 15 },
+              { label: "30s", value: 30 },
+              { label: "60s", value: 60 },
+              { label: "120s", value: 120 },
+            ].map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => saveConfig({ ...cfg, pollIntervalSec: opt.value })}
+                disabled={saving}
+                className={`px-3 py-1.5 text-xs rounded border transition-colors ${
+                  cfg.pollIntervalSec === opt.value
+                    ? "bg-primary/20 text-primary border-primary/40"
+                    : "bg-white/5 text-slate-400 border-white/10 hover:border-white/20"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Tracked Entities Config (only shown when recording is enabled) */}
       {cfg.recordingEnabled && (
         <TrackedEntitiesConfig
           trackedTopics={cfg.trackedTopics ?? []}
           trackedGroups={cfg.trackedGroups ?? []}
+          excludedTopics={cfg.excludedTopics ?? []}
+          excludedGroups={cfg.excludedGroups ?? []}
           onUpdate={handleTrackedUpdate}
           disabled={saving}
         />

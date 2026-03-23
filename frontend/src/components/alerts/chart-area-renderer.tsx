@@ -100,11 +100,12 @@ export function ChartAreaRenderer({
           return (
             <Area
               key={key}
-              type="natural"
+              type="monotone"
               dataKey={key}
               fill={`url(#fill-${key})`}
               stroke={`var(--color-${key})`}
               strokeWidth={2}
+              connectNulls
               activeDot={{ r: 4 }}
               dot={data.length === 1 ? { r: 4, fill: `var(--color-${key})` } : false}
             />

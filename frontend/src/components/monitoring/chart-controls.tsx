@@ -46,6 +46,7 @@ interface ChartControlsProps {
   chartType: ChartType;
   onChartTypeChange: (t: ChartType) => void;
   trackedPatterns: string[];
+  excludedPatterns: string[];
 }
 
 /** Controls bar — mode toggle, entity add (with tracked/available sections), time window, chart type. */
@@ -60,6 +61,7 @@ export function ChartControls({
   chartType,
   onChartTypeChange,
   trackedPatterns,
+  excludedPatterns,
 }: ChartControlsProps) {
   const [open, setOpen] = useState(false);
   const [pendingSelection, setPendingSelection] = useState("");
@@ -68,12 +70,16 @@ export function ChartControls({
   const atCapacity = selectedEntities.length >= MAX_CHART_ENTITIES;
   const addDisabled = !pendingSelection || atCapacity || isAlreadyAdded;
 
-  // Classify entities into tracked/available
-  const { tracked, available } = useMemo(() => {
+  // Classify entities into tracked/available/excluded
+  const { tracked, available, excluded } = useMemo(() => {
     const trackedList: string[] = [];
     const availableList: string[] = [];
+    const excludedSet = new Set<string>();
 
     for (const entity of entities) {
+      const isExcluded = excludedPatterns.some((p) => globMatch(entity, p));
+      if (isExcluded) excludedSet.add(entity);
+
       const isTracked = trackedPatterns.some((p) => globMatch(entity, p));
       if (isTracked) {
         trackedList.push(entity);
@@ -93,8 +99,9 @@ export function ChartControls({
     return {
       tracked: trackedList.sort(sortFn),
       available: availableList.sort(sortFn),
+      excluded: excludedSet,
     };
-  }, [entities, trackedPatterns, selectedEntities]);
+  }, [entities, trackedPatterns, excludedPatterns, selectedEntities]);
 
   const handleAdd = () => {
     if (pendingSelection && !addDisabled) {
@@ -156,6 +163,7 @@ export function ChartControls({
                   <CommandGroup heading={`Tracked (${tracked.length})`}>
                     {tracked.map((e) => {
                       const added = selectedEntities.some((s) => s.name === e);
+                      const isExcluded = excluded.has(e);
                       const chartEntity = selectedEntities.find((s) => s.name === e);
                       const dotColor = chartEntity
                         ? CHART_COLORS[chartEntity.colorIndex]
@@ -165,7 +173,7 @@ export function ChartControls({
                         <CommandItem
                           key={e}
                           value={e}
-                          disabled={added}
+                          disabled={added || isExcluded}
                           onSelect={() => {
                             setPendingSelection(e);
                             setOpen(false);
@@ -174,15 +182,19 @@ export function ChartControls({
                             "text-xs font-mono cursor-pointer",
                             "data-[selected=true]:bg-white/10 data-[selected=true]:text-white",
                             added && "opacity-40 cursor-not-allowed",
-                            "bg-primary/5", // subtle bg tint for tracked
+                            isExcluded && "opacity-30 line-through cursor-not-allowed",
+                            !isExcluded && "bg-primary/5", // subtle bg tint for tracked
                           )}
                         >
                           <span
                             className="mr-2 size-2 rounded-full shrink-0 inline-block"
-                            style={{ backgroundColor: dotColor }}
+                            style={{ backgroundColor: isExcluded ? "#4b5563" : dotColor }}
                           />
                           {added && <Check className="mr-1 size-3 text-primary" />}
                           {e}
+                          {isExcluded && (
+                            <span className="ml-auto text-[10px] text-semantic-red">excluded</span>
+                          )}
                         </CommandItem>
                       );
                     })}
@@ -194,11 +206,12 @@ export function ChartControls({
                   <CommandGroup heading={`Available (${available.length})`}>
                     {available.map((e) => {
                       const added = selectedEntities.some((s) => s.name === e);
+                      const isExcluded = excluded.has(e);
                       return (
                         <CommandItem
                           key={e}
                           value={e}
-                          disabled={added}
+                          disabled={added || isExcluded}
                           onSelect={() => {
                             setPendingSelection(e);
                             setOpen(false);
@@ -207,11 +220,15 @@ export function ChartControls({
                             "text-xs font-mono cursor-pointer",
                             "data-[selected=true]:bg-white/10 data-[selected=true]:text-white",
                             added && "opacity-40 cursor-not-allowed",
+                            isExcluded && "opacity-30 line-through cursor-not-allowed",
                           )}
                         >
                           <span className="mr-2 size-2 shrink-0" /> {/* spacer for alignment */}
                           {added && <Check className="mr-1 size-3 text-primary" />}
                           {e}
+                          {isExcluded && (
+                            <span className="ml-auto text-[10px] text-semantic-red">excluded</span>
+                          )}
                         </CommandItem>
                       );
                     })}
