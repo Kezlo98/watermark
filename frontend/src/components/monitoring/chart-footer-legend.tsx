@@ -1,19 +1,12 @@
 /**
  * Interactive footer legend below chart.
  * Each entity = chip with color picker, visibility toggle, remove button.
- * Untracked entities show a ⚠ warning icon with tooltip.
  */
 
 import { cn } from "@/lib/utils";
-import { X, AlertTriangle } from "lucide-react";
+import { X } from "lucide-react";
 import type { ChartEntity } from "./chart-entity-types";
 import { ChartColorPicker } from "./chart-color-picker";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 interface ChartFooterLegendProps {
   entities: ChartEntity[];
@@ -40,9 +33,7 @@ function ChartEntityChip({
       className={cn(
         "group flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-mono transition-opacity",
         !entity.visible && "opacity-40",
-        entity.tracked
-          ? "bg-primary/5 border border-primary/10"
-          : "bg-white/5",
+        "bg-primary/5 border border-primary/10",
       )}
     >
       <ChartColorPicker
@@ -50,23 +41,6 @@ function ChartEntityChip({
         entities={allEntities}
         onSelect={(i) => onSwapColor(entity.name, i)}
       />
-
-      {/* Warning icon for untracked entities */}
-      {!entity.tracked && (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <AlertTriangle className="size-3 text-amber-400 shrink-0" />
-            </TooltipTrigger>
-            <TooltipContent side="top" className="max-w-[200px] text-xs">
-              <p>
-                Data collection only while on chart.
-                Configure tracked entities in Settings to record persistently.
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      )}
 
       <button
         onClick={() => onToggleVisibility(entity.name)}

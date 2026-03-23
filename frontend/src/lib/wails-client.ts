@@ -89,9 +89,10 @@ export {
 } from "../../wailsjs/go/updater/UpdaterService";
 
 // --- Lag Alert Service ---
+import { SaveAlertConfig as _SaveAlertConfig } from "../../wailsjs/go/lagalert/LagAlertService";
+import type { ClusterAlertConfig } from "@/types/lag-alerts";
 export {
   GetAlertConfig,
-  SaveAlertConfig,
   AddRule,
   UpdateRule,
   DeleteRule,
@@ -102,8 +103,11 @@ export {
   RestartMonitoring,
   GetTopicTimeSeries,
   GetGroupTimeSeries,
-  SetActiveChartEntities,
 } from "../../wailsjs/go/lagalert/LagAlertService";
+
+/** Typed wrapper — accepts app interface, bridges to Wails class at boundary. */
+export const SaveAlertConfig = (clusterId: string, cfg: ClusterAlertConfig): Promise<void> =>
+  _SaveAlertConfig(clusterId, cfg as any);
 
 // --- Template Service ---
 export {

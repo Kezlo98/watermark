@@ -46,10 +46,6 @@ export function SaveAlertConfig(arg1, arg2) {
   return window['go']['lagalert']['LagAlertService']['SaveAlertConfig'](arg1, arg2);
 }
 
-export function SetActiveChartEntities(arg1, arg2) {
-  return window['go']['lagalert']['LagAlertService']['SetActiveChartEntities'](arg1, arg2);
-}
-
 export function SetContext(arg1) {
   return window['go']['lagalert']['LagAlertService']['SetContext'](arg1);
 }
