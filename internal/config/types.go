@@ -34,3 +34,10 @@ type AppConfig struct {
 	ActiveClusterID string           `json:"activeClusterId"`
 	SkippedVersion  string           `json:"skippedVersion,omitempty"`
 }
+
+// ConnectionTestResult is the structured result of a progressive cluster connectivity test.
+// Status is one of: "unreachable", "auth_error", "forbidden", "ok".
+type ConnectionTestResult struct {
+	Status  string `json:"status"`  // "unreachable" | "auth_error" | "forbidden" | "ok"
+	Message string `json:"message"` // human-readable detail
+}

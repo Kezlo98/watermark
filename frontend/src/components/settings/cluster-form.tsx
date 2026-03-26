@@ -1,12 +1,16 @@
 import { useState } from "react";
-import { Loader2, CheckCircle2, XCircle, Zap } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, ShieldX, ShieldAlert, Zap } from "lucide-react";
 import { SaveCluster, TestConnection, GetCluster } from "@/lib/wails-client";
 import { config } from "../../../wailsjs/go/models";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { ClusterFormFields } from "./cluster-form-fields";
 
-type TestStatus = "idle" | "testing" | "success" | "error";
+// Back-end connection test statuses returned by the Go service.
+type TestConnectionStatus = "unreachable" | "auth_error" | "forbidden" | "ok";
+
+// Full UI state including loading states.
+type TestUIState = "idle" | "testing" | TestConnectionStatus;
 
 interface ClusterFormProps {
   /** Cluster ID — pass "new" for creating a new cluster */
@@ -36,7 +40,7 @@ export function ClusterForm({ clusterId, clusterName, onClose }: ClusterFormProp
   });
 
   const [saving, setSaving] = useState(false);
-  const [testStatus, setTestStatus] = useState<TestStatus>("idle");
+  const [testStatus, setTestStatus] = useState<TestUIState>("idle");
   const [testMessage, setTestMessage] = useState("");
   const [saveError, setSaveError] = useState("");
   const [loaded, setLoaded] = useState(isNew);
@@ -66,18 +70,30 @@ export function ClusterForm({ clusterId, clusterName, onClose }: ClusterFormProp
 
   const handleTestConnection = async () => {
     if (!form.bootstrapServers.trim()) {
-      setTestStatus("error");
+      setTestStatus("unreachable");
       setTestMessage("Bootstrap servers required");
       return;
     }
     setTestStatus("testing");
     setTestMessage("");
     try {
-      await TestConnection(form.bootstrapServers);
-      setTestStatus("success");
-      setTestMessage("Connection successful!");
+      const isAwsMsk = form.securityProtocol === "AWS_MSK_IAM";
+      const isNoAuth = form.securityProtocol === "NONE";
+      const profile = new config.ClusterProfile({
+        bootstrapServers: form.bootstrapServers.trim(),
+        securityProtocol: form.securityProtocol,
+        saslMechanism: (!isNoAuth && !isAwsMsk) ? form.saslMechanism : "",
+        username: (!isNoAuth && !isAwsMsk) ? form.username : "",
+        password: (!isNoAuth && !isAwsMsk) ? (form.password || undefined) : undefined,
+        awsProfile: isAwsMsk ? form.awsProfile : "",
+        awsRegion: isAwsMsk ? form.awsRegion : "",
+      });
+      // Pass clusterID so backend can fetch saved password in edit mode
+      const result = await TestConnection(profile, isNew ? "" : clusterId);
+      setTestStatus(result.status as TestConnectionStatus);
+      setTestMessage(result.message);
     } catch (err) {
-      setTestStatus("error");
+      setTestStatus("unreachable");
       setTestMessage(err instanceof Error ? err.message : String(err));
     }
   };
@@ -131,19 +147,23 @@ export function ClusterForm({ clusterId, clusterName, onClose }: ClusterFormProp
         isNew={isNew}
       />
 
-      {/* Test Connection feedback */}
+      {/* Test Connection feedback — 4-status visual */}
       {testStatus !== "idle" && (
         <div
           className={cn(
             "flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-mono",
             testStatus === "testing" && "bg-primary/10 text-primary",
-            testStatus === "success" && "bg-status-healthy/10 text-status-healthy",
-            testStatus === "error" && "bg-semantic-red/10 text-semantic-red",
+            testStatus === "ok" && "bg-status-healthy/10 text-status-healthy",
+            testStatus === "auth_error" && "bg-orange-500/10 text-orange-400",
+            testStatus === "forbidden" && "bg-amber-500/10 text-amber-400",
+            testStatus === "unreachable" && "bg-semantic-red/10 text-semantic-red",
           )}
         >
           {testStatus === "testing" && <Loader2 className="size-3.5 animate-spin" />}
-          {testStatus === "success" && <CheckCircle2 className="size-3.5" />}
-          {testStatus === "error" && <XCircle className="size-3.5" />}
+          {testStatus === "ok" && <CheckCircle2 className="size-3.5" />}
+          {testStatus === "auth_error" && <ShieldX className="size-3.5" />}
+          {testStatus === "forbidden" && <ShieldAlert className="size-3.5" />}
+          {testStatus === "unreachable" && <XCircle className="size-3.5" />}
           <span>{testStatus === "testing" ? "Testing connection..." : testMessage}</span>
         </div>
       )}
@@ -158,25 +178,18 @@ export function ClusterForm({ clusterId, clusterName, onClose }: ClusterFormProp
 
       {/* Action buttons */}
       <div className="flex justify-between items-center pt-4 border-t border-white/5">
-        <div className="relative group">
-          <button
-            onClick={handleTestConnection}
-            disabled={testStatus === "testing" || form.securityProtocol === "AWS_MSK_IAM"}
-            className="flex items-center gap-1.5 px-4 py-2 text-sm text-slate-400 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {testStatus === "testing" ? (
-              <Loader2 className="size-3.5 animate-spin" />
-            ) : (
-              <Zap className="size-3.5" />
-            )}
-            Test Connection
-          </button>
-          {form.securityProtocol === "AWS_MSK_IAM" && (
-            <div className="absolute left-0 bottom-full mb-2 px-3 py-2 bg-slate-800 border border-white/10 rounded-lg text-xs text-slate-300 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-              AWS IAM auth is validated on Connect
-            </div>
+        <button
+          onClick={handleTestConnection}
+          disabled={testStatus === "testing"}
+          className="flex items-center gap-1.5 px-4 py-2 text-sm text-slate-400 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {testStatus === "testing" ? (
+            <Loader2 className="size-3.5 animate-spin" />
+          ) : (
+            <Zap className="size-3.5" />
           )}
-        </div>
+          Test Connection
+        </button>
 
         <div className="flex gap-3">
           <button

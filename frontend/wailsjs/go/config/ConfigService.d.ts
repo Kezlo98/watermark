@@ -36,4 +36,4 @@ export function SetActiveCluster(arg1:string):Promise<void>;
 
 export function SkipVersion(arg1:string):Promise<void>;
 
-export function TestConnection(arg1:string):Promise<void>;
+export function TestConnection(arg1:config.ClusterProfile,arg2:string):Promise<config.ConnectionTestResult>;
