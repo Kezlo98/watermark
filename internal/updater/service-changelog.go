@@ -12,7 +12,7 @@ import (
 	"github.com/Masterminds/semver/v3"
 )
 
-const changelogURL = "https://raw.githubusercontent.com/Kezlo98/watermark/main/CHANGELOG.md"
+const changelogURL = "https://raw.githubusercontent.com/Kezlo98/watermark/master/CHANGELOG.md"
 
 // versionHeaderRe matches lines like: ## [1.2.3] - 2026-01-15
 var versionHeaderRe = regexp.MustCompile(`^## \[(\d+\.\d+\.\d+)\]\s*[-–—]\s*(.+)$`)
