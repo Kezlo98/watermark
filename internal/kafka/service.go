@@ -2,20 +2,15 @@ package kafka
 
 import (
 	"context"
-	"crypto/tls"
 	"fmt"
-	"strings"
 	"sync"
 	"time"
 
 	"watermark-01/internal/config"
+	"watermark-01/internal/kafkautil"
 
-	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/twmb/franz-go/pkg/kadm"
 	"github.com/twmb/franz-go/pkg/kgo"
-	awsmsk "github.com/twmb/franz-go/pkg/sasl/aws"
-	"github.com/twmb/franz-go/pkg/sasl/plain"
-	"github.com/twmb/franz-go/pkg/sasl/scram"
 )
 
 // connectionTimeout is the maximum duration for a cluster connection attempt.
@@ -183,94 +178,14 @@ func (k *KafkaService) getCtx() context.Context {
 }
 
 // buildClientOpts creates kgo.Opt slice from a cluster profile.
+// Delegates to the shared kafkautil.BuildClientOpts to keep SASL/TLS logic in one place.
 func (k *KafkaService) buildClientOpts(profile *config.ClusterProfile, password string) ([]kgo.Opt, error) {
-	seeds := strings.Split(profile.BootstrapServers, ",")
-	for i := range seeds {
-		seeds[i] = strings.TrimSpace(seeds[i])
-	}
-
-	opts := []kgo.Opt{
-		kgo.SeedBrokers(seeds...),
-	}
-
-	// SASL authentication
-	switch profile.SecurityProtocol {
-	case "SASL_PLAIN":
-		opts = append(opts, kgo.SASL(plain.Auth{
-			User: profile.Username,
-			Pass: password,
-		}.AsMechanism()))
-	case "SASL_SCRAM":
-		mechanism := scram.Auth{
-			User: profile.Username,
-			Pass: password,
-		}
-		switch profile.SASLMechanism {
-		case "SCRAM-SHA-512":
-			opts = append(opts, kgo.SASL(mechanism.AsSha512Mechanism()))
-		default: // SCRAM-SHA-256
-			opts = append(opts, kgo.SASL(mechanism.AsSha256Mechanism()))
-		}
-	case "SASL_SSL":
-		// SASL + TLS
-		mechanism := scram.Auth{
-			User: profile.Username,
-			Pass: password,
-		}
-		switch profile.SASLMechanism {
-		case "SCRAM-SHA-512":
-			opts = append(opts, kgo.SASL(mechanism.AsSha512Mechanism()))
-		default:
-			opts = append(opts, kgo.SASL(mechanism.AsSha256Mechanism()))
-		}
-		opts = append(opts, kgo.DialTLSConfig(&tls.Config{}))
-	case "SSL":
-		opts = append(opts, kgo.DialTLSConfig(&tls.Config{}))
-	case "AWS_MSK_IAM":
-		var loadOpts []func(*awsconfig.LoadOptions) error
-		if profile.AwsProfile != "" {
-			loadOpts = append(loadOpts, awsconfig.WithSharedConfigProfile(profile.AwsProfile))
-		}
-		if profile.AwsRegion != "" {
-			loadOpts = append(loadOpts, awsconfig.WithRegion(profile.AwsRegion))
-		}
-		awsCfg, err := awsconfig.LoadDefaultConfig(k.getCtx(), loadOpts...)
-		if err != nil {
-			return nil, fmt.Errorf("load AWS config: %w", err)
-		}
-
-		// Resolve the effective region — user override → AWS config chain
-		effectiveRegion := profile.AwsRegion
-		if effectiveRegion == "" {
-			effectiveRegion = awsCfg.Region
-		}
-
-		mechanism := awsmsk.ManagedStreamingIAM(func(ctx context.Context) (awsmsk.Auth, error) {
-			creds, err := awsCfg.Credentials.Retrieve(ctx)
-			if err != nil {
-				profileName := profile.AwsProfile
-				if profileName == "" {
-					profileName = "default"
-				}
-				return awsmsk.Auth{}, fmt.Errorf("AWS credentials: %w — run 'aws sso login --profile %s' if using SSO", err, profileName)
-			}
-			return awsmsk.Auth{
-				AccessKey:    creds.AccessKeyID,
-				SecretKey:    creds.SecretAccessKey,
-				SessionToken: creds.SessionToken,
-			}, nil
-		})
-
-		// If we have a region, wrap the mechanism to work around franz-go's
-		// identifyRegion() which only parses region from *.amazonaws.com hostnames.
-		// For VPC endpoints or custom DNS, inject the region via a wrapper.
-		if effectiveRegion != "" {
-			mechanism = newRegionAwareMSKIAM(mechanism, effectiveRegion)
-		}
-
-		opts = append(opts, kgo.SASL(mechanism))
-		opts = append(opts, kgo.DialTLSConfig(&tls.Config{}))
-	}
-
-	return opts, nil
+	return kafkautil.BuildClientOpts(kafkautil.ProfileOpts{
+		BootstrapServers: profile.BootstrapServers,
+		SecurityProtocol: profile.SecurityProtocol,
+		SASLMechanism:    profile.SASLMechanism,
+		Username:         profile.Username,
+		AwsProfile:       profile.AwsProfile,
+		AwsRegion:        profile.AwsRegion,
+	}, password)
 }

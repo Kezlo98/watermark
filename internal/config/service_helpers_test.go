@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"errors"
 	"strings"
 	"sync"
 	"testing"
@@ -159,17 +160,29 @@ func TestSetActiveClusterNotFound(t *testing.T) {
 
 func TestTestConnectionInvalidServer(t *testing.T) {
 	svc := newTestService(t)
-	err := svc.TestConnection("invalid-host:99999")
-	if err == nil {
-		t.Fatal("expected error for invalid server")
+	result, err := svc.TestConnection(ClusterProfile{
+		BootstrapServers: "invalid-host:99999",
+		SecurityProtocol: "NONE",
+	}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Status != "unreachable" {
+		t.Fatalf("expected status 'unreachable', got %q", result.Status)
 	}
 }
 
 func TestTestConnectionEmptyServers(t *testing.T) {
 	svc := newTestService(t)
-	err := svc.TestConnection("")
-	if err == nil {
-		t.Fatal("expected error for empty servers")
+	result, err := svc.TestConnection(ClusterProfile{
+		BootstrapServers: "",
+		SecurityProtocol: "NONE",
+	}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Status != "unreachable" {
+		t.Fatalf("expected status 'unreachable', got %q", result.Status)
 	}
 }
 
@@ -213,3 +226,127 @@ func TestConfigPersistence(t *testing.T) {
 		t.Fatalf("expected 'light', got %s", settings.Theme)
 	}
 }
+
+func TestClassifyAuthError(t *testing.T) {
+	tests := []struct {
+		name     string
+		err      error
+		protocol string
+		want     string // substring expected in output
+	}{
+		{"SASL error", errors.New("SASL authentication failed"), "SASL_PLAIN", "SASL"},
+		{"AWS MSK error", errors.New("access denied"), "AWS_MSK_IAM", "AWS MSK IAM"},
+		{"TLS error", errors.New("tls: handshake failure"), "SASL_SSL", "TLS"},
+		{"Generic error", errors.New("connection reset"), "SASL_PLAIN", "Authentication failed"},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			result := classifyAuthError(tc.err, tc.protocol)
+			if !strings.Contains(result, tc.want) {
+				t.Errorf("expected %q in result, got %q", tc.want, result)
+			}
+		})
+	}
+}
+
+func TestClassifyMetadataError(t *testing.T) {
+	tests := []struct {
+		name       string
+		err        error
+		wantStatus string
+	}{
+		{"authorization error", errors.New("CLUSTER_AUTHORIZATION_FAILED"), "forbidden"},
+		{"topic auth error", errors.New("TOPIC_AUTHORIZATION_FAILED"), "forbidden"},
+		{"timeout error", errors.New("context deadline exceeded"), "auth_error"},
+		{"generic error", errors.New("connection reset"), "auth_error"},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			result := classifyMetadataError(tc.err)
+			if result.Status != tc.wantStatus {
+				t.Errorf("expected status %q, got %q", tc.wantStatus, result.Status)
+			}
+		})
+	}
+}
+
+func TestConnectionTestResultJSON(t *testing.T) {
+	result := ConnectionTestResult{Status: "ok", Message: "Connected — 3 brokers"}
+	data, err := json.Marshal(result)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(data), `"status":"ok"`) {
+		t.Fatalf("expected JSON with status field, got %s", string(data))
+	}
+}
+
+func TestResolveTestPasswordPlaintext(t *testing.T) {
+	svc := newTestService(t)
+	pw, err := svc.resolveTestPassword(ClusterProfile{Password: "plain"}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if pw != "plain" {
+		t.Fatalf("expected 'plain', got %s", pw)
+	}
+}
+
+func TestResolveTestPasswordFromSavedProfile(t *testing.T) {
+	svc := newTestService(t)
+	// Save a cluster with password (will be auto-encrypted)
+	if err := svc.SaveCluster(ClusterProfile{
+		Name:             "Saved",
+		BootstrapServers: "localhost:9092",
+		SecurityProtocol: "SASL_PLAIN",
+		Password:         "saved-secret",
+	}); err != nil {
+		t.Fatal(err)
+	}
+	clusters := svc.GetClusters()
+	clusterID := clusters[0].ID
+
+	// Empty form password + clusterID → should resolve from saved
+	pw, err := svc.resolveTestPassword(ClusterProfile{Password: ""}, clusterID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if pw != "saved-secret" {
+		t.Fatalf("expected 'saved-secret', got %s", pw)
+	}
+}
+
+func TestResolveTestPasswordEmpty(t *testing.T) {
+	svc := newTestService(t)
+	pw, err := svc.resolveTestPassword(ClusterProfile{Password: ""}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if pw != "" {
+		t.Fatalf("expected empty, got %s", pw)
+	}
+}
+
+func TestResolveTestPasswordFormOverridesSaved(t *testing.T) {
+	svc := newTestService(t)
+	if err := svc.SaveCluster(ClusterProfile{
+		Name:             "Saved",
+		BootstrapServers: "localhost:9092",
+		SecurityProtocol: "SASL_PLAIN",
+		Password:         "saved-secret",
+	}); err != nil {
+		t.Fatal(err)
+	}
+	clusters := svc.GetClusters()
+	clusterID := clusters[0].ID
+
+	// Form password takes priority over saved
+	pw, err := svc.resolveTestPassword(ClusterProfile{Password: "form-pw"}, clusterID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if pw != "form-pw" {
+		t.Fatalf("expected 'form-pw', got %s", pw)
+	}
+}
+

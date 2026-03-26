@@ -70,6 +70,6 @@ export function SkipVersion(arg1) {
   return window['go']['config']['ConfigService']['SkipVersion'](arg1);
 }
 
-export function TestConnection(arg1) {
-  return window['go']['config']['ConfigService']['TestConnection'](arg1);
+export function TestConnection(arg1, arg2) {
+  return window['go']['config']['ConfigService']['TestConnection'](arg1, arg2);
 }
