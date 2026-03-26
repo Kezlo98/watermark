@@ -140,11 +140,13 @@ func (s *ConfigService) resolveTestPassword(profile ClusterProfile, clusterID st
 // classifyAuthError produces a user-friendly message from a Ping failure.
 func classifyAuthError(err error, protocol string) string {
 	msg := err.Error()
-	if strings.Contains(msg, "SASL") {
-		return "SASL authentication failed — check mechanism and credentials"
-	}
+	// Check protocol-specific errors first (AWS MSK IAM uses SASL OAUTHBEARER,
+	// so its errors often contain "SASL" — must check before generic SASL handler)
 	if protocol == "AWS_MSK_IAM" {
 		return fmt.Sprintf("AWS MSK IAM auth failed: %s — verify credentials and IAM policy", msg)
+	}
+	if strings.Contains(msg, "SASL") {
+		return "SASL authentication failed — check mechanism and credentials"
 	}
 	if strings.Contains(msg, "tls") || strings.Contains(msg, "TLS") {
 		return fmt.Sprintf("TLS handshake failed: %s", msg)
