@@ -5,6 +5,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-03-27
+
+### Fixed
+
+- AWS MSK support with enhanced connection validation and IAM authentication
+- AWS MSK IAM error prioritized over generic SASL check for clearer error messages
+- Changelog URL in auto-updater corrected from main to master branch
+- Read-only mode guards for Kafka write operations (replay, clone topic)
+
 ## [1.1.0] - 2026-03-23
 
 ### Added
