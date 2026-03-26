@@ -9,7 +9,7 @@ import {
 
 interface MessageContextMenuProps {
   children: React.ReactNode;
-  onReplay: () => void;
+  onReplay?: () => void;
   onCopyValue: () => void;
   onCopyKey: () => void;
   onDeleteBefore?: () => void;
@@ -21,11 +21,13 @@ export function MessageContextMenu({ children, onReplay, onCopyValue, onCopyKey,
     <ContextMenu>
       <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
       <ContextMenuContent>
-        <ContextMenuItem onSelect={onReplay}>
-          <RotateCcw className="size-3.5" />
-          Replay
-        </ContextMenuItem>
-        <ContextMenuSeparator />
+        {onReplay && (
+          <ContextMenuItem onSelect={onReplay}>
+            <RotateCcw className="size-3.5" />
+            Replay
+          </ContextMenuItem>
+        )}
+        {onReplay && <ContextMenuSeparator />}
         <ContextMenuItem onSelect={onCopyValue}>
           <Copy className="size-3.5" />
           Copy Value

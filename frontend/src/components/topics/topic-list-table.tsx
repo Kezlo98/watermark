@@ -11,6 +11,7 @@ import { OwnershipBadges } from "@/components/annotations/ownership-badges";
 import { AnnotationEditorModal } from "@/components/annotations/annotation-editor-modal";
 import { BatchTagModal } from "@/components/annotations/batch-tag-modal";
 import { Pencil, Tag, Copy } from "lucide-react";
+import { useReadOnly } from "@/hooks/use-read-only";
 
 interface TopicListTableProps {
   onTopicClick: (topicName: string) => void;
@@ -20,6 +21,7 @@ interface TopicListTableProps {
 }
 
 export function TopicListTable({ onTopicClick, onCloneTopic, searchFilter, hideInternal }: TopicListTableProps) {
+  const isReadOnly = useReadOnly();
   const { data: topics = [] } = useKafkaQuery(["topics"], GetTopics);
   const { annotations } = useAnnotations();
   const {
@@ -138,18 +140,19 @@ export function TopicListTable({ onTopicClick, onCloneTopic, searchFilter, hideI
     {
       id: "actions",
       header: "",
-      cell: ({ row }) => (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onCloneTopic(row.original.name);
-          }}
-          className="p-1.5 text-slate-500 hover:text-primary transition-colors rounded hover:bg-white/5"
-          title="Clone topic"
-        >
-          <Copy className="size-3.5" />
-        </button>
-      ),
+      cell: ({ row }) =>
+        !isReadOnly && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onCloneTopic(row.original.name);
+            }}
+            className="p-1.5 text-slate-500 hover:text-primary transition-colors rounded hover:bg-white/5"
+            title="Clone topic"
+          >
+            <Copy className="size-3.5" />
+          </button>
+        ),
       enableSorting: false,
     },
   ];

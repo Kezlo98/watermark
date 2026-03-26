@@ -80,7 +80,7 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, onRe
               return (
                 <MessageContextMenu
                   key={msgKey}
-                  onReplay={() => onReplay?.(msg)}
+                  onReplay={onReplay ? () => onReplay(msg) : undefined}
                   onCopyValue={() => navigator.clipboard.writeText(msg.value)}
                   onCopyKey={() => navigator.clipboard.writeText(msg.key ?? "")}
                   onDeleteBefore={onDeleteBefore ? () => onDeleteBefore(msg) : undefined}
