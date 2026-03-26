@@ -3,11 +3,8 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"net"
 	"os"
 	"path/filepath"
-	"strings"
-	"time"
 )
 
 const configFileName = "config.json"
@@ -55,25 +52,8 @@ func (s *ConfigService) ImportConfig(jsonData string) error {
 	return s.saveConfig()
 }
 
-// TestConnection verifies TCP connectivity to bootstrap servers.
-func (s *ConfigService) TestConnection(bootstrapServers string) error {
-	servers := strings.Split(bootstrapServers, ",")
-	for _, server := range servers {
-		server = strings.TrimSpace(server)
-		if server == "" {
-			continue
-		}
 
-		conn, err := net.DialTimeout("tcp", server, 5*time.Second)
-		if err != nil {
-			return fmt.Errorf("connection failed to %s: %w", server, err)
-		}
-		conn.Close()
-		return nil // at least one server is reachable
-	}
 
-	return fmt.Errorf("no bootstrap servers specified")
-}
 
 // loadConfig reads the config JSON file from disk.
 func (s *ConfigService) loadConfig() error {
