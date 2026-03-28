@@ -142,6 +142,16 @@ func (k *KafkaService) GetActiveCluster() string {
 	return k.activeProfile
 }
 
+// UpdateReadOnly updates the read-only flag for the active connection
+// without requiring a reconnect. Used when the user edits cluster config.
+func (k *KafkaService) UpdateReadOnly(readOnly bool) {
+	k.mu.Lock()
+	defer k.mu.Unlock()
+	if k.connected {
+		k.readOnly = readOnly
+	}
+}
+
 // ClearCache invalidates the in-memory metadata cache so the next
 // API call fetches fresh data from the Kafka cluster.
 // Exposed to the frontend via Wails binding for manual refresh.

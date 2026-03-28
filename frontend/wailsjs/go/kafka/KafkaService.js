@@ -121,3 +121,7 @@ export function StartLiveTail(arg1) {
 export function StopLiveTail() {
   return window['go']['kafka']['KafkaService']['StopLiveTail']();
 }
+
+export function UpdateReadOnly(arg1) {
+  return window['go']['kafka']['KafkaService']['UpdateReadOnly'](arg1);
+}
