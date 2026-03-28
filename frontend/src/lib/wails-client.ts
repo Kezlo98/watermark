@@ -33,6 +33,7 @@ export {
   GetAllGroupsLagDetail,
   ResetConsumerGroupOffsets,
   ClearCache,
+  UpdateReadOnly,
 } from "../../wailsjs/go/kafka/KafkaService";
 
 // --- Config Service ---

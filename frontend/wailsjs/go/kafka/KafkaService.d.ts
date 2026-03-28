@@ -62,3 +62,5 @@ export function SetContext(arg1:context.Context):Promise<void>;
 export function StartLiveTail(arg1:string):Promise<void>;
 
 export function StopLiveTail():Promise<void>;
+
+export function UpdateReadOnly(arg1:boolean):Promise<void>;
