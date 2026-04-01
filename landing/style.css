@@ -303,6 +303,34 @@ img {
     background-color: #262626;
 }
 
+.btn-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.2;
+}
+
+.btn-subtitle {
+    font-size: 0.7rem;
+    opacity: 0.8;
+    font-weight: 400;
+}
+
+.quickstart-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+@media (min-width: 640px) {
+    .quickstart-actions {
+        flex-direction: row;
+    }
+}
+
 /* =========================================================================
    Hero Section
    ========================================================================= */
@@ -537,9 +565,7 @@ img {
 /* =========================================================================
    Quality of Life / Bento Grid
    ========================================================================= */
-.qol {
-    /* Using why class background & padding via HTML class="qol why" */
-}
+
 
 .section-header {
     margin-bottom: 64px;
