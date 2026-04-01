@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watermark | The Modern Kafka GUI</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Background glow container -->
+    <div class="glow-container">
+        <div class="blob hero-blob"></div>
+        <div class="blob cursor-blob" id="cursorBlob"></div>
+    </div>
+
+    <!-- 1. Navigation -->
+    <header class="navbar">
+        <div class="container navbar-inner">
+            <div class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2.5C12 2.5 5.5 9.5 5.5 15C5.5 18.5899 8.41015 21.5 12 21.5C15.5899 21.5 18.5 18.5899 18.5 15C18.5 9.5 12 2.5 12 2.5Z" stroke="var(--color-purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 11.5C10.067 11.5 8.5 13.067 8.5 15" stroke="var(--color-purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="logo-text">Watermark</span>
+            </div>
+            <nav class="nav-links">
+                <a href="#why">Why Watermark?</a>
+                <a href="#features">Features</a>
+                <a href="#quickstart">Quick Start</a>
+            </nav>
+            <div class="nav-actions">
+                <a href="https://github.com/Kezlo98/watermark" target="_blank" class="github-link" aria-label="GitHub Repository">
+                    <i class="ph ph-github-logo"></i>
+                </a>
+                <a href="https://github.com/Kezlo98/watermark/releases" class="btn btn-primary btn-glow">
+                    Download
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. Hero Section -->
+    <main id="main-content">
+    <section class="hero reveal">
+        <div class="container hero-inner">
+            <h1 class="hero-title">
+                The Kafka GUI built for <br />
+                <span class="text-gradient">Deep Observability.</span>
+            </h1>
+            <p class="hero-subtitle">
+                Manage, monitor, and troubleshoot your Kafka clusters locally. Built for developers who need real-time lag alerts, topic annotations, and multi-cluster scale.
+            </p>
+            <div class="hero-actions">
+                <a href="#" class="btn btn-primary btn-large btn-glow">
+                    <i class="ph ph-download-simple"></i> Download App
+                </a>
+                <a href="#quickstart" class="btn btn-outline btn-large">
+                    <i class="ph ph-terminal"></i> View Install Options
+                </a>
+            </div>
+        </div>
+
+        <!-- Hero App Mockup -->
+        <div class="hero-mockup-wrapper reveal fade-up">
+            <div class="hero-mockup">
+                <div class="mockup-header">
+                    <div class="dot dot-red"></div>
+                    <div class="dot dot-yellow"></div>
+                    <div class="dot dot-green"></div>
+                </div>
+                <div class="mockup-dashboard" aria-label="Watermark Cluster Overview">
+                    <!-- Top-left: Logo -->
+                    <div class="mockup-logo-cell">
+                        <div class="mockup-topbar-logo">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2.5C12 2.5 5.5 9.5 5.5 15C5.5 18.5899 8.41015 21.5 12 21.5C15.5899 21.5 18.5 18.5899 18.5 15C18.5 9.5 12 2.5 12 2.5Z" stroke="var(--color-purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span>Watermark</span>
+                        </div>
+                    </div>
+                    <!-- Top-right: Cluster + Search + Settings -->
+                    <div class="mockup-topbar-cell">
+                        <div class="mockup-topbar-cluster">
+                            <span class="mockup-cluster-dot green"></span>
+                            <span>Dev Cluster</span>
+                            <span style="font-size:8px;margin-left:2px">▾</span>
+                        </div>
+                        <div class="mockup-topbar-search">
+                            <i class="ph ph-magnifying-glass"></i>
+                            <span>Search...</span>
+                            <span class="mockup-kbd">⌘K</span>
+                        </div>
+                        <div class="mockup-topbar-right">
+                            <i class="ph ph-gear"></i>
+                        </div>
+                    </div>
+                    <!-- Bottom-left: Sidebar Menu -->
+                    <div class="mockup-sidebar">
+                        <nav class="mockup-sidebar-nav">
+                            <div class="mockup-sidebar-label">MENU</div>
+                            <a class="mockup-nav-item active"><i class="ph ph-chart-bar"></i> Overview <span class="mockup-nav-dot"></span></a>
+                            <a class="mockup-nav-item"><i class="ph ph-list-dashes"></i> Topics <span class="mockup-nav-dot"></span></a>
+                            <a class="mockup-nav-item"><i class="ph ph-users"></i> Consumers</a>
+                            <a class="mockup-nav-item"><i class="ph ph-chart-line-up"></i> Monitoring</a>
+                            <a class="mockup-nav-item"><i class="ph ph-tree-structure"></i> Schemas</a>
+                        </nav>
+                    </div>
+                    <!-- Bottom-right: Main Content -->
+                    <div class="mockup-main">
+                        <div class="mockup-page-header">
+                            <h4 class="mockup-page-title">CLUSTER OVERVIEW</h4>
+                            <i class="ph ph-arrows-clockwise" style="color:var(--color-text-muted);font-size:14px"></i>
+                        </div>
+                        <!-- Stat Cards -->
+                        <div class="mockup-stat-row">
+                            <div class="mockup-stat-card">
+                                <div class="mockup-stat-label">CLUSTER STATUS <i class="ph ph-check-circle" style="color:var(--color-green)"></i></div>
+                                <div class="mockup-stat-value">2/2 Online</div>
+                                <div class="mockup-stat-sub green">↑ All Healthy</div>
+                            </div>
+                            <div class="mockup-stat-card">
+                                <div class="mockup-stat-label">BROKERS <i class="ph ph-hard-drives" style="color:var(--color-blue)"></i></div>
+                                <div class="mockup-stat-value">2</div>
+                            </div>
+                            <div class="mockup-stat-card">
+                                <div class="mockup-stat-label">TOPICS <i class="ph ph-list-dashes" style="color:var(--color-green)"></i></div>
+                                <div class="mockup-stat-value">768</div>
+                            </div>
+                            <div class="mockup-stat-card">
+                                <div class="mockup-stat-label">TOTAL SIZE <i class="ph ph-database" style="color:#f59e0b"></i></div>
+                                <div class="mockup-stat-value">6.1 GB</div>
+                            </div>
+                        </div>
+                        <!-- Brokers Table -->
+                        <div class="mockup-section-label">BROKERS</div>
+                        <div class="mockup-table-block">
+                            <table class="mockup-table">
+                                <thead>
+                                    <tr><th>ID ↕</th><th>STATUS ↕</th><th>HOST / IP ↕</th><th>PORT ↕</th><th>PARTITIONS ↕</th><th>SIZE ↕</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="mono" style="color:var(--color-purple)">1★</td>
+                                        <td><span class="badge stable">● Online</span></td>
+                                        <td class="mono">Localhost</td>
+                                        <td class="mono">9094</td>
+                                        <td class="mono">1,342</td>
+                                        <td class="mono">3 GB</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="mono">2</td>
+                                        <td><span class="badge stable">● Online</span></td>
+                                        <td class="mono">Localhost</td>
+                                        <td class="mono">9094</td>
+                                        <td class="mono">1,367</td>
+                                        <td class="mono">3.1 GB</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- Footer -->
+                    <div class="mockup-footer-bar">dev</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. The Origin Story / Why Watermark -->
+    <section id="why" class="why reveal">
+        <div class="container container-small text-center">
+            <h2 class="section-title">Built to solve the gaps in Kafka tooling.</h2>
+            <div class="why-content">
+                <p>
+                    We built Watermark because we were tired of choosing between extremes. On one hand, tools like <strong>Offset Explorer</strong> are showing their age with outdated UIs and clunky UX. 
+                </p>
+                <p>
+                    On the other hand, modern tools like <strong>Redpanda Console</strong> are great, but missing crucial operational features needed for daily data engineering jobs—and they often timeout when handling clusters with too many brokers.
+                </p>
+                <p class="highlight">
+                    So, we forked Redpanda Console, fixed the bottlenecks, and supercharged it with the exact features DevOps and Engineers need.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Core Features -->
+    <section id="features" class="features">
+        <div class="container features-inner">
+            
+            <!-- Feature A: Lag Alerts -->
+            <div class="feature-row reveal fade-up">
+                <div class="feature-text">
+                    <div class="icon-box purple">
+                        <i class="ph ph-chart-line-up"></i>
+                    </div>
+                    <h3 class="feature-title">Advanced Observability & Lag Alerts</h3>
+                    <p class="feature-desc">
+                        Stop guessing if your consumers are keeping up. Watermark introduces built-in Lag count monitoring, dynamic Lag Ranking to instantly spot problematic consumers, and real-time lag message alerts.
+                    </p>
+                    <ul class="feature-list">
+                        <li><i class="ph ph-check-circle"></i> Real-time Lag Visualizations</li>
+                        <li><i class="ph ph-check-circle"></i> Global Lag Ranking Dashboard</li>
+                        <li><i class="ph ph-check-circle"></i> Configurable Alert Thresholds</li>
+                    </ul>
+                </div>
+                <div class="feature-image">
+                    <div class="mockup-app" aria-label="Watermark Monitoring Dashboard Preview">
+                        <!-- Monitoring Header -->
+                        <div class="mockup-monitoring-header">
+                            <h4 class="mockup-page-title">MONITORING</h4>
+                            <div class="mockup-header-actions">
+                                <span class="mockup-indicator green">11s</span>
+                                <span class="mockup-indicator green">3Bs</span>
+                                <i class="ph ph-bell"></i>
+                                <i class="ph ph-gear"></i>
+                            </div>
+                        </div>
+
+                        <!-- Ranking Tables Row -->
+                        <div class="mockup-tables-row">
+                            <!-- Consumer Lag Ranking -->
+                            <div class="mockup-table-block">
+                                <div class="mockup-table-header">
+                                    <span class="mockup-table-icon purple"><i class="ph ph-chart-line-up"></i></span>
+                                    <span class="mockup-table-label">CONSUMER LAG RANKING</span>
+                                </div>
+                                <table class="mockup-table">
+                                    <thead>
+                                        <tr><th>#</th><th>GROUP ID</th><th>STATE</th><th>TOTAL LAG</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>1</td><td class="mono">GROUP_001</td><td><span class="badge stable">Stable</span></td><td class="lag-val high">5,562</td></tr>
+                                        <tr><td>2</td><td class="mono">Group-002</td><td><span class="badge stable">Stable</span></td><td class="lag-val high">1,521</td></tr>
+                                        <tr><td>3</td><td class="mono">GROUP_003</td><td><span class="badge empty">Empty</span></td><td class="lag-val">23</td></tr>
+                                        <tr><td>4</td><td class="mono">GROUP_003</td><td><span class="badge empty">Empty</span></td><td class="lag-val">23</td></tr>
+                                    </tbody>
+                                </table>
+                                <div class="mockup-table-footer">Showing top 5 of 662 groups</div>
+                            </div>
+                            <!-- Topic Lag Ranking -->
+                            <div class="mockup-table-block">
+                                <div class="mockup-table-header">
+                                    <span class="mockup-table-icon cyan"><i class="ph ph-chart-bar"></i></span>
+                                    <span class="mockup-table-label">TOPIC LAG RANKING</span>
+                                </div>
+                                <table class="mockup-table">
+                                    <thead>
+                                        <tr><th>#</th><th>TOPIC</th><th>TOTAL LAG</th><th>GROUPS</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>1</td><td class="mono">springCloudBus</td><td class="lag-val critical">8,871,763</td><td>535</td></tr>
+                                        <tr><td>2</td><td class="mono">TOPIC_001</td><td class="lag-val high">5,198</td><td>2</td></tr>
+                                        <tr><td>3</td><td class="mono">TOPIC_002</td><td class="lag-val high">1,521</td><td>1</td></tr>
+                                        <tr><td>4</td><td class="mono">TOPIC_003</td><td class="lag-val">364</td><td>2</td></tr>
+                                    </tbody>
+                                </table>
+                                <div class="mockup-table-footer">Showing top 5 of 501 topics</div>
+                            </div>
+                        </div>
+
+                        <!-- Lag Visualization -->
+                        <div class="mockup-viz-section">
+                            <div class="mockup-viz-header">
+                                <span class="mockup-table-icon blue"><i class="ph ph-chart-line"></i></span>
+                                <span class="mockup-viz-title">LAG VISUALIZATION</span>
+                            </div>
+                            <div class="mockup-viz-controls">
+                                <div class="mockup-tab-group">
+                                    <span class="tab active">Topics</span>
+                                    <span class="tab">Groups</span>
+                                </div>
+                                <div class="mockup-time-group">
+                                    <span class="time-btn">1h</span>
+                                    <span class="time-btn">12h</span>
+                                    <span class="time-btn">1d</span>
+                                    <span class="time-btn active">7d</span>
+                                    <span class="time-btn">15d</span>
+                                    <span class="time-btn">30d</span>
+                                </div>
+                                <div class="mockup-chart-type">
+                                    <span class="chart-btn active"><i class="ph ph-chart-line"></i> Area</span>
+                                    <span class="chart-btn"><i class="ph ph-chart-line"></i> Line</span>
+                                    <span class="chart-btn"><i class="ph ph-chart-bar"></i> Bar</span>
+                                </div>
+                            </div>
+                            <!-- Mock Chart -->
+                            <div class="mockup-chart">
+                                <svg viewBox="0 0 500 140" preserveAspectRatio="none" class="chart-svg">
+                                    <!-- Y-axis labels -->
+                                    <text x="5" y="15" class="chart-label">1.8K</text>
+                                    <text x="5" y="50" class="chart-label">1.4K</text>
+                                    <text x="5" y="85" class="chart-label">900</text>
+                                    <text x="5" y="115" class="chart-label">450</text>
+                                    <text x="5" y="135" class="chart-label">0</text>
+                                    <!-- Grid lines -->
+                                    <line x1="35" y1="12" x2="500" y2="12" class="grid-line"/>
+                                    <line x1="35" y1="47" x2="500" y2="47" class="grid-line"/>
+                                    <line x1="35" y1="82" x2="500" y2="82" class="grid-line"/>
+                                    <line x1="35" y1="112" x2="500" y2="112" class="grid-line"/>
+                                    <line x1="35" y1="132" x2="500" y2="132" class="grid-line"/>
+                                    <!-- Area fill for TOPIC_A -->
+                                    <path d="M35,130 L120,128 L200,130 L280,125 L340,128 L380,120 L400,118 L420,132 L440,130 L460,128 L480,127 L500,125 L500,132 L35,132 Z" fill="rgba(139,92,246,0.15)"/>
+                                    <!-- Line for TOPIC_A -->
+                                    <polyline points="35,130 120,128 200,130 280,125 340,128 380,120 400,118 420,132 440,130 460,128 480,127 500,125" fill="none" stroke="#8b5cf6" stroke-width="1.5"/>
+                                    <!-- Area fill for TOPIC_D — spike -->
+                                    <path d="M420,132 L440,130 L460,40 L470,10 L480,15 L490,20 L500,25 L500,132 L420,132 Z" fill="rgba(239,68,68,0.2)"/>
+                                    <!-- Line for TOPIC_D spike -->
+                                    <polyline points="420,132 440,130 460,40 470,10 480,15 490,20 500,25" fill="none" stroke="#ef4444" stroke-width="1.5"/>
+                                    <!-- X-axis labels -->
+                                    <text x="60" y="140" class="chart-label">Fri 27</text>
+                                    <text x="200" y="140" class="chart-label">Sat 28</text>
+                                    <text x="370" y="140" class="chart-label">Mon 30</text>
+                                    <text x="460" y="140" class="chart-label">Tue 31</text>
+                                </svg>
+                            </div>
+                            <!-- Legend -->
+                            <div class="mockup-legend">
+                                <span class="legend-item"><span class="legend-dot" style="background:#8b5cf6"></span> TOPIC_A</span>
+                                <span class="legend-item"><span class="legend-dot" style="background:#06b6d4"></span> TOPIC_B</span>
+                                <span class="legend-item"><span class="legend-dot" style="background:#eab308"></span> TOPIC_C</span>
+                                <span class="legend-item"><span class="legend-dot" style="background:#ef4444"></span> TOPIC_D</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature B: Annotations (Reversed) -->
+            <div class="feature-row reversed reveal fade-up">
+                <div class="feature-text">
+                    <div class="icon-box blue">
+                        <i class="ph ph-tag"></i>
+                    </div>
+                    <h3 class="feature-title">Context-Aware Topic Annotations</h3>
+                    <p class="feature-desc">
+                        Ever looked at a topic and wondered: <em>"Who produces to this? Who consumes it?"</em> With Topic Annotations, you can tag producers, consumers, and add crucial documentation directly to topics.
+                    </p>
+                    <ul class="feature-list">
+                        <li><i class="ph ph-check-circle"></i> Tag Producers & Consumers</li>
+                        <li><i class="ph ph-check-circle"></i> Add Custom Metadata/Docs</li>
+                        <li><i class="ph ph-check-circle"></i> Share Annotations across your team</li>
+                    </ul>
+                </div>
+                <div class="feature-image">
+                    <div class="mockup-app" aria-label="Topic Annotations Preview">
+                        <!-- Topics Header -->
+                        <div class="mockup-monitoring-header">
+                            <h4 class="mockup-page-title">TOPICS</h4>
+                            <div class="mockup-header-actions">
+                                <span class="mockup-btn-create"><i class="ph ph-plus"></i> Create Topic</span>
+                            </div>
+                        </div>
+                        <!-- Search -->
+                        <div class="mockup-search-bar">
+                            <i class="ph ph-magnifying-glass"></i>
+                            <span class="mockup-search-text">AU</span>
+                        </div>
+                        <!-- Topics Table -->
+                        <table class="mockup-table">
+                            <thead>
+                                <tr><th>NAME ↕</th><th>PARTITIONS ↕</th><th>REPLICAS ↕</th><th>SIZE ↕</th><th>RETENTION ↕</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="mockup-topic-name">AUDIT_001</div>
+                                        <div class="mockup-annotations">
+                                            <span class="mockup-tag purple">● audit-collector</span>
+                                            <span class="mockup-tag-sep">-></span>
+                                            <span class="mockup-tag green">● audit-processor</span>
+                                        </div>
+                                    </td>
+                                    <td class="mono">1</td>
+                                    <td class="mono">2</td>
+                                    <td class="mono">1.1 MB</td>
+                                    <td class="mono">2d</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="mockup-topic-name">AUDIT_002</div>
+                                        <div class="mockup-annotations">
+                                            <span class="mockup-tag purple">● audit-collector</span>
+                                            <span class="mockup-tag-sep">-></span>
+                                            <span class="mockup-tag green">● audit-processor</span>
+                                        </div>
+                                    </td>
+                                    <td class="mono">1</td>
+                                    <td class="mono">2</td>
+                                    <td class="mono">2.2 MB</td>
+                                    <td class="mono">2d</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="mockup-topic-name">AUDIT_003</div>
+                                        <div class="mockup-annotations">
+                                            <span class="mockup-tag purple">● audit-collector</span>
+                                            <span class="mockup-tag-sep">-></span>
+                                            <span class="mockup-tag green">● audit-processor</span>
+                                        </div>
+                                    </td>
+                                    <td class="mono">5</td>
+                                    <td class="mono">1</td>
+                                    <td class="mono">113.1 KB</td>
+                                    <td class="mono">2d</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature C: Multi-Cluster -->
+            <div class="feature-row reveal fade-up">
+                <div class="feature-text">
+                    <div class="icon-box green">
+                        <i class="ph ph-plugs-connected"></i>
+                    </div>
+                    <h3 class="feature-title">Built for Complex Environments</h3>
+                    <p class="feature-desc">
+                        Manage dozens of clusters without the UI freezing. Seamlessly switch contexts, manage multiple authentications, and export your configurations.
+                    </p>
+                    <ul class="feature-list">
+                        <li><i class="ph ph-check-circle"></i> Multi-Cluster Support (No Timeouts)</li>
+                        <li><i class="ph ph-check-circle"></i> Export & Import Cluster Configs</li>
+                        <li><i class="ph ph-check-circle"></i> Auth: SSL, AWS IAM, SASL</li>
+                    </ul>
+                </div>
+                <div class="feature-image">
+                    <div class="mockup-app" aria-label="Multiple Cluster Configuration Preview">
+                        <!-- Preferences Header -->
+                        <div class="mockup-monitoring-header">
+                            <h4 class="mockup-page-title"><i class="ph ph-gear" style="font-size:14px;margin-right:4px"></i> Preferences</h4>
+                            <i class="ph ph-x" style="color:var(--color-text-muted);font-size:14px;cursor:pointer"></i>
+                        </div>
+                        <div class="mockup-preferences">
+                            <!-- Sidebar -->
+                            <div class="mockup-pref-sidebar">
+                                <div class="mockup-pref-item active"><i class="ph ph-globe" style="color:var(--color-green)"></i> Clusters</div>
+                                <div class="mockup-pref-item"><i class="ph ph-paint-brush" style="color:#f59e0b"></i> Appearance</div>
+                                <div class="mockup-pref-item"><i class="ph ph-folder" style="color:#f59e0b"></i> Annotations</div>
+                                <div class="mockup-pref-item"><i class="ph ph-file" style="color:var(--color-text-muted)"></i> Templates</div>
+                                <div class="mockup-pref-item"><i class="ph ph-desktop" style="color:var(--color-text-muted)"></i> System</div>
+                            </div>
+                            <!-- Content -->
+                            <div class="mockup-pref-content">
+                                <div class="mockup-pref-header">
+                                    <span><i class="ph ph-globe" style="color:var(--color-green);margin-right:4px"></i> CLUSTER CONNECTIONS</span>
+                                    <span class="mockup-btn-create small"><i class="ph ph-plus"></i> Add</span>
+                                </div>
+                                <!-- Cluster Items -->
+                                <div class="mockup-cluster-item">
+                                    <div class="mockup-cluster-info">
+                                        <span class="mockup-cluster-dot green"></span>
+                                        <span class="mockup-cluster-name green">Dev Cluster</span>
+                                    </div>
+                                    <div class="mockup-cluster-actions">
+                                        <span class="badge stable">Connected</span>
+                                        <i class="ph ph-power"></i><i class="ph ph-pencil-simple"></i><i class="ph ph-copy"></i><i class="ph ph-trash"></i>
+                                    </div>
+                                </div>
+                                <div class="mockup-cluster-item">
+                                    <div class="mockup-cluster-info">
+                                        <span class="mockup-cluster-dot green"></span>
+                                        <span class="mockup-cluster-name green">Local Cluster</span>
+                                    </div>
+                                    <div class="mockup-cluster-actions">
+                                        <span class="badge read-only">Read-Only</span>
+                                        <i class="ph ph-power"></i><i class="ph ph-pencil-simple"></i><i class="ph ph-copy"></i><i class="ph ph-trash"></i>
+                                    </div>
+                                </div>
+                                <div class="mockup-cluster-item">
+                                    <div class="mockup-cluster-info">
+                                        <span class="mockup-cluster-dot"></span>
+                                        <span class="mockup-cluster-name green">AVB Non-Prod</span>
+                                    </div>
+                                    <div class="mockup-cluster-actions">
+                                        <i class="ph ph-power"></i><i class="ph ph-pencil-simple"></i><i class="ph ph-copy"></i><i class="ph ph-trash"></i>
+                                    </div>
+                                </div>
+                                <div class="mockup-cluster-item">
+                                    <div class="mockup-cluster-info">
+                                        <span class="mockup-cluster-dot"></span>
+                                        <span class="mockup-cluster-name green">Eagle Prod</span>
+                                    </div>
+                                    <div class="mockup-cluster-actions">
+                                        <span class="badge read-only">Read-Only</span>
+                                        <i class="ph ph-power"></i><i class="ph ph-pencil-simple"></i><i class="ph ph-copy"></i><i class="ph ph-trash"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 5. Developer Productivity (Bento Box) -->
+    <section class="qol why reveal fade-up">
+        <div class="container container-large">
+            <div class="text-center section-header">
+                <h2 class="section-title">Quality of Life Improvements</h2>
+                <p class="section-subtitle">Smaller features designed to save you hours of manual work.</p>
+            </div>
+
+            <div class="bento-grid">
+                <!-- Replay -->
+                <div class="bento-card">
+                    <i class="ph ph-clock-counter-clockwise icon-purple"></i>
+                    <h4>Replay Messages</h4>
+                    <p>Resend existing messages to test downstream consumers quickly.</p>
+                </div>
+
+                <!-- Templates -->
+                <div class="bento-card">
+                    <i class="ph ph-copy icon-blue"></i>
+                    <h4>Topic Templates</h4>
+                    <p>Clone topic settings or use predefined templates for lightning-fast creation.</p>
+                </div>
+
+                <!-- Read Only -->
+                <div class="bento-card">
+                    <i class="ph ph-shield-check icon-green"></i>
+                    <h4>Read-Only Clusters</h4>
+                    <p>Protect production by marking specific clusters as read-only.</p>
+                </div>
+
+                <!-- Local -->
+                <div class="bento-card">
+                    <i class="ph ph-hard-drives icon-neutral"></i>
+                    <h4>100% Local & Lite</h4>
+                    <p>All settings and configs are stored safely on your local machine.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. Quick Start & Social Proof -->
+    <section id="quickstart" class="quickstart reveal fade-up">
+        <div class="container container-small text-center">
+            <h2 class="section-title">Ready to upgrade your workflow?</h2>
+            
+            <!-- Mock Terminal -->
+            <div class="terminal">
+                <div class="terminal-header">
+                    <div class="dot dot-red"></div>
+                    <div class="dot dot-yellow"></div>
+                    <div class="dot dot-green"></div>
+                    <span class="terminal-shell">bash</span>
+                </div>
+                <div class="terminal-body">
+                    <div class="terminal-comment"># Clone the repository</div>
+                    <div class="terminal-cmd"><span class="cmd">git clone</span> https://github.com/Kezlo98/watermark.git</div>
+                    <br/>
+                    <div class="terminal-comment"># Start Watermark</div>
+                    <div class="terminal-cmd"><span class="cmd">cd</span> watermark</div>
+                    <div class="terminal-cmd"><span class="cmd">docker-compose</span> up -d</div>
+                </div>
+            </div>
+
+            <div class="social-proof">
+                <a href="https://github.com/Kezlo98/watermark" class="social-link">
+                    <i class="ph ph-github-logo"></i> Star on GitHub
+                </a>
+                <span class="dot-separator">•</span>
+                <span class="license">Open Source (Apache 2.0)</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. Footer -->
+    <footer class="footer">
+        <div class="container footer-inner">
+            <div class="footer-brand">
+                <span class="logo-text">Watermark</span>
+                <span class="footer-desc">| Open Source Kafka GUI</span>
+            </div>
+            <div class="footer-links">
+                <a href="https://github.com/Kezlo98/watermark">GitHub Repository</a>
+                <a href="https://github.com/Kezlo98/watermark/issues">Report an Issue</a>
+            </div>
+            <div class="footer-copy">
+                Proudly forked and improved from Redpanda Console.
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    </main>
+</body>
+</html>
