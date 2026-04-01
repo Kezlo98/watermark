@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Loader2, CheckCircle2, XCircle, ShieldX, ShieldAlert, Zap } from "lucide-react";
-import { SaveCluster, TestConnection, GetCluster } from "@/lib/wails-client";
+import { SaveCluster, TestConnection, GetCluster, UpdateReadOnly } from "@/lib/wails-client";
 import { config } from "../../../wailsjs/go/models";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { ClusterFormFields } from "./cluster-form-fields";
+import { useSettingsStore } from "@/store/settings";
 
 // Back-end connection test statuses returned by the Go service.
 type TestConnectionStatus = "unreachable" | "auth_error" | "forbidden" | "ok";
@@ -22,6 +23,7 @@ interface ClusterFormProps {
 
 export function ClusterForm({ clusterId, clusterName, onClose }: ClusterFormProps) {
   const queryClient = useQueryClient();
+  const activeClusterId = useSettingsStore((s) => s.activeClusterId);
   const isNew = clusterId === "new";
 
   const [form, setForm] = useState({
@@ -123,6 +125,13 @@ export function ClusterForm({ clusterId, clusterName, onClose }: ClusterFormProp
         schemaRegistryPassword: form.schemaRegistryPassword || undefined,
       });
       await SaveCluster(profile);
+
+      // Sync backend readOnly flag if editing the currently active cluster
+      // (backend only sets this at connect time, so we push the new value)
+      if (!isNew && clusterId === activeClusterId) {
+        await UpdateReadOnly(form.readOnly);
+      }
+
       await queryClient.invalidateQueries({ queryKey: ["clusters"] });
       onClose();
     } catch (err) {

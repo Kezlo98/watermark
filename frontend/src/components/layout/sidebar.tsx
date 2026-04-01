@@ -7,7 +7,7 @@ import {
   FileCode2,
   AlertTriangle,
 } from "lucide-react";
-import logoImg from "@/assets/images/logo-universal.png";
+import logoImg from "@/assets/logo.svg";
 import { cn } from "@/lib/utils";
 import { GetCurrentVersion } from "@/lib/wails-client";
 import { UpdateBanner } from "./update-banner";
@@ -53,7 +53,7 @@ export function Sidebar() {
       {/* Logo */}
       <div className="flex items-center gap-3 px-6 py-5 border-b border-white/5">
         <div className="flex items-center justify-center shrink-0">
-          <img src={logoImg} alt="Watermark" className="size-10 object-contain rounded-lg" />
+          <img src={logoImg} alt="Watermark" className="size-10" />
         </div>
         <div>
           <h1 className="text-base font-display font-bold text-white tracking-tight">
