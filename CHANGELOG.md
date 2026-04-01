@@ -5,6 +5,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-04-01
+
+### Changed
+
+- New app logo with SVG watermark icon
+
+### Fixed
+
+- Backend readOnly flag now syncs correctly when editing active cluster config
+
 ## [1.1.1] - 2026-03-27
 
 ### Fixed
