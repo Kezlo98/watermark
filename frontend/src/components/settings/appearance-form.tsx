@@ -29,27 +29,27 @@ export function AppearanceForm() {
     <div className="space-y-8">
       {/* Theme */}
       <section>
-        <h3 className="text-sm font-display font-bold text-white uppercase tracking-wider mb-4">
+        <h3 className="text-sm font-display font-bold text-foreground uppercase tracking-wider mb-4">
           🎨 Appearance
         </h3>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">Theme</label>
+            <label className="block text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1.5">Theme</label>
             <Select value={theme} onValueChange={(v) => setTheme(v as "dark" | "light" | "system")}>
               <SelectTrigger className="w-48">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="dark">Dark</SelectItem>
-                <SelectItem value="light" disabled>Light (Coming Soon)</SelectItem>
-                <SelectItem value="system" disabled>System (Coming Soon)</SelectItem>
+                <SelectItem value="light">Light</SelectItem>
+                <SelectItem value="system">System</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div>
-            <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">UI Density</label>
+            <label className="block text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1.5">UI Density</label>
             <Select value={density} onValueChange={(v) => setDensity(v as "compact" | "comfortable" | "spacious")}>
               <SelectTrigger className="w-48">
                 <SelectValue />
@@ -60,21 +60,21 @@ export function AppearanceForm() {
                 <SelectItem value="spacious">Spacious</SelectItem>
               </SelectContent>
             </Select>
-            <p className="text-xs text-slate-500 mt-1">Controls row height and padding in tables</p>
+            <p className="text-xs text-muted-foreground mt-1">Controls row height and padding in tables</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4 max-w-sm">
             <div>
-              <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">Code Font</label>
+              <label className="block text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1.5">Code Font</label>
               <input
                 type="text"
                 value={codeFont}
                 onChange={(e) => setCodeFont(e.target.value)}
-                className="w-full h-9 px-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white font-mono focus:outline-none focus:ring-1 focus:ring-primary/50"
+                className="w-full h-9 px-3 bg-secondary border border-border rounded-lg text-sm text-foreground font-mono focus:outline-none focus:ring-1 focus:ring-primary/50"
               />
             </div>
             <div>
-              <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">Font Size ({codeFontSize}px)</label>
+              <label className="block text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1.5">Font Size ({codeFontSize}px)</label>
               <Slider
                 value={[codeFontSize]}
                 onValueChange={([v]) => setCodeFontSize(v)}
@@ -90,13 +90,13 @@ export function AppearanceForm() {
 
       {/* Preview */}
       <section>
-        <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">Preview</label>
+        <label className="block text-xs font-mono text-muted-foreground uppercase tracking-wider mb-2">Preview</label>
         <div className="glass-panel overflow-hidden">
-          <Suspense fallback={<div className="p-4 text-sm text-slate-500">Loading preview...</div>}>
+          <Suspense fallback={<div className="p-4 text-sm text-muted-foreground">Loading preview...</div>}>
             <MonacoEditor
               height="180px"
               language="json"
-              theme="vs-dark"
+              theme={theme === "light" ? "vs" : "vs-dark"}
               value={SAMPLE_JSON}
               options={{
                 readOnly: true,

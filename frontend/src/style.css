@@ -54,6 +54,47 @@
     --sidebar-ring: #8B5CF6;
   }
 
+  .light {
+    --background: #FFFFFF;
+    --foreground: #1A1A2E;
+    --primary: #8B5CF6;
+    --primary-foreground: #FFFFFF;
+    --card: #FFFFFF;
+    --card-foreground: #1A1A2E;
+    --popover: #FFFFFF;
+    --popover-foreground: #1A1A2E;
+    --secondary: #F1F3F5;
+    --secondary-foreground: #1A1A2E;
+    --muted: #F8F9FA;
+    --muted-foreground: #6B7280;
+    --accent: #F1F3F5;
+    --accent-foreground: #1A1A2E;
+    --destructive: #DC2626;
+    --destructive-foreground: #FFFFFF;
+    --border: #E9ECEF;
+    --input: #E9ECEF;
+    --ring: #8B5CF6;
+    --glass-panel: #FFFFFF;
+    --border-subtle: #E9ECEF;
+    --border-hover: #CED4DA;
+    --semantic-cyan: #06B6D4;
+    --semantic-purple: #8B5CF6;
+    --semantic-orange: #F59E0B;
+    --semantic-red: #DC2626;
+    --status-healthy: #059669;
+    --status-rebalancing: #D97706;
+    --status-dead: #DC2626;
+    --status-empty: #9CA3AF;
+    --sidebar: #F8F9FA;
+    --sidebar-foreground: #1A1A2E;
+    --sidebar-primary: #8B5CF6;
+    --sidebar-primary-foreground: #FFFFFF;
+    --sidebar-accent: #F1F3F5;
+    --sidebar-accent-foreground: #1A1A2E;
+    --sidebar-border: #E9ECEF;
+    --sidebar-ring: #8B5CF6;
+  }
+
   * {
     margin: 0;
     padding: 0;
@@ -67,6 +108,7 @@
     font-family: "Inter", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 300ms ease, color 300ms ease;
   }
 
   body {
@@ -81,22 +123,22 @@
     overflow: hidden;
   }
 
-  /* Custom scrollbar for dark theme */
-  ::-webkit-scrollbar {
+  /* Custom scrollbar — dark mode only; light mode uses native OS scrollbars */
+  :not(.light) ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
 
-  ::-webkit-scrollbar-track {
+  :not(.light) ::-webkit-scrollbar-track {
     background: transparent;
   }
 
-  ::-webkit-scrollbar-thumb {
+  :not(.light) ::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.15);
     border-radius: 3px;
   }
 
-  ::-webkit-scrollbar-thumb:hover {
+  :not(.light) ::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.25);
   }
 }
@@ -107,11 +149,19 @@
     border: 1px solid var(--border-subtle);
     border-radius: 16px;
   }
+  .light .glass-panel {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  }
 
   .glass-sidebar {
     background: rgba(10, 10, 10, 0.4);
     backdrop-filter: blur(20px);
     border-right: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  .light .glass-sidebar {
+    background: var(--sidebar);
+    backdrop-filter: none;
+    border-right: 1px solid var(--sidebar-border);
   }
 
   .text-gradient {
