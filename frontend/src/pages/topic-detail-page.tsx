@@ -10,6 +10,7 @@ import { TopicOwnershipHeader } from "@/components/annotations/topic-ownership-h
 import { AnnotationEditorModal } from "@/components/annotations/annotation-editor-modal";
 import { useReadOnly } from "@/hooks/use-read-only";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSettingsStore } from "@/store/settings";
 
 export function TopicDetailPage() {
   const { topicId } = useParams({ from: "/topics/$topicId" });
@@ -19,6 +20,7 @@ export function TopicDetailPage() {
   const [deleteMode, setDeleteMode] = useState<DeleteMode | null>(null);
   const isReadOnly = useReadOnly();
   const queryClient = useQueryClient();
+  const clusterId = useSettingsStore((s) => s.activeClusterId);
 
   const handleDeleteSuccess = useCallback(() => {
     setDeleteMode(null);
@@ -46,7 +48,16 @@ export function TopicDetailPage() {
           />
         </div>
         <div className="flex items-center gap-2">
-          <RefreshButton queryKeys={[["topic-config", topicId], ["topic-partitions", topicId]]} />
+          <RefreshButton
+            queryKeys={[
+              ["messages", topicId],
+              ["topic-consumers", topicId],
+              ["topic-partitions", topicId],
+              ["topic-configs", topicId],
+              ["topic-acls", topicId],
+              ["annotations", clusterId ?? ""],
+            ]}
+          />
           {!isReadOnly && (
             <MessagesActionDropdown
               onProduce={() => setProduceOpen(true)}
