@@ -106,7 +106,7 @@ export function BrokerTable() {
 
   return (
     <div>
-      <h2 className="text-lg font-display font-bold text-white mb-4 uppercase tracking-wider">
+      <h2 className="text-lg font-display font-bold text-foreground mb-4 uppercase tracking-wider">
         Brokers
       </h2>
       <DataTable

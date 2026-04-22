@@ -145,7 +145,7 @@ export function TrackedEntitiesConfig({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+        <span className="text-xs font-semibold text-foreground uppercase tracking-wider">
           Chart Tracking
         </span>
         {totalMatched > WARN_THRESHOLD && (
@@ -157,7 +157,7 @@ export function TrackedEntitiesConfig({
       </div>
 
       {/* Tab switcher */}
-      <div className="flex gap-0.5 bg-white/5 rounded-lg p-0.5 w-fit">
+      <div className="flex gap-0.5 bg-secondary rounded-lg p-0.5 w-fit">
         {(["topics", "groups"] as ActiveTab[]).map((t) => (
           <button
             key={t}
@@ -166,7 +166,7 @@ export function TrackedEntitiesConfig({
               "px-3 py-1 text-xs rounded-md transition-colors capitalize",
               tab === t
                 ? "bg-primary/20 text-primary"
-                : "text-slate-400 hover:text-white",
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             {t} ({t === "topics" ? trackedTopics.length : trackedGroups.length})
@@ -176,7 +176,7 @@ export function TrackedEntitiesConfig({
 
       {/* Include section */}
       <div className="space-y-2">
-        <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+        <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
           Include
         </span>
 
@@ -188,7 +188,7 @@ export function TrackedEntitiesConfig({
             onKeyDown={(e) => e.key === "Enter" && handleAdd()}
             placeholder={tab === "topics" ? "e.g. orders-*" : "e.g. payment-*"}
             disabled={disabled}
-            className="flex-1 px-2 py-1.5 text-xs bg-white/5 border border-white/10 rounded text-white placeholder-slate-600 focus:outline-none focus:border-white/30 font-mono"
+            className="flex-1 px-2 py-1.5 text-xs bg-secondary border border-border rounded text-foreground placeholder-muted-foreground focus:outline-none focus:border-ring font-mono"
           />
           <button
             onClick={handleAdd}
@@ -202,7 +202,7 @@ export function TrackedEntitiesConfig({
 
         {/* Include pattern list */}
         {activePatterns.length === 0 ? (
-          <p className="text-xs text-slate-500 py-3 text-center border border-dashed border-white/10 rounded-lg">
+          <p className="text-xs text-muted-foreground py-3 text-center border border-dashed border-border rounded-lg">
             {tab === "topics"
               ? "No topics tracked. Select topics in the chart or add patterns here."
               : "No groups tracked. Select groups in the chart or add patterns here."}
@@ -214,18 +214,18 @@ export function TrackedEntitiesConfig({
               return (
                 <div
                   key={pattern}
-                  className="flex items-center justify-between px-3 py-1.5 bg-white/3 border border-white/5 rounded-md group"
+                  className="flex items-center justify-between px-3 py-1.5 bg-secondary border border-border rounded-md group"
                 >
-                  <span className="text-xs font-mono text-white">{pattern}</span>
+                  <span className="text-xs font-mono text-foreground">{pattern}</span>
                   <div className="flex items-center gap-3">
-                    <span className="text-[10px] text-slate-500">
+                    <span className="text-[10px] text-muted-foreground">
                       matches {matchCount} {tab === "topics" ? "topic" : "group"}
                       {matchCount !== 1 ? "s" : ""}
                     </span>
                     <button
                       onClick={() => handleRemove(idx)}
                       disabled={disabled}
-                      className="text-slate-500 hover:text-semantic-red transition-colors opacity-0 group-hover:opacity-100"
+                      className="text-muted-foreground hover:text-semantic-red transition-colors opacity-0 group-hover:opacity-100"
                       title="Remove pattern"
                     >
                       <X className="size-3" />
@@ -240,7 +240,7 @@ export function TrackedEntitiesConfig({
 
       {/* Exclude section */}
       <div className="space-y-2">
-        <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+        <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
           Exclude
         </span>
 
@@ -251,7 +251,7 @@ export function TrackedEntitiesConfig({
             onKeyDown={(e) => e.key === "Enter" && handleAddExclude()}
             placeholder={tab === "topics" ? "e.g. *-dlq" : "e.g. *-retry"}
             disabled={disabled}
-            className="flex-1 px-2 py-1.5 text-xs bg-white/5 border border-white/10 rounded text-white placeholder-slate-600 focus:outline-none focus:border-white/30 font-mono"
+            className="flex-1 px-2 py-1.5 text-xs bg-secondary border border-border rounded text-foreground placeholder-muted-foreground focus:outline-none focus:border-ring font-mono"
           />
           <button
             onClick={handleAddExclude}
@@ -264,7 +264,7 @@ export function TrackedEntitiesConfig({
         </div>
 
         {activeExcludePatterns.length === 0 ? (
-          <p className="text-xs text-slate-500 py-2 text-center">
+          <p className="text-xs text-muted-foreground py-2 text-center">
             No exclude patterns — all included entities will be recorded.
           </p>
         ) : (
@@ -276,16 +276,16 @@ export function TrackedEntitiesConfig({
                   key={pattern}
                   className="flex items-center justify-between px-3 py-1.5 bg-semantic-red/5 border border-semantic-red/10 rounded-md group"
                 >
-                  <span className="text-xs font-mono text-white">{pattern}</span>
+                  <span className="text-xs font-mono text-foreground">{pattern}</span>
                   <div className="flex items-center gap-3">
-                    <span className="text-[10px] text-slate-500">
+                    <span className="text-[10px] text-muted-foreground">
                       excludes {matchCount} {tab === "topics" ? "topic" : "group"}
                       {matchCount !== 1 ? "s" : ""}
                     </span>
                     <button
                       onClick={() => handleRemoveExclude(idx)}
                       disabled={disabled}
-                      className="text-slate-500 hover:text-semantic-red transition-colors opacity-0 group-hover:opacity-100"
+                      className="text-muted-foreground hover:text-semantic-red transition-colors opacity-0 group-hover:opacity-100"
                     >
                       <X className="size-3" />
                     </button>
@@ -299,8 +299,8 @@ export function TrackedEntitiesConfig({
 
       {/* Net tracked count */}
       {(activePatterns.length > 0 || activeExcludePatterns.length > 0) && (
-        <div className="text-xs text-slate-400 pt-1">
-          Net tracked: <span className="text-white font-medium">{netTracked}</span> {tab}
+        <div className="text-xs text-muted-foreground pt-1">
+          Net tracked: <span className="text-foreground font-medium">{netTracked}</span> {tab}
         </div>
       )}
     </div>

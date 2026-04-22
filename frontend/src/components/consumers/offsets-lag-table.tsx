@@ -42,18 +42,18 @@ export function OffsetsLagTable({ offsets }: OffsetsLagTableProps) {
 
   return (
     <div>
-      <h3 className="text-sm font-display font-bold text-white mb-3 uppercase tracking-wider">
+      <h3 className="text-sm font-display font-bold text-foreground mb-3 uppercase tracking-wider">
         Offsets &amp; Lag
       </h3>
       <div className="glass-panel overflow-hidden">
         <div className="overflow-auto max-h-[calc(100vh-320px)]">
           <table className="w-full">
-            <thead className="sticky top-0 z-10 bg-[#141414]">
+            <thead className="sticky top-0 z-10 bg-card">
               <tr>
                 {["Topic", "Partitions", "Total Lag"].map((h) => (
                   <th
                     key={h}
-                    className="px-4 py-3 text-left text-[11px] font-mono font-semibold text-slate-400 uppercase tracking-wider"
+                    className="px-4 py-3 text-left text-[11px] font-mono font-semibold text-muted-foreground uppercase tracking-wider"
                   >
                     {h}
                   </th>
@@ -68,21 +68,21 @@ export function OffsetsLagTable({ offsets }: OffsetsLagTableProps) {
                     {/* Topic summary row */}
                     <tr
                       key={g.topic}
-                      className="cursor-pointer hover:bg-white/5 transition-colors duration-150"
+                      className="cursor-pointer hover:bg-secondary transition-colors duration-150"
                       onClick={() => toggle(g.topic)}
                     >
-                      <td className="px-4 py-3 text-sm font-mono text-white">
+                      <td className="px-4 py-3 text-sm font-mono text-foreground">
                         <div className="flex items-center gap-2">
                           <ChevronRight
                             className={cn(
-                              "size-4 text-slate-400 transition-transform duration-150 shrink-0",
+                              "size-4 text-muted-foreground transition-transform duration-150 shrink-0",
                               isOpen && "rotate-90"
                             )}
                           />
                           {g.topic}
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-sm font-mono text-slate-300">
+                      <td className="px-4 py-3 text-sm font-mono text-foreground">
                         {g.partitions.length}
                       </td>
                       <td className="px-4 py-3 text-sm font-mono">
@@ -97,13 +97,13 @@ export function OffsetsLagTable({ offsets }: OffsetsLagTableProps) {
                     {isOpen && (
                       <tr key={`${g.topic}-detail`}>
                         <td colSpan={3} className="p-0">
-                          <table className="w-full bg-white/[0.02]">
+                          <table className="w-full bg-secondary">
                             <thead>
-                              <tr className="border-b border-white/5">
+                              <tr className="border-b border-border">
                                 {["Partition", "Host", "Current Offset", "End Offset", "Lag"].map((h) => (
                                   <th
                                     key={h}
-                                    className="px-6 py-2 text-left text-[10px] font-mono font-semibold text-slate-500 uppercase tracking-wider"
+                                    className="px-6 py-2 text-left text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wider"
                                   >
                                     {h}
                                   </th>
@@ -113,16 +113,16 @@ export function OffsetsLagTable({ offsets }: OffsetsLagTableProps) {
                             <tbody className="divide-y divide-white/[0.03]">
                               {g.partitions.map((p) => (
                                 <tr key={p.partition}>
-                                  <td className="px-6 py-2 text-xs font-mono text-slate-400">
+                                  <td className="px-6 py-2 text-xs font-mono text-muted-foreground">
                                     {p.partition}
                                   </td>
-                                  <td className="px-6 py-2 text-xs font-mono text-slate-400">
+                                  <td className="px-6 py-2 text-xs font-mono text-muted-foreground">
                                     {p.host || "—"}
                                   </td>
-                                  <td className="px-6 py-2 text-xs font-mono text-slate-300">
+                                  <td className="px-6 py-2 text-xs font-mono text-foreground">
                                     {formatNumber(p.currentOffset)}
                                   </td>
-                                  <td className="px-6 py-2 text-xs font-mono text-slate-300">
+                                  <td className="px-6 py-2 text-xs font-mono text-foreground">
                                     {formatNumber(p.endOffset)}
                                   </td>
                                   <td className="px-6 py-2 text-xs font-mono">

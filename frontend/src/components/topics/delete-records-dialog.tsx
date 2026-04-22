@@ -116,7 +116,7 @@ export function DeleteRecordsDialog({ mode, onClose, onSuccess }: DeleteRecordsD
             <AlertTriangle className="size-4" />
             {title}
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-slate-300">
+          <AlertDialogDescription className="text-foreground">
             {description}
           </AlertDialogDescription>
           {(isPurge || isTimestamp) && (
@@ -129,12 +129,12 @@ export function DeleteRecordsDialog({ mode, onClose, onSuccess }: DeleteRecordsD
         {/* Date picker — shown when opened from Actions dropdown */}
         {needsDatePicker && (
           <div className="py-2">
-            <label className="text-xs font-mono text-slate-400 block mb-1">Delete all messages before:</label>
+            <label className="text-xs font-mono text-muted-foreground block mb-1">Delete all messages before:</label>
             <input
               type="datetime-local"
               value={pickedDate}
               onChange={(e) => setPickedDate(e.target.value)}
-              className="h-8 px-2 w-full bg-white/5 border border-white/10 rounded text-xs text-white font-mono focus:outline-none focus:ring-1 focus:ring-primary/50"
+              className="h-8 px-2 w-full bg-secondary border border-border rounded text-xs text-foreground font-mono focus:outline-none focus:ring-1 focus:ring-primary/50"
             />
           </div>
         )}
@@ -147,7 +147,7 @@ export function DeleteRecordsDialog({ mode, onClose, onSuccess }: DeleteRecordsD
               checked={confirmed}
               onCheckedChange={(v) => setConfirmed(!!v)}
             />
-            <label htmlFor="purge-confirm" className="text-sm text-slate-300 cursor-pointer select-none">
+            <label htmlFor="purge-confirm" className="text-sm text-foreground cursor-pointer select-none">
               I understand this is irreversible
             </label>
           </div>

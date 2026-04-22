@@ -54,7 +54,7 @@ export function MonitoringPage() {
           <Dialog>
             <DialogTrigger asChild>
               <button
-                className="relative p-1.5 text-slate-400 hover:text-white rounded border border-white/10 bg-white/3 hover:bg-white/5 transition-colors"
+                className="relative p-1.5 text-muted-foreground hover:text-foreground rounded border border-border bg-secondary hover:bg-secondary transition-colors"
                 title="Alert History"
               >
                 <Bell className="size-3.5" />
@@ -65,10 +65,10 @@ export function MonitoringPage() {
                 )}
               </button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-4xl bg-[#0c0c0c] border border-white/10 p-6 flex flex-col gap-4 max-h-[85vh]">
-              <DialogHeader className="border-b border-white/5 pb-4 shrink-0 -mx-6 px-6 -mt-2">
+            <DialogContent className="sm:max-w-4xl bg-[#0c0c0c] border border-border p-6 flex flex-col gap-4 max-h-[85vh]">
+              <DialogHeader className="border-b border-border pb-4 shrink-0 -mx-6 px-6 -mt-2">
                 <DialogTitle className="text-lg font-bold flex items-center gap-2">
-                  <Bell className="size-5 text-slate-400" />
+                  <Bell className="size-5 text-muted-foreground" />
                   Alert Notifications
                 </DialogTitle>
               </DialogHeader>
@@ -81,14 +81,14 @@ export function MonitoringPage() {
           <Dialog>
             <DialogTrigger asChild>
               <button
-                className="p-1.5 text-slate-400 hover:text-white rounded border border-white/10 bg-white/3 hover:bg-white/5 transition-colors"
+                className="p-1.5 text-muted-foreground hover:text-foreground rounded border border-border bg-secondary hover:bg-secondary transition-colors"
                 title="Monitoring Configuration"
               >
                 <Settings className="size-3.5" />
               </button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-2xl bg-[#0c0c0c] border border-white/10 p-6 flex flex-col gap-4 max-h-[85vh]">
-              <DialogHeader className="border-b border-white/5 pb-4 shrink-0 -mx-6 px-6 -mt-2">
+            <DialogContent className="sm:max-w-2xl bg-[#0c0c0c] border border-border p-6 flex flex-col gap-4 max-h-[85vh]">
+              <DialogHeader className="border-b border-border pb-4 shrink-0 -mx-6 px-6 -mt-2">
                 <DialogTitle className="text-lg font-bold">Monitoring Configuration</DialogTitle>
               </DialogHeader>
               <div className="flex-1 overflow-y-auto min-h-0 pt-2 pb-2">
@@ -108,8 +108,8 @@ export function MonitoringPage() {
           </div>
 
           {/* Bottom Chart */}
-          <div className="flex flex-col gap-4 flex-1 min-h-0 border-t border-slate-800/60 pt-6">
-            <h2 className="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2 shrink-0">
+          <div className="flex flex-col gap-4 flex-1 min-h-0 border-t border-border pt-6">
+            <h2 className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-2 shrink-0">
               <BarChart3 className="size-4 text-purple-400" />
               Lag Visualization
             </h2>

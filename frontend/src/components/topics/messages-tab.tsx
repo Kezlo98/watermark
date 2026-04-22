@@ -225,8 +225,8 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
 
           <div className="h-4 w-px bg-emerald-500/20" />
 
-          <span className="text-xs font-mono text-slate-400">{topicName}</span>
-          <span className="text-xs font-mono text-slate-500">· {liveTailMessages.length} messages</span>
+          <span className="text-xs font-mono text-muted-foreground">{topicName}</span>
+          <span className="text-xs font-mono text-muted-foreground">· {liveTailMessages.length} messages</span>
 
           <div className="flex-1" />
 
@@ -279,7 +279,7 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
           </button>
           <button
             onClick={() => setSelectedIds(new Set())}
-            className="flex items-center gap-1 px-2 py-1.5 text-sm text-slate-400 hover:text-white transition-colors"
+            className="flex items-center gap-1 px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <X className="size-3.5" />
             Clear

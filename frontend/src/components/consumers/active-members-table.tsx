@@ -6,13 +6,13 @@ const columns: ColumnDef<ConsumerGroupMember, unknown>[] = [
   {
     accessorKey: "clientId",
     header: "Client ID",
-    cell: ({ row }) => <span className="text-white font-medium">{row.original.clientId}</span>,
+    cell: ({ row }) => <span className="text-foreground font-medium">{row.original.clientId}</span>,
   },
   {
     accessorKey: "host",
     header: "Host IP",
     cell: ({ row }) => (
-      <span className="font-mono text-slate-300" title="NAT gateways may mask the true pod IP">
+      <span className="font-mono text-foreground" title="NAT gateways may mask the true pod IP">
         {row.original.host}
       </span>
     ),
@@ -42,7 +42,7 @@ interface ActiveMembersTableProps {
 export function ActiveMembersTable({ members }: ActiveMembersTableProps) {
   return (
     <div>
-      <h3 className="text-sm font-display font-bold text-white mb-3 uppercase tracking-wider">
+      <h3 className="text-sm font-display font-bold text-foreground mb-3 uppercase tracking-wider">
         Active Members ({members.length})
       </h3>
       <DataTable data={members} columns={columns} />

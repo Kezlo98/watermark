@@ -26,7 +26,7 @@ export function TopicOwnershipHeader({
         onEdit={onEdit}
       />
       {ann?.notes && (
-        <span className="text-[10px] text-slate-500 font-mono italic ml-1">
+        <span className="text-[10px] text-muted-foreground font-mono italic ml-1">
           — {ann.notes}
         </span>
       )}

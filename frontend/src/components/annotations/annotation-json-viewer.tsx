@@ -2,6 +2,7 @@ import { useState, lazy, Suspense } from "react";
 import { ChevronRight, Code2, Copy, Check, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
+import { useSettingsStore } from "@/store/settings";
 
 const Editor = lazy(() => import("@monaco-editor/react"));
 
@@ -17,6 +18,7 @@ export function AnnotationJsonViewer({
   annotations,
 }: AnnotationJsonViewerProps) {
   const [copied, setCopied] = useState(false);
+  const { theme } = useSettingsStore();
 
   const jsonContent = JSON.stringify(annotations, null, 2);
 
@@ -32,7 +34,7 @@ export function AnnotationJsonViewer({
 
   return (
     <Collapsible className="space-y-2">
-      <CollapsibleTrigger className="group flex items-center gap-2 text-xs text-slate-400 hover:text-white transition-colors">
+      <CollapsibleTrigger className="group flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors">
         <ChevronRight
           className={cn(
             "size-3 transition-transform",
@@ -44,10 +46,10 @@ export function AnnotationJsonViewer({
       </CollapsibleTrigger>
 
       <CollapsibleContent>
-        <div className="relative rounded-lg border border-white/5 overflow-hidden">
+        <div className="relative rounded-lg border border-border overflow-hidden">
           <button
             onClick={handleCopy}
-            className="absolute top-2 right-2 z-10 p-1.5 text-slate-400 hover:text-white bg-white/5 rounded border border-white/10 hover:bg-white/10 transition-colors"
+            className="absolute top-2 right-2 z-10 p-1.5 text-muted-foreground hover:text-foreground bg-secondary rounded border border-border hover:bg-accent transition-colors"
             title="Copy to clipboard"
           >
             {copied ? (
@@ -56,12 +58,12 @@ export function AnnotationJsonViewer({
               <Copy className="size-3" />
             )}
           </button>
-          <Suspense fallback={<div className="flex justify-center items-center h-full p-4"><Loader2 className="w-4 h-4 animate-spin text-slate-400" /></div>}>
+          <Suspense fallback={<div className="flex justify-center items-center h-full p-4"><Loader2 className="w-4 h-4 animate-spin text-muted-foreground" /></div>}>
             <Editor
               height={editorHeight}
               language="json"
               value={jsonContent}
-              theme="vs-dark"
+              theme={theme === "light" ? "vs" : "vs-dark"}
               options={{
                 readOnly: true,
                 minimap: { enabled: false },

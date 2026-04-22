@@ -175,7 +175,7 @@ export function SaveTemplateModal({
         <DialogBody className="space-y-5">
           {/* Template Name */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <label className="mb-2 block text-sm font-medium text-foreground">
               Template Name <span className="text-red-400">*</span>
             </label>
             <input
@@ -183,14 +183,14 @@ export function SaveTemplateModal({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Payment Topics"
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-sm text-white placeholder:text-slate-500 focus:border-primary focus:outline-none"
+              className="w-full rounded-lg border border-border bg-card px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
               autoFocus
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <label className="mb-2 block text-sm font-medium text-foreground">
               Description
             </label>
             <textarea
@@ -198,13 +198,13 @@ export function SaveTemplateModal({
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Optional description for this template"
               rows={2}
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-sm text-white placeholder:text-slate-500 focus:border-primary focus:outline-none"
+              className="w-full rounded-lg border border-border bg-card px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
             />
           </div>
 
           {/* Pattern */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <label className="mb-2 block text-sm font-medium text-foreground">
               Auto-Match Pattern
             </label>
             <input
@@ -212,9 +212,9 @@ export function SaveTemplateModal({
               value={pattern}
               onChange={(e) => setPattern(e.target.value)}
               placeholder="e.g., payment.* (optional)"
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 font-mono text-sm text-white placeholder:text-slate-500 focus:border-primary focus:outline-none"
+              className="w-full rounded-lg border border-border bg-card px-4 py-2 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
             />
-            <p className="mt-1.5 text-xs text-slate-400">
+            <p className="mt-1.5 text-xs text-muted-foreground">
               Use * for any characters, ? for single character. Leave blank to
               disable auto-match.
             </p>
@@ -223,7 +223,7 @@ export function SaveTemplateModal({
           {/* Partitions + RF */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-300">
+              <label className="mb-2 block text-sm font-medium text-foreground">
                 Partitions
               </label>
               <Select value={String(partitions)} onValueChange={(v) => setPartitions(Number(v))}>
@@ -240,7 +240,7 @@ export function SaveTemplateModal({
               </Select>
             </div>
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-300">
+              <label className="mb-2 block text-sm font-medium text-foreground">
                 Replication Factor
               </label>
               <Select value={String(replicationFactor)} onValueChange={(v) => setReplicationFactor(Number(v))}>
@@ -261,13 +261,13 @@ export function SaveTemplateModal({
           {/* Editable Configs */}
           <div>
             <div className="mb-2 flex items-center justify-between">
-              <label className="text-sm font-medium text-slate-300">
+              <label className="text-sm font-medium text-foreground">
                 Overridden Configs
               </label>
               <button
                 type="button"
                 onClick={handleAddRow}
-                className="flex items-center gap-1 rounded-md bg-slate-700/50 px-2.5 py-1 text-xs font-medium text-slate-300 transition-colors hover:bg-slate-700 hover:text-white"
+                className="flex items-center gap-1 rounded-md bg-secondary px-2.5 py-1 text-xs font-medium text-foreground transition-colors hover:bg-accent hover:text-foreground"
               >
                 <Plus className="size-3" />
                 Add Config
@@ -275,17 +275,17 @@ export function SaveTemplateModal({
             </div>
 
             {configRows.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-slate-700 bg-slate-800/30 px-4 py-6 text-center text-sm text-slate-500">
+              <div className="rounded-lg border border-dashed border-border bg-card/30 px-4 py-6 text-center text-sm text-muted-foreground">
                 No configs added. Click &quot;Add Config&quot; to add key-value pairs.
               </div>
             ) : (
               <div className="space-y-2">
                 {/* Column headers */}
                 <div className="grid grid-cols-[1fr_1fr_32px] gap-2 px-1">
-                  <span className="text-xs font-medium text-slate-500">
+                  <span className="text-xs font-medium text-muted-foreground">
                     Key
                   </span>
-                  <span className="text-xs font-medium text-slate-500">
+                  <span className="text-xs font-medium text-muted-foreground">
                     Value
                   </span>
                   <span />
@@ -303,7 +303,7 @@ export function SaveTemplateModal({
                         handleRowChange(index, "key", e.target.value)
                       }
                       placeholder="retention.ms"
-                      className="w-full rounded-md border border-slate-700 bg-slate-800 px-3 py-1.5 font-mono text-xs text-white placeholder:text-slate-600 focus:border-primary focus:outline-none"
+                      className="w-full rounded-md border border-border bg-card px-3 py-1.5 font-mono text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
                     />
                     <input
                       type="text"
@@ -312,12 +312,12 @@ export function SaveTemplateModal({
                         handleRowChange(index, "value", e.target.value)
                       }
                       placeholder="604800000"
-                      className="w-full rounded-md border border-slate-700 bg-slate-800 px-3 py-1.5 font-mono text-xs text-white placeholder:text-slate-600 focus:border-primary focus:outline-none"
+                      className="w-full rounded-md border border-border bg-card px-3 py-1.5 font-mono text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
                     />
                     <button
                       type="button"
                       onClick={() => handleRemoveRow(index)}
-                      className="flex size-7 items-center justify-center rounded-md text-slate-500 transition-colors hover:bg-red-500/10 hover:text-red-400"
+                      className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-red-500/10 hover:text-red-400"
                       title="Remove config"
                     >
                       <Trash2 className="size-3.5" />
@@ -339,7 +339,7 @@ export function SaveTemplateModal({
         <DialogFooter>
           <button
             onClick={onClose}
-            className="rounded-lg px-4 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800"
+            className="rounded-lg px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-card"
           >
             Cancel
           </button>

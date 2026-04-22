@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import { RotateCcw } from "lucide-react";
+import { useSettingsStore } from "@/store/settings";
 
 const MonacoEditor = lazy(() => import("@monaco-editor/react"));
 
@@ -30,18 +31,19 @@ interface MessageInspectorProps {
 
 export function MessageInspector({ value, offset, format, onClose, onReplay }: MessageInspectorProps) {
   const { content, language } = formatMessageValue(value, format);
+  const { theme } = useSettingsStore();
 
   return (
     <div className="glass-panel overflow-hidden flex flex-col">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-white/5">
-        <span className="text-xs font-mono text-slate-400">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-secondary">
+        <span className="text-xs font-mono text-muted-foreground">
           MESSAGE INSPECTOR (Offset: {offset})
         </span>
         <div className="flex gap-2">
           {onReplay && (
             <button
               onClick={onReplay}
-              className="text-xs text-slate-400 hover:text-white px-2 py-1 rounded bg-white/5 hover:bg-white/10 transition-colors flex items-center gap-1"
+              className="text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded bg-secondary hover:bg-accent transition-colors flex items-center gap-1"
             >
               <RotateCcw className="size-3" />
               Replay
@@ -49,24 +51,24 @@ export function MessageInspector({ value, offset, format, onClose, onReplay }: M
           )}
           <button
             onClick={() => navigator.clipboard.writeText(value)}
-            className="text-xs text-slate-400 hover:text-white px-2 py-1 rounded bg-white/5 hover:bg-white/10 transition-colors"
+            className="text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded bg-secondary hover:bg-accent transition-colors"
           >
             Copy
           </button>
           <button
             onClick={onClose}
-            className="text-xs text-slate-400 hover:text-white px-2 py-1 rounded bg-white/5 hover:bg-white/10 transition-colors"
+            className="text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded bg-secondary hover:bg-accent transition-colors"
           >
             ✕
           </button>
         </div>
       </div>
       <div className="flex-1 min-h-[300px]">
-        <Suspense fallback={<div className="p-4 text-sm text-slate-500">Loading editor...</div>}>
+        <Suspense fallback={<div className="p-4 text-sm text-muted-foreground">Loading editor...</div>}>
           <MonacoEditor
             height="300px"
             language={language}
-            theme="vs-dark"
+            theme={theme === "light" ? "vs" : "vs-dark"}
             value={content}
             options={{
               readOnly: true,

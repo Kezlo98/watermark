@@ -9,7 +9,7 @@ const columns: ColumnDef<AclEntry, unknown>[] = [
   {
     accessorKey: "principal",
     header: "Principal",
-    cell: ({ row }) => <span className="text-white font-medium">{row.original.principal}</span>,
+    cell: ({ row }) => <span className="text-foreground font-medium">{row.original.principal}</span>,
   },
   {
     accessorKey: "operation",
@@ -37,7 +37,7 @@ const columns: ColumnDef<AclEntry, unknown>[] = [
   {
     accessorKey: "host",
     header: "Host",
-    cell: ({ row }) => <span className="font-mono text-slate-400">{row.original.host}</span>,
+    cell: ({ row }) => <span className="font-mono text-muted-foreground">{row.original.host}</span>,
   },
 ];
 
@@ -53,7 +53,7 @@ export function AclsTab({ topicName }: AclsTabProps) {
 
   return (
     <div>
-      <p className="text-xs text-slate-500 mb-4">
+      <p className="text-xs text-muted-foreground mb-4">
         Read-only view of ACL entries for this topic.
       </p>
       <DataTable data={acls} columns={columns} />
