@@ -41,17 +41,17 @@ export function ClusterFormFields({ form, onChange, clusterId, isNew }: ClusterF
     <>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">Name</label>
+          <label className="block text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1.5">Name</label>
           <input
             type="text"
             value={form.name}
             onChange={(e) => onChange({ name: e.target.value })}
             placeholder="e.g. Dev Cluster"
-            className="w-full h-9 px-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/50"
+            className="w-full h-9 px-3 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
           />
         </div>
         <div>
-          <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">Label Color</label>
+          <label className="block text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1.5">Label Color</label>
           <Select value={form.labelColor} onValueChange={(v) => onChange({ labelColor: v })}>
               <SelectTrigger className="w-full">
                 <SelectValue />
@@ -67,19 +67,19 @@ export function ClusterFormFields({ form, onChange, clusterId, isNew }: ClusterF
       </div>
 
       <div>
-        <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">Bootstrap Servers</label>
+        <label className="block text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1.5">Bootstrap Servers</label>
         <input
           type="text"
           value={form.bootstrapServers}
           onChange={(e) => onChange({ bootstrapServers: e.target.value })}
           placeholder="localhost:9092, broker2:9092"
-          className="w-full h-9 px-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white font-mono focus:outline-none focus:ring-1 focus:ring-primary/50"
+          className="w-full h-9 px-3 bg-secondary border border-border rounded-lg text-sm text-foreground font-mono focus:outline-none focus:ring-1 focus:ring-primary/50"
         />
       </div>
 
       <div className={cn("grid gap-4", showSaslFields ? "grid-cols-2" : "grid-cols-1")}>
         <div>
-          <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">Security Protocol</label>
+          <label className="block text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1.5">Security Protocol</label>
           <Select value={form.securityProtocol} onValueChange={(v) => onChange({ securityProtocol: v })}>
               <SelectTrigger className="w-full">
                 <SelectValue />
@@ -96,7 +96,7 @@ export function ClusterFormFields({ form, onChange, clusterId, isNew }: ClusterF
         </div>
         {showSaslFields && (
           <div>
-            <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">SASL Mechanism</label>
+            <label className="block text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1.5">SASL Mechanism</label>
             <Select value={form.saslMechanism} onValueChange={(v) => onChange({ saslMechanism: v })}>
                 <SelectTrigger className="w-full">
                   <SelectValue />
@@ -127,22 +127,22 @@ export function ClusterFormFields({ form, onChange, clusterId, isNew }: ClusterF
       {showSaslFields && (
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">Username</label>
+            <label className="block text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1.5">Username</label>
             <input
               type="text"
               value={form.username}
               onChange={(e) => onChange({ username: e.target.value })}
-              className="w-full h-9 px-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/50"
+              className="w-full h-9 px-3 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
             />
           </div>
           <div>
-            <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">Password</label>
+            <label className="block text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1.5">Password</label>
             <input
               type="password"
               value={form.password}
               onChange={(e) => onChange({ password: e.target.value })}
               placeholder={isNew ? "" : "••••••••  (leave blank to keep)"}
-              className="w-full h-9 px-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/50"
+              className="w-full h-9 px-3 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
             />
           </div>
         </div>
@@ -150,15 +150,15 @@ export function ClusterFormFields({ form, onChange, clusterId, isNew }: ClusterF
 
       {/* Schema Registry */}
       <div>
-        <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">
-          Schema Registry URL <span className="text-slate-500">(optional)</span>
+        <label className="block text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1.5">
+          Schema Registry URL <span className="text-muted-foreground">(optional)</span>
         </label>
         <input
           type="text"
           value={form.schemaRegistryUrl}
           onChange={(e) => onChange({ schemaRegistryUrl: e.target.value })}
           placeholder="http://localhost:8081"
-          className="w-full h-9 px-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white font-mono focus:outline-none focus:ring-1 focus:ring-primary/50"
+          className="w-full h-9 px-3 bg-secondary border border-border rounded-lg text-sm text-foreground font-mono focus:outline-none focus:ring-1 focus:ring-primary/50"
         />
       </div>
 
@@ -168,7 +168,7 @@ export function ClusterFormFields({ form, onChange, clusterId, isNew }: ClusterF
           checked={form.readOnly}
           onCheckedChange={(checked) => onChange({ readOnly: checked })}
         />
-        <Label htmlFor={`read-only-toggle-${clusterId}`} className="text-sm text-slate-300 font-normal cursor-pointer">
+        <Label htmlFor={`read-only-toggle-${clusterId}`} className="text-sm text-foreground font-normal cursor-pointer">
           Enable Read-Only Mode (Disable write operations)
         </Label>
       </div>

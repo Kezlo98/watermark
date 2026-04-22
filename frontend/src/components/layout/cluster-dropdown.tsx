@@ -69,7 +69,7 @@ export function ClusterDropdown() {
       case "error":
         return "bg-semantic-red";
       default:
-        return "bg-slate-500";
+        return "bg-muted-foreground";
     }
   };
 
@@ -97,7 +97,7 @@ export function ClusterDropdown() {
               ? "bg-status-healthy/5 border-status-healthy/20 hover:border-status-healthy/40"
               : connectionStatus === "error"
                 ? "bg-semantic-red/5 border-semantic-red/20 hover:border-semantic-red/40"
-                : "bg-white/5 border-white/10 hover:border-white/20"
+                : "bg-secondary border-border hover:border-border-hover"
           )}
         >
           {connectionStatus === "connecting" ? (
@@ -107,11 +107,11 @@ export function ClusterDropdown() {
           )}
           <span className={cn(
             "text-sm font-medium max-w-[140px] truncate",
-            activeCluster ? (COLOR_TEXT[activeCluster.color] ?? "text-white") : "text-white"
+            activeCluster ? (COLOR_TEXT[activeCluster.color] ?? "text-foreground") : "text-foreground"
           )}>
             {statusLabel()}
           </span>
-          <ChevronDown className="size-3 text-slate-400" />
+          <ChevronDown className="size-3 text-muted-foreground" />
         </button>
       </DropdownMenuTrigger>
 
@@ -121,7 +121,7 @@ export function ClusterDropdown() {
         {/* Cluster list */}
         {clusters.length === 0 ? (
           <div className="py-6 text-center">
-            <p className="text-xs text-slate-400 mb-2">No clusters configured</p>
+            <p className="text-xs text-muted-foreground mb-2">No clusters configured</p>
             <button
               onClick={openSettings}
               className="text-xs text-primary hover:underline"
@@ -148,15 +148,15 @@ export function ClusterDropdown() {
                     "size-2 rounded-full shrink-0",
                     isThisConnected
                       ? "bg-status-healthy animate-pulse"
-                      : (COLOR_DOTS[cluster.color] ?? "bg-slate-500")
+                      : (COLOR_DOTS[cluster.color] ?? "bg-muted-foreground")
                   )}
                 />
                 <div className="flex-1 min-w-0">
                   <p className={cn(
                     "text-sm font-medium truncate",
-                    COLOR_TEXT[cluster.color] ?? "text-white"
+                    COLOR_TEXT[cluster.color] ?? "text-foreground"
                   )}>{cluster.name}</p>
-                  <p className="text-[10px] text-slate-500 font-mono truncate">
+                  <p className="text-[10px] text-muted-foreground font-mono truncate">
                     {cluster.bootstrapServers}
                   </p>
                 </div>

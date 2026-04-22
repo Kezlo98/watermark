@@ -51,7 +51,7 @@ export function DataTable<T>({
         <table className="w-full">
           {/* No position:sticky — avoids WKWebView text-corruption bug.
               Pagination keeps tables short enough that sticky is unnecessary. */}
-          <thead className="bg-[#141414]">
+          <thead className="bg-card">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
@@ -59,7 +59,7 @@ export function DataTable<T>({
                     key={header.id}
                     className={cn(
                       "px-4 py-3 text-left text-[11px] font-mono font-semibold",
-                      "text-slate-400 uppercase tracking-wider whitespace-nowrap",
+                      "text-muted-foreground uppercase tracking-wider whitespace-nowrap",
                       header.column.getCanSort() && "cursor-pointer select-none"
                     )}
                     onClick={header.column.getToggleSortingHandler()}
@@ -67,7 +67,7 @@ export function DataTable<T>({
                     <div className="flex items-center gap-1">
                       {flexRender(header.column.columnDef.header, header.getContext())}
                       {header.column.getCanSort() && (
-                        <ArrowUpDown className="size-3 text-slate-500" />
+                        <ArrowUpDown className="size-3 text-muted-foreground" />
                       )}
                     </div>
                   </th>
@@ -83,7 +83,7 @@ export function DataTable<T>({
                   key={row.id}
                   className={cn(
                     "transition-colors duration-150",
-                    onRowClick && "cursor-pointer hover:bg-white/5",
+                    onRowClick && "cursor-pointer hover:bg-secondary",
                     highlight
                   )}
                   onClick={() => onRowClick?.(row.original)}
@@ -91,7 +91,7 @@ export function DataTable<T>({
                   {row.getVisibleCells().map((cell) => (
                     <td
                       key={cell.id}
-                      className="px-4 py-3 text-sm text-slate-300 font-mono"
+                      className="px-4 py-3 text-sm text-foreground font-mono"
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
@@ -105,8 +105,8 @@ export function DataTable<T>({
 
       {/* Pagination */}
       {table.getPageCount() > 1 && (
-        <div className="flex items-center justify-between px-4 py-3 border-t border-white/5">
-          <span className="text-xs text-slate-400 font-mono">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-border">
+          <span className="text-xs text-muted-foreground font-mono">
             Showing {table.getState().pagination.pageIndex * pageSize + 1}-
             {Math.min(
               (table.getState().pagination.pageIndex + 1) * pageSize,
@@ -118,14 +118,14 @@ export function DataTable<T>({
             <button
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
-              className="px-3 py-1 text-xs font-mono text-slate-400 bg-white/5 rounded border border-white/10 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="px-3 py-1 text-xs font-mono text-muted-foreground bg-secondary rounded border border-border hover:bg-accent disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               Prev
             </button>
             <button
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
-              className="px-3 py-1 text-xs font-mono text-slate-400 bg-white/5 rounded border border-white/10 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="px-3 py-1 text-xs font-mono text-muted-foreground bg-secondary rounded border border-border hover:bg-accent disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               Next
             </button>

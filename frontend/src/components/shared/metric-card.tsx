@@ -21,7 +21,7 @@ export function MetricCard({
   return (
     <div className={cn("glass-panel p-5", className)}>
       <div className="flex items-start justify-between mb-3">
-        <span className="text-xs font-mono font-medium text-slate-400 uppercase tracking-wider">
+        <span className="text-xs font-mono font-medium text-muted-foreground uppercase tracking-wider">
           {label}
         </span>
         <div
@@ -33,7 +33,7 @@ export function MetricCard({
           <Icon className={cn("size-4", iconColor)} />
         </div>
       </div>
-      <div className="font-mono text-2xl font-bold text-white">{value}</div>
+      <div className="font-mono text-2xl font-bold text-foreground">{value}</div>
       {trend && (
         <div
           className={cn(

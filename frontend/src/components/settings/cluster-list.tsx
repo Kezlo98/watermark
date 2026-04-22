@@ -62,7 +62,7 @@ export function ClusterList() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-display font-bold text-white uppercase tracking-wider">
+        <h3 className="text-sm font-display font-bold text-foreground uppercase tracking-wider">
           🌐 Cluster Connections
         </h3>
         <button
@@ -80,8 +80,8 @@ export function ClusterList() {
           <div className="size-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
             <Power className="size-6 text-primary" />
           </div>
-          <p className="text-sm font-medium text-white mb-1">No clusters configured</p>
-          <p className="text-xs text-slate-400 mb-4">Add a Kafka cluster to get started</p>
+          <p className="text-sm font-medium text-foreground mb-1">No clusters configured</p>
+          <p className="text-xs text-muted-foreground mb-4">Add a Kafka cluster to get started</p>
           <button
             onClick={() => setEditingClusterId("new")}
             className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors"
@@ -108,7 +108,7 @@ export function ClusterList() {
                   ? "border-primary/30 bg-primary/5"
                   : isConnected
                     ? "border-status-healthy/30 bg-status-healthy/5"
-                    : "border-white/10 bg-white/5 hover:bg-white/[0.07]"
+                    : "border-border bg-secondary hover:bg-accent"
               )}
             >
               <div className="flex items-center gap-3">
@@ -120,15 +120,15 @@ export function ClusterList() {
                       ? "bg-status-healthy animate-pulse"
                       : isConnecting
                         ? "bg-primary animate-pulse"
-                        : "bg-slate-500"
+                        : "bg-muted-foreground"
                   )}
                 />
                 <span className={cn(
                     "text-sm font-medium",
-                    COLOR_TEXT[cluster.color] ?? "text-white"
+                    COLOR_TEXT[cluster.color] ?? "text-foreground"
                   )}>{cluster.name}</span>
                 {cluster.readOnly && (
-                  <span className="text-[10px] font-mono text-slate-500 px-1.5 py-0.5 bg-white/5 rounded border border-white/10">
+                  <span className="text-[10px] font-mono text-muted-foreground px-1.5 py-0.5 bg-secondary rounded border border-border">
                     Read-Only
                   </span>
                 )}
@@ -152,7 +152,7 @@ export function ClusterList() {
                     "p-1.5 rounded transition-colors",
                     isConnected
                       ? "text-status-healthy hover:text-red-400 hover:bg-red-500/10"
-                      : "text-slate-400 hover:text-status-healthy hover:bg-status-healthy/10"
+                      : "text-muted-foreground hover:text-status-healthy hover:bg-status-healthy/10"
                   )}
                   title={isConnected ? "Disconnect" : "Connect"}
                 >
@@ -160,19 +160,19 @@ export function ClusterList() {
                 </button>
                 <button
                   onClick={() => setEditingClusterId(editingClusterId === cluster.id ? null : cluster.id)}
-                  className="p-1.5 text-slate-400 hover:text-white rounded hover:bg-white/10 transition-colors"
+                  className="p-1.5 text-muted-foreground hover:text-foreground rounded hover:bg-accent transition-colors"
                 >
                   <Pencil className="size-3.5" />
                 </button>
                 <button
                   onClick={() => handleDuplicate(cluster.id)}
-                  className="p-1.5 text-slate-400 hover:text-white rounded hover:bg-white/10 transition-colors"
+                  className="p-1.5 text-muted-foreground hover:text-foreground rounded hover:bg-accent transition-colors"
                 >
                   <Copy className="size-3.5" />
                 </button>
                 <button
                   onClick={() => handleDelete(cluster.id)}
-                  className="p-1.5 text-slate-400 hover:text-semantic-red rounded hover:bg-semantic-red/10 transition-colors"
+                  className="p-1.5 text-muted-foreground hover:text-semantic-red rounded hover:bg-semantic-red/10 transition-colors"
                 >
                   <Trash2 className="size-3.5" />
                 </button>

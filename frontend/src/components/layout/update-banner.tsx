@@ -80,7 +80,7 @@ export function UpdateBanner() {
         )}>
           <button
             onClick={() => setDismissed(true)}
-            className="absolute top-2 right-2 p-0.5 rounded-md text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-colors"
+            className="absolute top-2 right-2 p-0.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
             aria-label="Dismiss update"
           >
             <X className="size-3" />
