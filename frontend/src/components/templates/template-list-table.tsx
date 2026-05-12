@@ -1,5 +1,6 @@
 import { Pencil, Trash2 } from "lucide-react";
 import type { TopicTemplate } from "@/types/templates";
+import { RowContextMenu } from "@/components/shared/row-context-menu";
 
 interface TemplateListTableProps {
   templates: TopicTemplate[];
@@ -40,60 +41,44 @@ export function TemplateListTable({
             <th className="px-4 py-3 text-center font-medium text-foreground">
               Configs
             </th>
-            <th className="px-4 py-3 text-right font-medium text-foreground">
-              Actions
-            </th>
           </tr>
         </thead>
         <tbody>
           {templates.map((template) => (
-            <tr
+            <RowContextMenu
               key={template.id}
-              className="border-b border-border/30 transition-colors hover:bg-card/20"
+              items={[
+                { label: "Edit Template", icon: Pencil, onSelect: () => onEdit(template) },
+                { label: "Delete Template", icon: Trash2, onSelect: () => onDelete(template.id), variant: "destructive", separatorBefore: true },
+              ]}
             >
-              <td className="px-4 py-3">
-                <div className="flex flex-col gap-0.5">
-                  <span className="font-medium text-foreground">
-                    {template.name}
-                  </span>
-                  {template.description && (
-                    <span className="text-xs text-muted-foreground">
-                      {template.description}
+              <tr className="border-b border-border/30 transition-colors hover:bg-card/20">
+                <td className="px-4 py-3">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="font-medium text-foreground">
+                      {template.name}
                     </span>
-                  )}
-                </div>
-              </td>
-              <td className="px-4 py-3 font-mono text-xs text-foreground">
-                {template.pattern || "—"}
-              </td>
-              <td className="px-4 py-3 text-center text-foreground">
-                {template.partitions}
-              </td>
-              <td className="px-4 py-3 text-center text-foreground">
-                {template.replicationFactor}
-              </td>
-              <td className="px-4 py-3 text-center text-muted-foreground">
-                {Object.keys(template.configs || {}).length}
-              </td>
-              <td className="px-4 py-3">
-                <div className="flex items-center justify-end gap-2">
-                  <button
-                    onClick={() => onEdit(template)}
-                    className="rounded p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-primary"
-                    title="Edit template"
-                  >
-                    <Pencil className="size-3.5" />
-                  </button>
-                  <button
-                    onClick={() => onDelete(template.id)}
-                    className="rounded p-1.5 text-muted-foreground transition-colors hover:bg-red-500/20 hover:text-red-400"
-                    title="Delete template"
-                  >
-                    <Trash2 className="size-3.5" />
-                  </button>
-                </div>
-              </td>
-            </tr>
+                    {template.description && (
+                      <span className="text-xs text-muted-foreground">
+                        {template.description}
+                      </span>
+                    )}
+                  </div>
+                </td>
+                <td className="px-4 py-3 font-mono text-xs text-foreground">
+                  {template.pattern || "—"}
+                </td>
+                <td className="px-4 py-3 text-center text-foreground">
+                  {template.partitions}
+                </td>
+                <td className="px-4 py-3 text-center text-foreground">
+                  {template.replicationFactor}
+                </td>
+                <td className="px-4 py-3 text-center text-muted-foreground">
+                  {Object.keys(template.configs || {}).length}
+                </td>
+              </tr>
+            </RowContextMenu>
           ))}
         </tbody>
       </table>
