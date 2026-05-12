@@ -17,12 +17,12 @@ interface ServiceNameInputProps {
 
 const VARIANT_STYLES = {
   producer: {
-    badge: "bg-purple-500/15 text-purple-300 border-purple-500/30",
+    badge: "bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/30",
     ring: "focus-within:ring-purple-500/30",
     dot: "bg-purple-400",
   },
   consumer: {
-    badge: "bg-blue-500/15 text-blue-300 border-blue-500/30",
+    badge: "bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30",
     ring: "focus-within:ring-blue-500/30",
     dot: "bg-blue-400",
   },
