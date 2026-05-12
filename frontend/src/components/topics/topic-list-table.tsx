@@ -10,7 +10,7 @@ import { useAnnotationUIStore } from "@/store/annotations";
 import { OwnershipBadges } from "@/components/annotations/ownership-badges";
 import { AnnotationEditorModal } from "@/components/annotations/annotation-editor-modal";
 import { BatchTagModal } from "@/components/annotations/batch-tag-modal";
-import { Pencil, Tag, Copy } from "lucide-react";
+import { Tag, Copy } from "lucide-react";
 import { useReadOnly } from "@/hooks/use-read-only";
 
 interface TopicListTableProps {
@@ -92,7 +92,7 @@ export function TopicListTable({ onTopicClick, onCloneTopic, searchFilter, hideI
             <span className="text-foreground font-medium">{row.original.name}</span>
             {hasOwnership && (
               <div
-                className="flex items-center gap-1 flex-wrap min-w-0 cursor-pointer group"
+                className="flex items-center gap-1 flex-wrap min-w-0 cursor-pointer"
                 onClick={(e) => {
                   e.stopPropagation();
                   openEditor(row.original.name);
@@ -109,19 +109,7 @@ export function TopicListTable({ onTopicClick, onCloneTopic, searchFilter, hideI
                   consumers={consumers}
                   maxVisible={3}
                 />
-                <Pencil className="size-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity ml-0.5" />
               </div>
-            )}
-            {!hasOwnership && (
-              <button
-                className="text-[10px] text-muted-foreground hover:text-muted-foreground transition-colors italic cursor-pointer bg-transparent border-0 p-0 w-fit"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  openEditor(row.original.name);
-                }}
-              >
-                + tag
-              </button>
             )}
           </div>
         );
@@ -135,24 +123,6 @@ export function TopicListTable({ onTopicClick, onCloneTopic, searchFilter, hideI
       cell: ({ row }) => formatBytes(row.original.size),
     },
     { accessorKey: "retention", header: "Retention" },
-    {
-      id: "actions",
-      header: "",
-      cell: ({ row }) =>
-        !isReadOnly && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onCloneTopic(row.original.name);
-            }}
-            className="p-1.5 text-muted-foreground hover:text-primary transition-colors rounded hover:bg-secondary"
-            title="Clone topic"
-          >
-            <Copy className="size-3.5" />
-          </button>
-        ),
-      enableSorting: false,
-    },
   ];
 
   return (
@@ -184,6 +154,14 @@ export function TopicListTable({ onTopicClick, onCloneTopic, searchFilter, hideI
         columns={columns}
         onRowClick={(row) => onTopicClick(row.name)}
         globalFilter={searchFilter}
+        getRowContextMenu={(topic) =>
+          isReadOnly
+            ? []
+            : [
+                { label: "Clone Topic", icon: Copy, onSelect: () => onCloneTopic(topic.name) },
+                { label: "Edit Tags", icon: Tag, onSelect: () => openEditor(topic.name) },
+              ]
+        }
       />
 
       {/* Editor modal */}

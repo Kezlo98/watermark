@@ -11,6 +11,7 @@ import {
 import { useState } from "react";
 import { ArrowUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { RowContextMenu, type RowContextMenuItem } from "@/components/shared/row-context-menu";
 
 interface DataTableProps<T> {
   data: T[];
@@ -20,6 +21,7 @@ interface DataTableProps<T> {
   globalFilter?: string;
   pageSize?: number;
   className?: string;
+  getRowContextMenu?: (row: T) => RowContextMenuItem[];
 }
 
 export function DataTable<T>({
@@ -30,6 +32,7 @@ export function DataTable<T>({
   globalFilter,
   pageSize = 50,
   className,
+  getRowContextMenu,
 }: DataTableProps<T>) {
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -78,7 +81,8 @@ export function DataTable<T>({
           <tbody className="divide-y divide-border">
             {table.getRowModel().rows.map((row) => {
               const highlight = highlightRow?.(row.original);
-              return (
+              const contextItems = getRowContextMenu?.(row.original) ?? [];
+              const tr = (
                 <tr
                   key={row.id}
                   className={cn(
@@ -98,6 +102,11 @@ export function DataTable<T>({
                   ))}
                 </tr>
               );
+              return contextItems.length > 0 ? (
+                <RowContextMenu key={row.id} items={contextItems}>
+                  {tr}
+                </RowContextMenu>
+              ) : tr;
             })}
           </tbody>
         </table>
