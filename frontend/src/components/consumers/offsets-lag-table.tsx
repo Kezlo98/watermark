@@ -60,7 +60,7 @@ export function OffsetsLagTable({ offsets }: OffsetsLagTableProps) {
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-border">
               {groups.map((g) => {
                 const isOpen = expanded.has(g.topic);
                 return (

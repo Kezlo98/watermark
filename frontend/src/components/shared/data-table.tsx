@@ -75,7 +75,7 @@ export function DataTable<T>({
               </tr>
             ))}
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-border">
             {table.getRowModel().rows.map((row) => {
               const highlight = highlightRow?.(row.original);
               return (

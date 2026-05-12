@@ -11,28 +11,28 @@ interface StatusBadgeProps {
 
 const VARIANT_STYLES: Record<StatusVariant, { bg: string; text: string; dot: string; border: string }> = {
   healthy: {
-    bg: "bg-status-healthy/10",
-    text: "text-status-healthy",
+    bg: "bg-status-healthy/15 dark:bg-status-healthy/10",
+    text: "text-status-healthy-foreground dark:text-status-healthy",
     dot: "bg-status-healthy",
-    border: "border-status-healthy/20",
+    border: "border-status-healthy/30 dark:border-status-healthy/20",
   },
   rebalancing: {
-    bg: "bg-status-rebalancing/10",
-    text: "text-status-rebalancing",
+    bg: "bg-status-rebalancing/15 dark:bg-status-rebalancing/10",
+    text: "text-status-rebalancing-foreground dark:text-status-rebalancing",
     dot: "bg-status-rebalancing",
-    border: "border-status-rebalancing/20",
+    border: "border-status-rebalancing/30 dark:border-status-rebalancing/20",
   },
   dead: {
-    bg: "bg-status-dead/10",
-    text: "text-status-dead",
+    bg: "bg-status-dead/15 dark:bg-status-dead/10",
+    text: "text-status-dead-foreground dark:text-status-dead",
     dot: "bg-status-dead",
-    border: "border-status-dead/20",
+    border: "border-status-dead/30 dark:border-status-dead/20",
   },
   empty: {
-    bg: "bg-status-empty/10",
-    text: "text-status-empty",
+    bg: "bg-status-empty/15 dark:bg-status-empty/10",
+    text: "text-status-empty-foreground dark:text-status-empty",
     dot: "bg-status-empty",
-    border: "border-status-empty/20",
+    border: "border-status-empty/30 dark:border-status-empty/20",
   },
 };
 

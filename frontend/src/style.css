@@ -55,43 +55,47 @@
   }
 
   .light {
-    --background: #FFFFFF;
-    --foreground: #1A1A2E;
+    --background: #F8FAFC;
+    --foreground: #0F172A;
     --primary: #8B5CF6;
     --primary-foreground: #FFFFFF;
     --card: #FFFFFF;
-    --card-foreground: #1A1A2E;
+    --card-foreground: #0F172A;
     --popover: #FFFFFF;
-    --popover-foreground: #1A1A2E;
-    --secondary: #F1F3F5;
-    --secondary-foreground: #1A1A2E;
-    --muted: #F8F9FA;
-    --muted-foreground: #6B7280;
-    --accent: #F1F3F5;
-    --accent-foreground: #1A1A2E;
-    --destructive: #DC2626;
+    --popover-foreground: #0F172A;
+    --secondary: #F1F5F9;
+    --secondary-foreground: #0F172A;
+    --muted: #F1F5F9;
+    --muted-foreground: #64748B;
+    --accent: #F1F5F9;
+    --accent-foreground: #0F172A;
+    --destructive: #EF4444;
     --destructive-foreground: #FFFFFF;
-    --border: #E9ECEF;
-    --input: #E9ECEF;
+    --border: #E2E8F0;
+    --input: #E2E8F0;
     --ring: #8B5CF6;
     --glass-panel: #FFFFFF;
-    --border-subtle: #E9ECEF;
-    --border-hover: #CED4DA;
+    --border-subtle: #E2E8F0;
+    --border-hover: #CBD5E1;
     --semantic-cyan: #06B6D4;
     --semantic-purple: #8B5CF6;
     --semantic-orange: #F59E0B;
     --semantic-red: #DC2626;
     --status-healthy: #059669;
+    --status-healthy-foreground: #065F46;
     --status-rebalancing: #D97706;
+    --status-rebalancing-foreground: #92400E;
     --status-dead: #DC2626;
-    --status-empty: #9CA3AF;
-    --sidebar: #F8F9FA;
-    --sidebar-foreground: #1A1A2E;
+    --status-dead-foreground: #991B1B;
+    --status-empty: #94A3B8;
+    --status-empty-foreground: #475569;
+    --sidebar: #FFFFFF;
+    --sidebar-foreground: #0F172A;
     --sidebar-primary: #8B5CF6;
     --sidebar-primary-foreground: #FFFFFF;
-    --sidebar-accent: #F1F3F5;
-    --sidebar-accent-foreground: #1A1A2E;
-    --sidebar-border: #E9ECEF;
+    --sidebar-accent: #F1F5F9;
+    --sidebar-accent-foreground: #0F172A;
+    --sidebar-border: #E2E8F0;
     --sidebar-ring: #8B5CF6;
   }
 
@@ -150,7 +154,8 @@
     border-radius: 16px;
   }
   .light .glass-panel {
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    border: 1px solid #E2E8F0;
   }
 
   .glass-sidebar {

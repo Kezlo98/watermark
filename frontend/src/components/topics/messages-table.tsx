@@ -66,7 +66,7 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, onRe
               <th className="px-4 py-3 text-left text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wider">Value</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-border">
             {paginatedMessages.length === 0 && (
               <tr>
                 <td colSpan={selectMode ? 6 : 5} className="px-4 py-8 text-center text-sm text-muted-foreground font-mono">

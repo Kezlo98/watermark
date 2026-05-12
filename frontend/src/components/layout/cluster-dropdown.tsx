@@ -19,12 +19,12 @@ const COLOR_DOTS: Record<string, string> = {
   purple: "bg-primary",
 };
 
-/** Lighter shades for text readability on dark backgrounds */
+/** Vibrant shades for light mode, lighter shades for dark mode */
 const COLOR_TEXT: Record<string, string> = {
-  red: "text-red-400",
-  orange: "text-orange-400",
-  green: "text-green-400",
-  purple: "text-violet-400",
+  red: "text-red-700 dark:text-red-400",
+  orange: "text-orange-700 dark:text-orange-400",
+  green: "text-green-700 dark:text-green-400",
+  purple: "text-purple-700 dark:text-violet-400",
 };
 
 export function ClusterDropdown() {
@@ -94,9 +94,9 @@ export function ClusterDropdown() {
           className={cn(
             "flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-colors",
             connectionStatus === "connected"
-              ? "bg-status-healthy/5 border-status-healthy/20 hover:border-status-healthy/40"
+              ? "bg-status-healthy/15 dark:bg-status-healthy/5 border-status-healthy/30 dark:border-status-healthy/20 hover:border-status-healthy/50 dark:hover:border-status-healthy/40"
               : connectionStatus === "error"
-                ? "bg-semantic-red/5 border-semantic-red/20 hover:border-semantic-red/40"
+                ? "bg-semantic-red/15 dark:bg-semantic-red/5 border-semantic-red/30 dark:border-semantic-red/20 hover:border-semantic-red/50 dark:hover:border-semantic-red/40"
                 : "bg-secondary border-border hover:border-border-hover"
           )}
         >
@@ -107,7 +107,13 @@ export function ClusterDropdown() {
           )}
           <span className={cn(
             "text-sm font-medium max-w-[140px] truncate",
-            activeCluster ? (COLOR_TEXT[activeCluster.color] ?? "text-foreground") : "text-foreground"
+            connectionStatus === "connected"
+              ? "text-status-healthy-foreground dark:text-status-healthy"
+              : connectionStatus === "error"
+                ? "text-status-dead-foreground dark:text-status-dead"
+                : activeCluster
+                  ? (COLOR_TEXT[activeCluster.color] ?? "text-foreground")
+                  : "text-foreground"
           )}>
             {statusLabel()}
           </span>
@@ -154,14 +160,16 @@ export function ClusterDropdown() {
                 <div className="flex-1 min-w-0">
                   <p className={cn(
                     "text-sm font-medium truncate",
-                    COLOR_TEXT[cluster.color] ?? "text-foreground"
+                    isThisConnected 
+                      ? "text-status-healthy-foreground dark:text-status-healthy"
+                      : (COLOR_TEXT[cluster.color] ?? "text-foreground")
                   )}>{cluster.name}</p>
                   <p className="text-[10px] text-muted-foreground font-mono truncate">
                     {cluster.bootstrapServers}
                   </p>
                 </div>
                 {isThisConnected && (
-                  <span className="text-[10px] font-mono text-status-healthy shrink-0">
+                  <span className="text-[10px] font-mono text-status-healthy-foreground dark:text-status-healthy shrink-0">
                     ● Live
                   </span>
                 )}

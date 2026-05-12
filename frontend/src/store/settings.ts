@@ -75,11 +75,15 @@ function resolveTheme(mode: ThemeMode): "dark" | "light" {
 function applyTheme(mode: ThemeMode) {
   const resolved = resolveTheme(mode);
   const root = document.documentElement;
+  
   if (resolved === "light") {
     root.classList.add("light");
+    root.classList.remove("dark");
   } else {
+    root.classList.add("dark");
     root.classList.remove("light");
   }
+  
   localStorage.setItem("watermark-theme", mode);
 }
 

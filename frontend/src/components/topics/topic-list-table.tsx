@@ -92,7 +92,7 @@ export function TopicListTable({ onTopicClick, onCloneTopic, searchFilter, hideI
             <span className="text-foreground font-medium">{row.original.name}</span>
             {hasOwnership && (
               <div
-                className="flex items-center gap-1 cursor-pointer group"
+                className="flex items-center gap-1 flex-wrap min-w-0 cursor-pointer group"
                 onClick={(e) => {
                   e.stopPropagation();
                   openEditor(row.original.name);
@@ -113,17 +113,15 @@ export function TopicListTable({ onTopicClick, onCloneTopic, searchFilter, hideI
               </div>
             )}
             {!hasOwnership && (
-              <div
-                className="cursor-pointer group"
+              <button
+                className="text-[10px] text-muted-foreground hover:text-muted-foreground transition-colors italic cursor-pointer bg-transparent border-0 p-0 w-fit"
                 onClick={(e) => {
                   e.stopPropagation();
                   openEditor(row.original.name);
                 }}
               >
-                <span className="text-[10px] text-muted-foreground group-hover:text-muted-foreground transition-colors italic">
-                  + tag
-                </span>
-              </div>
+                + tag
+              </button>
             )}
           </div>
         );

@@ -52,9 +52,13 @@ export default {
         },
         status: {
           healthy: "var(--status-healthy)",
+          "healthy-foreground": "var(--status-healthy-foreground)",
           rebalancing: "var(--status-rebalancing)",
+          "rebalancing-foreground": "var(--status-rebalancing-foreground)",
           dead: "var(--status-dead)",
+          "dead-foreground": "var(--status-dead-foreground)",
           empty: "var(--status-empty)",
+          "empty-foreground": "var(--status-empty-foreground)",
         },
       },
       fontFamily: {

@@ -37,7 +37,7 @@ export function VersionHistory({ subjectName }: VersionHistoryProps) {
               <th className="px-4 py-2.5 text-left text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wider">Type</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-border">
             {versions.map((v) => (
               <tr key={v.version} className="hover:bg-secondary transition-colors">
                 <td className="px-4 py-2.5 text-sm font-mono text-primary">v{v.version}</td>
