@@ -9,3 +9,4 @@ plans
 # AI agent session data
 .claude/
 docs/journals
+repomix-output.xml
