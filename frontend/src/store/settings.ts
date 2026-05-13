@@ -29,7 +29,9 @@ export type ConnectionStatus = "disconnected" | "connecting" | "connected" | "er
 interface SettingsState {
   /* Theme */
   theme: ThemeMode;
+  resolvedTheme: "light" | "dark";
   setTheme: (theme: ThemeMode) => void;
+  setResolvedTheme: (resolved: "light" | "dark") => void;
 
   /* UI Density */
   density: UIDensity;
@@ -92,7 +94,10 @@ let systemListener: (() => void) | null = null;
 function setupSystemListener() {
   cleanupSystemListener();
   const mq = window.matchMedia("(prefers-color-scheme: dark)");
-  const handler = () => applyTheme("system");
+  const handler = () => {
+    applyTheme("system");
+    useSettingsStore.getState().setResolvedTheme(resolveTheme("system"));
+  };
   mq.addEventListener("change", handler);
   systemListener = () => mq.removeEventListener("change", handler);
 }
@@ -113,11 +118,13 @@ export function initTheme() {
 
 export const useSettingsStore = create<SettingsState>((set, get) => ({
   theme: (localStorage.getItem("watermark-theme") as ThemeMode) || "dark",
+  resolvedTheme: resolveTheme((localStorage.getItem("watermark-theme") as ThemeMode) || "dark"),
+  setResolvedTheme: (resolved) => set({ resolvedTheme: resolved }),
   setTheme: (theme) => {
     applyTheme(theme);
     cleanupSystemListener();
     if (theme === "system") setupSystemListener();
-    set({ theme });
+    set({ theme, resolvedTheme: resolveTheme(theme) });
   },
 
   density: "comfortable",

@@ -128,21 +128,21 @@
   }
 
   /* Custom scrollbar — dark mode only; light mode uses native OS scrollbars */
-  :not(.light) ::-webkit-scrollbar {
+  html:not(.light) ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
 
-  :not(.light) ::-webkit-scrollbar-track {
+  html:not(.light) ::-webkit-scrollbar-track {
     background: transparent;
   }
 
-  :not(.light) ::-webkit-scrollbar-thumb {
+  html:not(.light) ::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.15);
     border-radius: 3px;
   }
 
-  :not(.light) ::-webkit-scrollbar-thumb:hover {
+  html:not(.light) ::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.25);
   }
 }

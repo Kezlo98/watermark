@@ -41,7 +41,7 @@ export function MonitoringRuleRow({
         <button
           onClick={() => { const u = { ...local, enabled: !local.enabled }; setLocal(u); onUpdate(u); }}
           disabled={disabled}
-          className={`w-2 h-2 rounded-full shrink-0 ${local.enabled ? "bg-primary" : "bg-secondary0"}`}
+          className={`w-2 h-2 rounded-full shrink-0 ${local.enabled ? "bg-primary" : "bg-muted"}`}
           title={local.enabled ? "Enabled" : "Disabled"}
         />
         <input

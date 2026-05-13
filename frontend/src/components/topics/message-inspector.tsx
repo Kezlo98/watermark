@@ -31,7 +31,7 @@ interface MessageInspectorProps {
 
 export function MessageInspector({ value, offset, format, onClose, onReplay }: MessageInspectorProps) {
   const { content, language } = formatMessageValue(value, format);
-  const { theme } = useSettingsStore();
+  const { resolvedTheme } = useSettingsStore();
 
   return (
     <div className="glass-panel overflow-hidden flex flex-col">
@@ -68,7 +68,7 @@ export function MessageInspector({ value, offset, format, onClose, onReplay }: M
           <MonacoEditor
             height="300px"
             language={language}
-            theme={theme === "light" ? "vs" : "vs-dark"}
+            theme={resolvedTheme === "light" ? "vs" : "vs-dark"}
             value={content}
             options={{
               readOnly: true,
