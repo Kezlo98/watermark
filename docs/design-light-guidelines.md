@@ -6,7 +6,7 @@
 |---------|-------|
 | **Theme Name** | Luminous Stream |
 | **Primary Color** | `#8B5CF6` (Vivid Purple) |
-| **Background** | `#FFFFFF` (Pure White) |
+| **Background** | `#F8FAFC` (Off White) |
 | **Personality** | Airy, minimalist, high-clarity, professional observability |
 | **Mode** | Dual-mode (dark + light) with header icon toggle |
 
@@ -16,39 +16,39 @@
 
 | Token | Hex | Usage |
 |-------|-----|-------|
-| `--background` | `#FFFFFF` | Main app background |
-| `--foreground` | `#1A1A2E` | Primary text color |
+| `--background` | `#F8FAFC` | Main app background |
+| `--foreground` | `#0F172A` | Primary text color |
 | `--primary` | `#8B5CF6` | Accent, links, active navigation, primary CTAs |
 | `--primary-foreground` | `#FFFFFF` | Text on primary buttons |
 | `--card` | `#FFFFFF` | Card backgrounds (with airy shadow) |
-| `--card-foreground` | `#1A1A2E` | Card text |
+| `--card-foreground` | `#0F172A` | Card text |
 | `--popover` | `#FFFFFF` | Popover/dropdown backgrounds |
-| `--popover-foreground` | `#1A1A2E` | Popover text |
-| `--secondary` | `#F1F3F5` | Secondary backgrounds, subtle interactive fills |
-| `--secondary-foreground` | `#1A1A2E` | Text on secondary surfaces |
-| `--muted` | `#F8F9FA` | Muted backgrounds, table headers |
-| `--muted-foreground` | `#6B7280` | Labels, descriptions, secondary text |
-| `--accent` | `#F1F3F5` | Hover states, active backgrounds |
-| `--accent-foreground` | `#1A1A2E` | Text on accent surfaces |
-| `--destructive` | `#DC2626` | Delete actions, error states |
+| `--popover-foreground` | `#0F172A` | Popover text |
+| `--secondary` | `#F1F5F9` | Secondary backgrounds, subtle interactive fills |
+| `--secondary-foreground` | `#0F172A` | Text on secondary surfaces |
+| `--muted` | `#F1F5F9` | Muted backgrounds, table headers |
+| `--muted-foreground` | `#64748B` | Labels, descriptions, secondary text |
+| `--accent` | `#F1F5F9` | Hover states, active backgrounds |
+| `--accent-foreground` | `#0F172A` | Text on accent surfaces |
+| `--destructive` | `#EF4444` | Delete actions, error states |
 | `--destructive-foreground` | `#FFFFFF` | Text on destructive buttons |
-| `--border` | `#E9ECEF` | Default borders |
-| `--border-subtle` | `#E9ECEF` | Subtle structural lines |
-| `--border-hover` | `#CED4DA` | Borders on hover |
-| `--input` | `#E9ECEF` | Input field borders |
+| `--border` | `#E2E8F0` | Default borders |
+| `--border-subtle` | `#E2E8F0` | Subtle structural lines |
+| `--border-hover` | `#CBD5E1` | Borders on hover |
+| `--input` | `#E2E8F0` | Input field borders |
 | `--ring` | `#8B5CF6` | Focus ring color |
 
 ### Sidebar Tokens
 
 | Token | Hex | Usage |
 |-------|-----|-------|
-| `--sidebar` | `#F8F9FA` | Sidebar background (solid, no blur) |
-| `--sidebar-foreground` | `#1A1A2E` | Sidebar text |
+| `--sidebar` | `#FFFFFF` | Sidebar background (solid, no blur) |
+| `--sidebar-foreground` | `#0F172A` | Sidebar text |
 | `--sidebar-primary` | `#8B5CF6` | Active nav item accent |
 | `--sidebar-primary-foreground` | `#FFFFFF` | Text on active nav |
-| `--sidebar-accent` | `#F1F3F5` | Nav item hover background |
-| `--sidebar-accent-foreground` | `#1A1A2E` | Nav item hover text |
-| `--sidebar-border` | `#E9ECEF` | Sidebar border |
+| `--sidebar-accent` | `#F1F5F9` | Nav item hover background |
+| `--sidebar-accent-foreground` | `#0F172A` | Nav item hover text |
+| `--sidebar-border` | `#E2E8F0` | Sidebar border |
 | `--sidebar-ring` | `#8B5CF6` | Sidebar focus ring |
 
 ### Semantic Colors (Muted for Light)
@@ -136,8 +136,8 @@ The `.glass-panel` class in light mode uses solid surface + shadow instead of da
 ## Animation & Interaction
 
 ### Theme Transition
-- **Duration:** 300ms smooth transition on `background-color`, `color`, `border-color`, `box-shadow`.
-- **Method:** `transition-colors duration-300` on `<html>` element.
+- **Duration:** 300ms smooth transition on `background-color` and `color`.
+- **Method:** Raw `transition:` declaration on `html` element (not Tailwind `transition-colors`).
 - **Flash prevention:** Apply saved theme class before React hydration.
 
 ### General
