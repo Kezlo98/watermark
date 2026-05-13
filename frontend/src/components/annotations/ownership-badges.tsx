@@ -63,12 +63,12 @@ export function OwnershipBadges({
 
       {/* Edit hint */}
       {onEdit && !hasAny && (
-        <span className="text-[10px] text-slate-500 group-hover:text-slate-400 transition-colors italic">
+        <span className="text-[10px] text-muted-foreground group-hover:text-muted-foreground transition-colors italic">
           + tag
         </span>
       )}
       {onEdit && hasAny && (
-        <Pencil className="size-3 text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity ml-0.5" />
+        <Pencil className="size-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity ml-0.5" />
       )}
     </div>
   );

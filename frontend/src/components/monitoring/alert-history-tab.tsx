@@ -55,7 +55,7 @@ export function AlertHistoryTab() {
                 "px-3 py-1 text-xs rounded border transition-colors capitalize",
                 filter === mode
                   ? "bg-primary/20 text-primary border-primary/40"
-                  : "bg-white/5 text-slate-400 border-white/10 hover:border-white/20",
+                  : "bg-secondary text-muted-foreground border-border hover:border-border-hover",
               )}
             >
               {mode}
@@ -67,7 +67,7 @@ export function AlertHistoryTab() {
             <>
               <button
                 onClick={() => markAllRead(activeClusterId)}
-                className="text-xs text-slate-400 hover:text-white transition-colors"
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
                 Mark all read
               </button>
@@ -84,7 +84,7 @@ export function AlertHistoryTab() {
 
       {/* Alert list */}
       {filtered.length === 0 ? (
-        <div className="py-12 text-center text-sm text-slate-500">
+        <div className="py-12 text-center text-sm text-muted-foreground">
           {filter === "all"
             ? "No alerts yet. Configure rules in the Config tab."
             : `No ${filter} alerts.`}
@@ -92,15 +92,15 @@ export function AlertHistoryTab() {
       ) : (
         <div className="glass-panel overflow-hidden">
           {Object.entries(grouped).map(([pattern, groupAlerts]) => (
-            <div key={pattern} className="border-b border-white/5 last:border-0">
-              <div className="px-4 py-2 text-xs text-slate-500 font-medium bg-white/2">
+            <div key={pattern} className="border-b border-border last:border-0">
+              <div className="px-4 py-2 text-xs text-muted-foreground font-medium bg-secondary">
                 Rule: {pattern}
               </div>
               {groupAlerts.map((alert) => (
                 <button
                   key={alert.id}
                   onClick={() => handleGroupClick(alert.groupId)}
-                  className="w-full flex items-start gap-3 px-4 py-2.5 hover:bg-white/5 transition-colors text-left"
+                  className="w-full flex items-start gap-3 px-4 py-2.5 hover:bg-secondary transition-colors text-left"
                 >
                   <span className="mt-0.5 shrink-0">
                     {alert.resolved ? "✅" : alert.level === "critical" ? "🔴" : "🟡"}
@@ -110,16 +110,16 @@ export function AlertHistoryTab() {
                       <span
                         className={cn(
                           "text-sm font-medium truncate",
-                          !alert.read && !alert.resolved ? "text-white" : "text-slate-400",
+                          !alert.read && !alert.resolved ? "text-foreground" : "text-muted-foreground",
                         )}
                       >
                         {alert.groupId}
                       </span>
-                      <span className="text-[10px] text-slate-500 shrink-0">
+                      <span className="text-[10px] text-muted-foreground shrink-0">
                         {relativeTime(alert.timestamp)}
                       </span>
                     </div>
-                    <div className="text-xs text-slate-500 mt-0.5">
+                    <div className="text-xs text-muted-foreground mt-0.5">
                       Lag: {alert.lag.toLocaleString()} / threshold:{" "}
                       {alert.threshold.toLocaleString()}
                       {alert.resolved && alert.resolvedAt && (

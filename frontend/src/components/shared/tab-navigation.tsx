@@ -34,13 +34,13 @@ export function TabNavigation({
               "flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-left transition-colors",
               activeTab === tab.id
                 ? "bg-primary/10 text-primary border-l-2 border-primary"
-                : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary"
             )}
           >
             {tab.icon && <tab.icon className="size-3.5 shrink-0" />}
             {tab.label}
             {tab.count !== undefined && (
-              <span className="text-xs text-slate-500 font-mono">({tab.count})</span>
+              <span className="text-xs text-muted-foreground font-mono">({tab.count})</span>
             )}
           </button>
         ))}
@@ -49,7 +49,7 @@ export function TabNavigation({
   }
 
   return (
-    <nav className={cn("flex items-center gap-1 border-b border-white/10", className)}>
+    <nav className={cn("flex items-center gap-1 border-b border-border", className)}>
       {tabs.map((tab) => (
         <button
           key={tab.id}
@@ -58,13 +58,13 @@ export function TabNavigation({
             "relative flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium transition-colors",
             activeTab === tab.id
               ? "text-primary"
-              : "text-slate-400 hover:text-slate-200"
+              : "text-muted-foreground hover:text-foreground"
           )}
         >
           {tab.icon && <tab.icon className="size-3.5 shrink-0" />}
           {tab.label}
           {tab.count !== undefined && (
-            <span className="ml-1 text-xs text-slate-500 font-mono">({tab.count})</span>
+            <span className="ml-1 text-xs text-muted-foreground font-mono">({tab.count})</span>
           )}
           {activeTab === tab.id && (
             <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t" />

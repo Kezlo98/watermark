@@ -66,7 +66,7 @@ export function AwsRegionSelect({ value, onChange }: AwsRegionSelectProps) {
 
   return (
     <Popover open={hasDropdown} onOpenChange={(open) => { if (!open) setShowDropdown(false); }}>
-      <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">
+      <label className="block text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1.5">
         AWS Region
       </label>
       <PopoverAnchor asChild>
@@ -77,13 +77,13 @@ export function AwsRegionSelect({ value, onChange }: AwsRegionSelectProps) {
             onChange={(e) => handleInputChange(e.target.value)}
             onFocus={() => setShowDropdown(true)}
             placeholder="From AWS Config (Default)"
-            className="w-full h-9 px-3 pr-8 bg-white/5 border border-white/10 rounded-lg text-sm text-white font-mono focus:outline-none focus:ring-1 focus:ring-primary/50 placeholder:text-slate-500 placeholder:font-sans placeholder:not-italic"
+            className="w-full h-9 px-3 pr-8 bg-secondary border border-border rounded-lg text-sm text-foreground font-mono focus:outline-none focus:ring-1 focus:ring-primary/50 placeholder:text-muted-foreground placeholder:font-sans placeholder:not-italic"
           />
           {inputText && (
             <button
               type="button"
               onClick={handleClear}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 text-xs"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground text-xs"
               title="Clear — use region from AWS config"
             >
               ✕
@@ -107,7 +107,7 @@ export function AwsRegionSelect({ value, onChange }: AwsRegionSelectProps) {
             className={`w-full px-3 py-1.5 text-left text-xs font-mono cursor-pointer transition-colors ${
               r.value === value
                 ? "text-primary bg-primary/10"
-                : "text-slate-300 hover:bg-white/10"
+                : "text-foreground hover:bg-accent"
             }`}
           >
             {r.label}
@@ -115,7 +115,7 @@ export function AwsRegionSelect({ value, onChange }: AwsRegionSelectProps) {
         ))}
       </PopoverContent>
 
-      <p className="text-[10px] text-slate-500 mt-1">
+      <p className="text-[10px] text-muted-foreground mt-1">
         Leave empty to use region from ~/.aws/config or AWS_REGION env var.
       </p>
     </Popover>

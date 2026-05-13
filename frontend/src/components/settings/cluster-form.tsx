@@ -145,7 +145,7 @@ export function ClusterForm({ clusterId, clusterName, onClose }: ClusterFormProp
 
   return (
     <div className="glass-panel p-5 space-y-4">
-      <h4 className="text-sm font-display font-bold text-white uppercase tracking-wider">
+      <h4 className="text-sm font-display font-bold text-foreground uppercase tracking-wider">
         {isNew ? "✨ New Cluster" : `Edit Cluster: ${form.name}`}
       </h4>
 
@@ -186,11 +186,11 @@ export function ClusterForm({ clusterId, clusterName, onClose }: ClusterFormProp
       )}
 
       {/* Action buttons */}
-      <div className="flex justify-between items-center pt-4 border-t border-white/5">
+      <div className="flex justify-between items-center pt-4 border-t border-border">
         <button
           onClick={handleTestConnection}
           disabled={testStatus === "testing"}
-          className="flex items-center gap-1.5 px-4 py-2 text-sm text-slate-400 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center gap-1.5 px-4 py-2 text-sm text-muted-foreground bg-secondary rounded-lg border border-border hover:bg-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {testStatus === "testing" ? (
             <Loader2 className="size-3.5 animate-spin" />
@@ -203,7 +203,7 @@ export function ClusterForm({ clusterId, clusterName, onClose }: ClusterFormProp
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm text-slate-400 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors"
+            className="px-4 py-2 text-sm text-muted-foreground bg-secondary rounded-lg border border-border hover:bg-accent transition-colors"
           >
             Cancel
           </button>

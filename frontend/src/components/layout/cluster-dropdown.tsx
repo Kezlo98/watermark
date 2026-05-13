@@ -19,12 +19,12 @@ const COLOR_DOTS: Record<string, string> = {
   purple: "bg-primary",
 };
 
-/** Lighter shades for text readability on dark backgrounds */
+/** Vibrant shades for light mode, lighter shades for dark mode */
 const COLOR_TEXT: Record<string, string> = {
-  red: "text-red-400",
-  orange: "text-orange-400",
-  green: "text-green-400",
-  purple: "text-violet-400",
+  red: "text-red-700 dark:text-red-400",
+  orange: "text-orange-700 dark:text-orange-400",
+  green: "text-green-700 dark:text-green-400",
+  purple: "text-purple-700 dark:text-violet-400",
 };
 
 export function ClusterDropdown() {
@@ -69,7 +69,7 @@ export function ClusterDropdown() {
       case "error":
         return "bg-semantic-red";
       default:
-        return "bg-slate-500";
+        return "bg-muted-foreground";
     }
   };
 
@@ -94,10 +94,10 @@ export function ClusterDropdown() {
           className={cn(
             "flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-colors",
             connectionStatus === "connected"
-              ? "bg-status-healthy/5 border-status-healthy/20 hover:border-status-healthy/40"
+              ? "bg-status-healthy/15 dark:bg-status-healthy/5 border-status-healthy/30 dark:border-status-healthy/20 hover:border-status-healthy/50 dark:hover:border-status-healthy/40"
               : connectionStatus === "error"
-                ? "bg-semantic-red/5 border-semantic-red/20 hover:border-semantic-red/40"
-                : "bg-white/5 border-white/10 hover:border-white/20"
+                ? "bg-semantic-red/15 dark:bg-semantic-red/5 border-semantic-red/30 dark:border-semantic-red/20 hover:border-semantic-red/50 dark:hover:border-semantic-red/40"
+                : "bg-secondary border-border hover:border-border-hover"
           )}
         >
           {connectionStatus === "connecting" ? (
@@ -107,11 +107,17 @@ export function ClusterDropdown() {
           )}
           <span className={cn(
             "text-sm font-medium max-w-[140px] truncate",
-            activeCluster ? (COLOR_TEXT[activeCluster.color] ?? "text-white") : "text-white"
+            connectionStatus === "connected"
+              ? "text-status-healthy-foreground dark:text-status-healthy"
+              : connectionStatus === "error"
+                ? "text-status-dead-foreground dark:text-status-dead"
+                : activeCluster
+                  ? (COLOR_TEXT[activeCluster.color] ?? "text-foreground")
+                  : "text-foreground"
           )}>
             {statusLabel()}
           </span>
-          <ChevronDown className="size-3 text-slate-400" />
+          <ChevronDown className="size-3 text-muted-foreground" />
         </button>
       </DropdownMenuTrigger>
 
@@ -121,7 +127,7 @@ export function ClusterDropdown() {
         {/* Cluster list */}
         {clusters.length === 0 ? (
           <div className="py-6 text-center">
-            <p className="text-xs text-slate-400 mb-2">No clusters configured</p>
+            <p className="text-xs text-muted-foreground mb-2">No clusters configured</p>
             <button
               onClick={openSettings}
               className="text-xs text-primary hover:underline"
@@ -148,20 +154,22 @@ export function ClusterDropdown() {
                     "size-2 rounded-full shrink-0",
                     isThisConnected
                       ? "bg-status-healthy animate-pulse"
-                      : (COLOR_DOTS[cluster.color] ?? "bg-slate-500")
+                      : (COLOR_DOTS[cluster.color] ?? "bg-muted-foreground")
                   )}
                 />
                 <div className="flex-1 min-w-0">
                   <p className={cn(
                     "text-sm font-medium truncate",
-                    COLOR_TEXT[cluster.color] ?? "text-white"
+                    isThisConnected 
+                      ? "text-status-healthy-foreground dark:text-status-healthy"
+                      : (COLOR_TEXT[cluster.color] ?? "text-foreground")
                   )}>{cluster.name}</p>
-                  <p className="text-[10px] text-slate-500 font-mono truncate">
+                  <p className="text-[10px] text-muted-foreground font-mono truncate">
                     {cluster.bootstrapServers}
                   </p>
                 </div>
                 {isThisConnected && (
-                  <span className="text-[10px] font-mono text-status-healthy shrink-0">
+                  <span className="text-[10px] font-mono text-status-healthy-foreground dark:text-status-healthy shrink-0">
                     ● Live
                   </span>
                 )}

@@ -165,7 +165,7 @@ export function LagChartsTab() {
   // Empty states
   if (alertConfig === null) {
     return (
-      <div className="flex items-center justify-center h-64 text-sm text-slate-500">
+      <div className="flex items-center justify-center h-64 text-sm text-muted-foreground">
         <div className="flex flex-col items-center gap-3">
           <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
           Loading configuration...
@@ -177,10 +177,10 @@ export function LagChartsTab() {
   if (!recordingEnabled) {
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-4">
-        <BarChart3 className="size-12 text-slate-600" />
+        <BarChart3 className="size-12 text-muted-foreground" />
         <div className="text-center space-y-1">
-          <p className="text-sm text-slate-400">Chart recording is disabled.</p>
-          <p className="text-xs text-slate-500">
+          <p className="text-sm text-muted-foreground">Chart recording is disabled.</p>
+          <p className="text-xs text-muted-foreground">
             Enable recording in the <span className="text-primary">Settings</span> to start
             capturing lag data.
           </p>
@@ -206,17 +206,17 @@ export function LagChartsTab() {
       />
 
       {enrichedEntities.length === 0 ? (
-        <div className="py-16 text-center text-sm text-slate-500">
+        <div className="py-16 text-center text-sm text-muted-foreground">
           Select a {prefs.mode} above to start charting.
         </div>
       ) : (
         <>
           {isLoading && mergedData.length === 0 ? (
-            <div className="py-16 text-center text-sm text-slate-500">
+            <div className="py-16 text-center text-sm text-muted-foreground">
               Recording started — waiting for data...
             </div>
           ) : mergedData.length === 0 ? (
-            <div className="py-16 text-center text-sm text-slate-500">
+            <div className="py-16 text-center text-sm text-muted-foreground">
               No lag data available for the selected {prefs.mode === "topic" ? "topics" : "groups"} in this time window.
             </div>
           ) : prefs.chartType === "area" ? (

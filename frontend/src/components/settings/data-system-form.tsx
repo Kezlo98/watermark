@@ -67,13 +67,13 @@ function AppVersionSection() {
 
   return (
     <section>
-      <h3 className="text-sm font-display font-bold text-white uppercase tracking-wider mb-4">
+      <h3 className="text-sm font-display font-bold text-foreground uppercase tracking-wider mb-4">
         ℹ️ About
       </h3>
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-white font-medium">Watermark</p>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-sm text-foreground font-medium">Watermark</p>
+          <p className="text-xs text-muted-foreground mt-0.5">
             {version ? `v${version}` : "—"}
           </p>
         </div>
@@ -84,10 +84,10 @@ function AppVersionSection() {
             isAvailable
               ? "bg-primary/20 border-primary/30 text-primary hover:bg-primary/30"
               : isSkipped
-                ? "bg-slate-500/10 border-slate-500/20 text-slate-400 hover:bg-slate-500/20"
+                ? "bg-muted border-border text-muted-foreground hover:bg-muted"
                 : isError
                   ? "bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20"
-                  : "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10"
+                  : "bg-secondary border-border text-foreground hover:bg-accent"
           }`}
         >
           {isLoading && <Loader2 className="size-3 animate-spin" />}
@@ -117,20 +117,20 @@ export function DataSystemForm() {
     <div className="space-y-8">
       {/* Data section */}
       <section>
-        <h3 className="text-sm font-display font-bold text-white uppercase tracking-wider mb-4">
+        <h3 className="text-sm font-display font-bold text-foreground uppercase tracking-wider mb-4">
           💻 System & Workspace
         </h3>
 
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <Label htmlFor="launch-startup" className="text-sm text-slate-300 font-normal cursor-pointer">
+            <Label htmlFor="launch-startup" className="text-sm text-foreground font-normal cursor-pointer">
               Start application when computer starts
             </Label>
             <Switch id="launch-startup" defaultChecked />
           </div>
 
           <div className="flex items-center justify-between">
-            <Label htmlFor="minimize-tray" className="text-sm text-slate-300 font-normal cursor-pointer">
+            <Label htmlFor="minimize-tray" className="text-sm text-foreground font-normal cursor-pointer">
               Minimize to system tray when closed
             </Label>
             <Switch id="minimize-tray" defaultChecked />
@@ -140,15 +140,15 @@ export function DataSystemForm() {
 
       {/* Import/Export */}
       <section>
-        <p className="text-sm text-slate-400 mb-4">
+        <p className="text-sm text-muted-foreground mb-4">
           Share cluster configurations with your team.
         </p>
         <div className="flex gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 text-sm text-slate-300 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors">
+          <button className="flex items-center gap-2 px-4 py-2 text-sm text-foreground bg-secondary rounded-lg border border-border hover:bg-accent transition-colors">
             <Download className="size-4" />
             Import Config (.json)
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 text-sm text-slate-300 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors">
+          <button className="flex items-center gap-2 px-4 py-2 text-sm text-foreground bg-secondary rounded-lg border border-border hover:bg-accent transition-colors">
             <Upload className="size-4" />
             Export Config (.json)
           </button>

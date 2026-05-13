@@ -150,7 +150,7 @@ export function CreateTopicModal({ isOpen, onClose, cloneFrom }: CreateTopicModa
 
           {/* Topic Name */}
           <div>
-            <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1.5">
               Topic Name
             </label>
             <input
@@ -161,8 +161,8 @@ export function CreateTopicModal({ isOpen, onClose, cloneFrom }: CreateTopicModa
                 if (error) setError(null);
               }}
               placeholder="my.new.topic"
-              className={`w-full h-9 px-3 bg-white/5 border rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-primary/50 ${
-                error ? "border-semantic-red/50" : "border-white/10"
+              className={`w-full h-9 px-3 bg-secondary border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 ${
+                error ? "border-semantic-red/50" : "border-border"
               }`}
             />
             {error && (
@@ -173,7 +173,7 @@ export function CreateTopicModal({ isOpen, onClose, cloneFrom }: CreateTopicModa
           {/* Partitions + Replication Factor */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1.5">
                 Partitions
               </label>
               <Select value={String(form.partitions)} onValueChange={(v) => setForm({ ...form, partitions: Number(v) })}>
@@ -188,7 +188,7 @@ export function CreateTopicModal({ isOpen, onClose, cloneFrom }: CreateTopicModa
               </Select>
             </div>
             <div>
-              <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1.5">
                 Replication Factor
               </label>
               <Select value={String(form.replicationFactor)} onValueChange={(v) => setForm({ ...form, replicationFactor: Number(v) })}>
@@ -206,20 +206,20 @@ export function CreateTopicModal({ isOpen, onClose, cloneFrom }: CreateTopicModa
 
           {/* Retention */}
           <div>
-            <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1.5">
               Retention (ms) {retentionLabel}
             </label>
             <input
               type="number"
               value={form.retentionMs}
               onChange={(e) => setForm({ ...form, retentionMs: Number(e.target.value) })}
-              className="w-full h-9 px-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white font-mono focus:outline-none focus:ring-1 focus:ring-primary/50"
+              className="w-full h-9 px-3 bg-secondary border border-border rounded-lg text-sm text-foreground font-mono focus:outline-none focus:ring-1 focus:ring-primary/50"
             />
           </div>
 
           {/* Cleanup Policy */}
           <div>
-            <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1.5">
               Cleanup Policy
             </label>
             <Select value={form.cleanupPolicy} onValueChange={(v) => setForm({ ...form, cleanupPolicy: v })}>
@@ -239,7 +239,7 @@ export function CreateTopicModal({ isOpen, onClose, cloneFrom }: CreateTopicModa
           <button
             onClick={handleClose}
             disabled={mutation.isPending}
-            className="px-4 py-2 text-sm text-slate-400 hover:text-white bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors"
+            className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground bg-secondary rounded-lg border border-border hover:bg-accent transition-colors"
           >
             Cancel
           </button>

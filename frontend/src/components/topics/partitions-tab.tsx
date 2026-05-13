@@ -56,7 +56,7 @@ function buildColumns(onPurge?: (partition: Partition) => void): ColumnDef<Parti
             className={cn(
               "flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md border transition-colors",
               isEmpty
-                ? "text-slate-600 border-white/5 cursor-not-allowed"
+                ? "text-muted-foreground border-border cursor-not-allowed"
                 : "text-red-400 border-red-500/20 bg-red-500/5 hover:bg-red-500/15",
             )}
           >

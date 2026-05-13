@@ -32,7 +32,7 @@ export function TopicDetailPage() {
     <div className="space-y-6">
       <button
         onClick={() => router.history.back()}
-        className="flex items-center gap-1 text-sm text-slate-400 hover:text-slate-200 transition-colors"
+        className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
         <ChevronLeft className="size-4" />
         Topics

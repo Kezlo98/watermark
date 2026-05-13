@@ -89,10 +89,10 @@ export function TopicListTable({ onTopicClick, onCloneTopic, searchFilter, hideI
 
         return (
           <div className="flex flex-col gap-1">
-            <span className="text-white font-medium">{row.original.name}</span>
+            <span className="text-foreground font-medium">{row.original.name}</span>
             {hasOwnership && (
               <div
-                className="flex items-center gap-1 cursor-pointer group"
+                className="flex items-center gap-1 flex-wrap min-w-0 cursor-pointer group"
                 onClick={(e) => {
                   e.stopPropagation();
                   openEditor(row.original.name);
@@ -103,27 +103,25 @@ export function TopicListTable({ onTopicClick, onCloneTopic, searchFilter, hideI
                   consumers={[]}
                   maxVisible={3}
                 />
-                <span className="text-[10px] text-slate-500 mx-0.5">→</span>
+                <span className="text-[10px] text-muted-foreground mx-0.5">→</span>
                 <OwnershipBadges
                   producers={[]}
                   consumers={consumers}
                   maxVisible={3}
                 />
-                <Pencil className="size-3 text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity ml-0.5" />
+                <Pencil className="size-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity ml-0.5" />
               </div>
             )}
             {!hasOwnership && (
-              <div
-                className="cursor-pointer group"
+              <button
+                className="text-[10px] text-muted-foreground hover:text-muted-foreground transition-colors italic cursor-pointer bg-transparent border-0 p-0 w-fit"
                 onClick={(e) => {
                   e.stopPropagation();
                   openEditor(row.original.name);
                 }}
               >
-                <span className="text-[10px] text-slate-500 group-hover:text-slate-400 transition-colors italic">
-                  + tag
-                </span>
-              </div>
+                + tag
+              </button>
             )}
           </div>
         );
@@ -147,7 +145,7 @@ export function TopicListTable({ onTopicClick, onCloneTopic, searchFilter, hideI
               e.stopPropagation();
               onCloneTopic(row.original.name);
             }}
-            className="p-1.5 text-slate-500 hover:text-primary transition-colors rounded hover:bg-white/5"
+            className="p-1.5 text-muted-foreground hover:text-primary transition-colors rounded hover:bg-secondary"
             title="Clone topic"
           >
             <Copy className="size-3.5" />
@@ -174,7 +172,7 @@ export function TopicListTable({ onTopicClick, onCloneTopic, searchFilter, hideI
           </button>
           <button
             onClick={clearSelectedTopics}
-            className="text-xs text-slate-400 hover:text-white transition-colors"
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
             Clear
           </button>

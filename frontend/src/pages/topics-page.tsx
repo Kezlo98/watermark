@@ -83,7 +83,7 @@ export function TopicsPage() {
           className="w-80"
         />
         <RefreshButton queryKeys={[["topics"]]} />
-        <label className="flex items-center gap-2 text-sm text-slate-400 cursor-pointer">
+        <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
           <Checkbox
             checked={hideInternal}
             onCheckedChange={(v) => setHideInternal(!!v)}

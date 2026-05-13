@@ -49,7 +49,7 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, onRe
       <div className={cn("overflow-auto", inspectorOpen ? "max-h-[30vh]" : "max-h-[50vh]")}>
         <table className="w-full">
           <thead>
-            <tr className="bg-white/5">
+            <tr className="bg-secondary">
               {selectMode && (
                 <th className="px-3 py-3 w-8">
                   <Checkbox
@@ -59,17 +59,17 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, onRe
                   />
                 </th>
               )}
-              <th className="px-4 py-3 text-left text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wider">P</th>
-              <th className="px-4 py-3 text-left text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wider">Offset</th>
-              <th className="px-4 py-3 text-left text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wider">Timestamp</th>
-              <th className="px-4 py-3 text-left text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wider">Key</th>
-              <th className="px-4 py-3 text-left text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wider">Value</th>
+              <th className="px-4 py-3 text-left text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wider">P</th>
+              <th className="px-4 py-3 text-left text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wider">Offset</th>
+              <th className="px-4 py-3 text-left text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wider">Timestamp</th>
+              <th className="px-4 py-3 text-left text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wider">Key</th>
+              <th className="px-4 py-3 text-left text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wider">Value</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-border">
             {paginatedMessages.length === 0 && (
               <tr>
-                <td colSpan={selectMode ? 6 : 5} className="px-4 py-8 text-center text-sm text-slate-500 font-mono">
+                <td colSpan={selectMode ? 6 : 5} className="px-4 py-8 text-center text-sm text-muted-foreground font-mono">
                   No messages found. Click Refresh to fetch.
                 </td>
               </tr>
@@ -94,7 +94,7 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, onRe
                         ? "bg-primary/10"
                         : selectMode && isChecked
                           ? "bg-primary/5"
-                          : "hover:bg-white/5"
+                          : "hover:bg-secondary"
                     )}
                   >
                     {selectMode && (
@@ -107,11 +107,11 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, onRe
                         />
                       </td>
                     )}
-                    <td className="px-4 py-3 text-sm font-mono text-slate-300">{msg.partition}</td>
-                    <td className="px-4 py-3 text-sm font-mono text-slate-300">{msg.offset}</td>
-                    <td className="px-4 py-3 text-sm font-mono text-slate-400">{msg.timestamp}</td>
+                    <td className="px-4 py-3 text-sm font-mono text-foreground">{msg.partition}</td>
+                    <td className="px-4 py-3 text-sm font-mono text-foreground">{msg.offset}</td>
+                    <td className="px-4 py-3 text-sm font-mono text-muted-foreground">{msg.timestamp}</td>
                     <td className="px-4 py-3 text-sm font-mono text-semantic-cyan">{msg.key}</td>
-                    <td className="px-4 py-3 text-sm font-mono text-slate-300 truncate max-w-xs">{msg.value}</td>
+                    <td className="px-4 py-3 text-sm font-mono text-foreground truncate max-w-xs">{msg.value}</td>
                   </tr>
                 </MessageContextMenu>
               );
@@ -121,10 +121,10 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, onRe
       </div>
 
       {/* Pagination footer */}
-      <div className="flex items-center justify-between px-4 py-2.5 border-t border-white/5 bg-white/[0.02]">
+      <div className="flex items-center justify-between px-4 py-2.5 border-t border-border bg-secondary">
         {/* Page size selector */}
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">Rows</span>
+          <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">Rows</span>
           <div className="flex gap-0.5">
             {PAGE_SIZE_OPTIONS.map((size) => (
               <button
@@ -134,7 +134,7 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, onRe
                   "px-2 py-1 text-xs font-mono rounded transition-colors",
                   pageSize === size
                     ? "bg-primary/20 text-primary border border-primary/30"
-                    : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary border border-transparent"
                 )}
               >
                 {size}
@@ -145,7 +145,7 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, onRe
 
         {/* Page info + navigation */}
         <div className="flex items-center gap-3">
-          <span className="text-xs font-mono text-slate-500">
+          <span className="text-xs font-mono text-muted-foreground">
             {messages.length > 0
               ? `${safePage * pageSize + 1}–${Math.min((safePage + 1) * pageSize, messages.length)} of ${messages.length}`
               : "0 messages"}
@@ -154,7 +154,7 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, onRe
             <button
               onClick={() => setCurrentPage(0)}
               disabled={safePage === 0}
-              className="p-1 rounded text-slate-400 hover:text-white hover:bg-white/5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               title="First page"
             >
               <ChevronsLeft className="size-3.5" />
@@ -162,18 +162,18 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, onRe
             <button
               onClick={() => setCurrentPage(safePage - 1)}
               disabled={safePage === 0}
-              className="p-1 rounded text-slate-400 hover:text-white hover:bg-white/5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               title="Previous page"
             >
               <ChevronLeft className="size-3.5" />
             </button>
-            <span className="px-2 text-xs font-mono text-slate-400">
+            <span className="px-2 text-xs font-mono text-muted-foreground">
               {safePage + 1} / {totalPages}
             </span>
             <button
               onClick={() => setCurrentPage(safePage + 1)}
               disabled={safePage >= totalPages - 1}
-              className="p-1 rounded text-slate-400 hover:text-white hover:bg-white/5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               title="Next page"
             >
               <ChevronRight className="size-3.5" />
@@ -181,7 +181,7 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, onRe
             <button
               onClick={() => setCurrentPage(totalPages - 1)}
               disabled={safePage >= totalPages - 1}
-              className="p-1 rounded text-slate-400 hover:text-white hover:bg-white/5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               title="Last page"
             >
               <ChevronsRight className="size-3.5" />

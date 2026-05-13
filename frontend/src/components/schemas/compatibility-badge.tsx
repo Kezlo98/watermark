@@ -5,7 +5,7 @@ const LEVEL_STYLES: Record<CompatibilityLevel, { bg: string; text: string }> = {
   BACKWARD: { bg: "bg-status-healthy/10", text: "text-status-healthy" },
   FORWARD: { bg: "bg-blue-500/10", text: "text-blue-400" },
   FULL: { bg: "bg-primary/10", text: "text-primary" },
-  NONE: { bg: "bg-slate-500/10", text: "text-slate-400" },
+  NONE: { bg: "bg-muted", text: "text-muted-foreground" },
 };
 
 interface CompatibilityBadgeProps {

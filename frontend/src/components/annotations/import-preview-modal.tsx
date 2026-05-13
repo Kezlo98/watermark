@@ -64,28 +64,28 @@ export function ImportPreviewModal({
           {stats.valid ? (
             <>
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 bg-white/5 rounded-lg">
-                  <p className="text-xs text-slate-400 uppercase tracking-wider">
+                <div className="p-3 bg-secondary rounded-lg">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider">
                     Topics
                   </p>
                   <p className="text-lg font-mono font-bold text-primary">
                     {stats.totalTopics}
                   </p>
                 </div>
-                <div className="p-3 bg-white/5 rounded-lg">
-                  <p className="text-xs text-slate-400 uppercase tracking-wider">
+                <div className="p-3 bg-secondary rounded-lg">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider">
                     Clusters
                   </p>
-                  <p className="text-lg font-mono font-bold text-white">
+                  <p className="text-lg font-mono font-bold text-foreground">
                     {stats.clusters}
                   </p>
                 </div>
               </div>
 
-              <div className="p-3 bg-white/5 rounded-lg">
-                <p className="text-xs text-slate-400">
+              <div className="p-3 bg-secondary rounded-lg">
+                <p className="text-xs text-muted-foreground">
                   Mode:{" "}
-                  <span className="text-white font-medium">
+                  <span className="text-foreground font-medium">
                     {mode === "merge"
                       ? "Merge (keep existing)"
                       : "Replace (overwrite all)"}
@@ -110,7 +110,7 @@ export function ImportPreviewModal({
         <DialogFooter>
           <button
             onClick={onCancel}
-            className="px-4 py-2 text-sm text-slate-400 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors"
+            className="px-4 py-2 text-sm text-muted-foreground bg-secondary rounded-lg border border-border hover:bg-accent transition-colors"
           >
             Cancel
           </button>

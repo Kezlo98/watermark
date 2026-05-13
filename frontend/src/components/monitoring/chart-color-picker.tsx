@@ -23,7 +23,7 @@ export function ChartColorPicker({ currentIndex, entities, onSelect }: ChartColo
         />
       </PopoverTrigger>
       <PopoverContent
-        className="w-auto p-2 bg-[#0f1115] border border-white/10"
+        className="w-auto p-2 bg-[#0f1115] border border-border"
         align="start"
         side="top"
       >

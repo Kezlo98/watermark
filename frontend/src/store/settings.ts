@@ -29,7 +29,9 @@ export type ConnectionStatus = "disconnected" | "connecting" | "connected" | "er
 interface SettingsState {
   /* Theme */
   theme: ThemeMode;
+  resolvedTheme: "light" | "dark";
   setTheme: (theme: ThemeMode) => void;
+  setResolvedTheme: (resolved: "light" | "dark") => void;
 
   /* UI Density */
   density: UIDensity;
@@ -65,9 +67,65 @@ interface SettingsState {
   setCodeFontSize: (size: number) => void;
 }
 
+function resolveTheme(mode: ThemeMode): "dark" | "light" {
+  if (mode === "system") {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  return mode;
+}
+
+function applyTheme(mode: ThemeMode) {
+  const resolved = resolveTheme(mode);
+  const root = document.documentElement;
+  
+  if (resolved === "light") {
+    root.classList.add("light");
+    root.classList.remove("dark");
+  } else {
+    root.classList.add("dark");
+    root.classList.remove("light");
+  }
+  
+  localStorage.setItem("watermark-theme", mode);
+}
+
+let systemListener: (() => void) | null = null;
+
+function setupSystemListener() {
+  cleanupSystemListener();
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  const handler = () => {
+    applyTheme("system");
+    useSettingsStore.getState().setResolvedTheme(resolveTheme("system"));
+  };
+  mq.addEventListener("change", handler);
+  systemListener = () => mq.removeEventListener("change", handler);
+}
+
+function cleanupSystemListener() {
+  if (systemListener) {
+    systemListener();
+    systemListener = null;
+  }
+}
+
+export function initTheme() {
+  const saved = (localStorage.getItem("watermark-theme") as ThemeMode) || "dark";
+  applyTheme(saved);
+  if (saved === "system") setupSystemListener();
+  return saved;
+}
+
 export const useSettingsStore = create<SettingsState>((set, get) => ({
-  theme: "dark",
-  setTheme: (theme) => set({ theme }),
+  theme: (localStorage.getItem("watermark-theme") as ThemeMode) || "dark",
+  resolvedTheme: resolveTheme((localStorage.getItem("watermark-theme") as ThemeMode) || "dark"),
+  setResolvedTheme: (resolved) => set({ resolvedTheme: resolved }),
+  setTheme: (theme) => {
+    applyTheme(theme);
+    cleanupSystemListener();
+    if (theme === "system") setupSystemListener();
+    set({ theme, resolvedTheme: resolveTheme(theme) });
+  },
 
   density: "comfortable",
   setDensity: (density) => set({ density }),

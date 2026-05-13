@@ -23,7 +23,7 @@ export function ConsumerDetailPage() {
     <div className="space-y-6">
       <button
         onClick={() => router.history.back()}
-        className="flex items-center gap-1 text-sm text-slate-400 hover:text-slate-200 transition-colors"
+        className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
         <ChevronLeft className="size-4" />
         Consumer Groups
@@ -39,7 +39,7 @@ export function ConsumerDetailPage() {
             <>
               <button
                 disabled
-                className="px-4 py-2 text-sm text-slate-400 bg-white/5 rounded-lg border border-white/10 opacity-50 cursor-not-allowed"
+                className="px-4 py-2 text-sm text-muted-foreground bg-secondary rounded-lg border border-border opacity-50 cursor-not-allowed"
                 title="Group must be Empty or Dead to reset offsets"
               >
                 ⏪ Reset Offsets

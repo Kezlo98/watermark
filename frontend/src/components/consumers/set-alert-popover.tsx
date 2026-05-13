@@ -94,7 +94,7 @@ export function SetAlertPopover({ groupId }: SetAlertPopoverProps) {
     <Popover open={open} onOpenChange={handleOpen}>
       <PopoverTrigger asChild>
         <button
-          className="px-3 py-1.5 text-sm text-slate-400 bg-white/5 rounded-lg border border-white/10 hover:text-white hover:border-white/20 transition-colors"
+          className="px-3 py-1.5 text-sm text-muted-foreground bg-secondary rounded-lg border border-border hover:text-foreground hover:border-border-hover transition-colors"
         >
           🔔 Set Alert
         </button>
@@ -102,12 +102,12 @@ export function SetAlertPopover({ groupId }: SetAlertPopoverProps) {
 
       <PopoverContent className="w-72" align="end" sideOffset={8}>
         <div className="space-y-3">
-          <div className="text-sm font-semibold text-white">Lag Alert</div>
-          <div className="text-xs text-slate-400 truncate font-mono">{groupId}</div>
+          <div className="text-sm font-semibold text-foreground">Lag Alert</div>
+          <div className="text-xs text-muted-foreground truncate font-mono">{groupId}</div>
 
           <div className="space-y-2">
             <div className="space-y-1">
-              <Label className="text-xs text-slate-400">
+              <Label className="text-xs text-muted-foreground">
                 Warning lag threshold
               </Label>
               <Input
@@ -119,7 +119,7 @@ export function SetAlertPopover({ groupId }: SetAlertPopoverProps) {
               />
             </div>
             <div className="space-y-1">
-              <Label className="text-xs text-slate-400">
+              <Label className="text-xs text-muted-foreground">
                 Critical lag threshold
               </Label>
               <Input
@@ -153,7 +153,7 @@ export function SetAlertPopover({ groupId }: SetAlertPopoverProps) {
             )}
             <button
               onClick={() => setOpen(false)}
-              className="px-3 py-1.5 text-xs text-slate-400 bg-white/5 border border-white/10 rounded hover:text-white transition-colors"
+              className="px-3 py-1.5 text-xs text-muted-foreground bg-secondary border border-border rounded hover:text-foreground transition-colors"
             >
               Cancel
             </button>

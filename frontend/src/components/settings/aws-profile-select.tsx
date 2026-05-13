@@ -25,7 +25,7 @@ export function AwsProfileSelect({ value, onChange }: AwsProfileSelectProps) {
 
   return (
     <div>
-      <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">
+      <label className="block text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1.5">
         AWS Profile
       </label>
       <Select
@@ -44,7 +44,7 @@ export function AwsProfileSelect({ value, onChange }: AwsProfileSelectProps) {
           ))}
         </SelectContent>
       </Select>
-      <p className="text-[10px] text-slate-500 mt-1">
+      <p className="text-[10px] text-muted-foreground mt-1">
         Uses env vars or ~/.aws/config. Leave default for current environment.
       </p>
     </div>

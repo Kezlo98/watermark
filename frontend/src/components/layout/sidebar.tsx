@@ -51,12 +51,12 @@ export function Sidebar() {
   return (
     <aside className="glass-sidebar w-[264px] h-screen flex flex-col shrink-0">
       {/* Logo */}
-      <div className="flex items-center gap-3 px-6 py-5 border-b border-white/5">
+      <div className="flex items-center gap-3 px-6 py-5 border-b border-border">
         <div className="flex items-center justify-center shrink-0">
           <img src={logoImg} alt="Watermark" className="size-10" />
         </div>
         <div>
-          <h1 className="text-base font-display font-bold text-white tracking-tight">
+          <h1 className="text-base font-display font-bold text-foreground tracking-tight">
             Watermark
           </h1>
         </div>
@@ -64,7 +64,7 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4">
-        <span className="px-3 mb-2 block text-[10px] font-mono font-semibold text-slate-500 uppercase tracking-widest">
+        <span className="px-3 mb-2 block text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-widest">
           Menu
         </span>
         <div className="flex flex-col gap-0.5">
@@ -78,7 +78,7 @@ export function Sidebar() {
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 w-full text-left",
                   active
                     ? "bg-primary/10 text-primary"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                 )}
               >
                 <item.icon className={cn("size-4", active && "text-primary")} />
@@ -104,8 +104,8 @@ export function Sidebar() {
       <UpdateBanner />
 
       {/* Version footer */}
-      <div className="px-6 py-4 border-t border-white/5 text-center">
-        <span className="text-[10px] font-mono text-slate-600">{version}</span>
+      <div className="px-6 py-4 border-t border-border text-center">
+        <span className="text-[10px] font-mono text-muted-foreground">{version}</span>
       </div>
     </aside>
   );

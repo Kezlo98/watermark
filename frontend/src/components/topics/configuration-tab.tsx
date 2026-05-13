@@ -27,7 +27,7 @@ const columns: ColumnDef<TopicConfig, unknown>[] = [
     accessorKey: "value",
     header: "Value",
     cell: ({ row }) => (
-      <span className={cn("font-mono", row.original.isOverridden && "text-white font-medium")}>
+      <span className={cn("font-mono", row.original.isOverridden && "text-foreground font-medium")}>
         {row.original.value}
       </span>
     ),
@@ -35,12 +35,12 @@ const columns: ColumnDef<TopicConfig, unknown>[] = [
   {
     accessorKey: "defaultValue",
     header: "Default",
-    cell: ({ row }) => <span className="font-mono text-slate-500">{row.original.defaultValue}</span>,
+    cell: ({ row }) => <span className="font-mono text-muted-foreground">{row.original.defaultValue}</span>,
   },
   {
     accessorKey: "description",
     header: "Description",
-    cell: ({ row }) => <span className="text-slate-400 text-xs">{row.original.description}</span>,
+    cell: ({ row }) => <span className="text-muted-foreground text-xs">{row.original.description}</span>,
   },
 ];
 
@@ -69,7 +69,7 @@ export function ConfigurationTab({ topicName }: ConfigurationTabProps) {
     <div className="space-y-4">
       {/* Toolbar */}
       <div className="flex items-center justify-between">
-        <span className="text-xs font-mono text-slate-400">
+        <span className="text-xs font-mono text-muted-foreground">
           <span className="text-primary">{overriddenCount}</span> overridden
         </span>
         <button

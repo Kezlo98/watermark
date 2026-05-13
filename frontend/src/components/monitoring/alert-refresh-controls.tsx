@@ -88,7 +88,7 @@ export function AlertRefreshControls({
   return (
     <div className="flex items-center gap-1">
       {/* Auto-refresh toggle + interval picker */}
-      <div className="flex items-center rounded border border-white/10 bg-white/3 overflow-hidden">
+      <div className="flex items-center rounded border border-border bg-secondary overflow-hidden">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -98,7 +98,7 @@ export function AlertRefreshControls({
                   "flex items-center gap-1.5 px-2 py-1.5 text-xs transition-colors",
                   enabled
                     ? "text-emerald-400 hover:text-emerald-300"
-                    : "text-slate-500 hover:text-slate-300",
+                    : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 {enabled ? (
@@ -121,11 +121,11 @@ export function AlertRefreshControls({
           </Tooltip>
         </TooltipProvider>
 
-        <div className="w-px h-4 bg-white/10" />
+        <div className="w-px h-4 bg-accent" />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="px-2 py-1.5 text-[11px] text-slate-400 hover:text-white transition-colors font-mono">
+            <button className="px-2 py-1.5 text-[11px] text-muted-foreground hover:text-foreground transition-colors font-mono">
               {formatInterval(intervalMs)}
             </button>
           </DropdownMenuTrigger>
@@ -159,10 +159,10 @@ export function AlertRefreshControls({
               onClick={handleManualRefresh}
               disabled={isCoolingDown}
               className={cn(
-                "p-1.5 rounded border border-white/10 bg-white/3 transition-colors",
+                "p-1.5 rounded border border-border bg-secondary transition-colors",
                 isCoolingDown
-                  ? "text-slate-600 cursor-not-allowed opacity-50"
-                  : "text-slate-400 hover:text-white hover:bg-white/5",
+                  ? "text-muted-foreground cursor-not-allowed opacity-50"
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary",
               )}
             >
               {isCoolingDown ? (
