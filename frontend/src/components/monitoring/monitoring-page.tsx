@@ -65,7 +65,7 @@ export function MonitoringPage() {
                 )}
               </button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-4xl bg-[#0c0c0c] border border-border p-6 flex flex-col gap-4 max-h-[85vh]">
+            <DialogContent className="sm:max-w-4xl bg-card border border-border p-6 flex flex-col gap-4 max-h-[85vh]">
               <DialogHeader className="border-b border-border pb-4 shrink-0 -mx-6 px-6 -mt-2">
                 <DialogTitle className="text-lg font-bold flex items-center gap-2">
                   <Bell className="size-5 text-muted-foreground" />
@@ -87,7 +87,7 @@ export function MonitoringPage() {
                 <Settings className="size-3.5" />
               </button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-2xl bg-[#0c0c0c] border border-border p-6 flex flex-col gap-4 max-h-[85vh]">
+            <DialogContent className="sm:max-w-2xl bg-card border border-border p-6 flex flex-col gap-4 max-h-[85vh]">
               <DialogHeader className="border-b border-border pb-4 shrink-0 -mx-6 px-6 -mt-2">
                 <DialogTitle className="text-lg font-bold">Monitoring Configuration</DialogTitle>
               </DialogHeader>

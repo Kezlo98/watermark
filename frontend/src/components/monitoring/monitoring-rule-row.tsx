@@ -49,7 +49,7 @@ export function MonitoringRuleRow({
           onChange={(e) => setLocal({ ...local, groupPattern: e.target.value })}
           onBlur={handleBlur}
           placeholder="Group pattern (e.g. payment-*)"
-          className="flex-1 px-2 py-1 text-xs bg-secondary border border-border rounded text-foreground placeholder-muted-foreground focus:outline-none focus:border-ring font-mono"
+          className="flex-1 px-2 py-1 text-xs bg-secondary border border-border rounded text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-ring font-mono"
         />
         <input
           type="number"

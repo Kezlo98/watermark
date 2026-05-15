@@ -33,14 +33,14 @@ export function OwnershipBadges({
       {producers.slice(0, maxVisible).map((name) => (
         <span
           key={`p-${name}`}
-          className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-mono rounded border bg-purple-500/15 text-purple-300 border-purple-500/30 whitespace-nowrap"
+          className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-mono rounded border bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/30 whitespace-nowrap"
         >
           <span className="size-1.5 rounded-full bg-purple-400" />
           {name}
         </span>
       ))}
       {producers.length > maxVisible && (
-        <span className="text-[10px] font-mono text-purple-400/70">
+        <span className="text-[10px] font-mono text-purple-600 dark:text-purple-400/70">
           +{producers.length - maxVisible}
         </span>
       )}
@@ -49,14 +49,14 @@ export function OwnershipBadges({
       {consumers.slice(0, maxVisible).map((name) => (
         <span
           key={`c-${name}`}
-          className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-mono rounded border bg-blue-500/15 text-blue-300 border-blue-500/30 whitespace-nowrap"
+          className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-mono rounded border bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30 whitespace-nowrap"
         >
           <span className="size-1.5 rounded-full bg-blue-400" />
           {name}
         </span>
       ))}
       {consumers.length > maxVisible && (
-        <span className="text-[10px] font-mono text-blue-400/70">
+        <span className="text-[10px] font-mono text-blue-600 dark:text-blue-400/70">
           +{consumers.length - maxVisible}
         </span>
       )}

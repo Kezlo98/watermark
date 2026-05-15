@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { ChevronDown, Sparkles } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useTemplates } from "@/hooks/use-templates";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { findBestTemplate, globMatch } from "@/lib/glob-match";
@@ -53,13 +54,13 @@ export function TemplatePickerDropdown({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between rounded-lg border border-border bg-card px-4 py-2 text-sm text-foreground transition-colors hover:border-border"
+        className="flex w-full items-center justify-between rounded-lg border border-border bg-card px-4 py-2 text-sm text-foreground transition-colors hover:border-border min-w-0"
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 min-w-0">
           {suggestedTemplate && !selectedTemplate && (
-            <Sparkles className="size-3.5 text-yellow-400" />
+            <Sparkles className="size-3.5 shrink-0 text-yellow-400" />
           )}
-          <span className={!selectedTemplate ? "text-muted-foreground" : ""}>
+          <span className={cn("truncate", !selectedTemplate ? "text-muted-foreground" : "")}>
             {selectedTemplate
               ? selectedTemplate.name
               : suggestedTemplate
@@ -68,7 +69,7 @@ export function TemplatePickerDropdown({
           </span>
         </div>
         <ChevronDown
-          className={`size-4 text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`}
+          className={`size-4 shrink-0 text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`}
         />
       </button>
 
@@ -96,14 +97,14 @@ export function TemplatePickerDropdown({
               <button
                 type="button"
                 onClick={() => handleSelect(suggestedTemplate)}
-                className="flex w-full items-center gap-2 border-t border-border/50 bg-yellow-400/5 px-4 py-2 text-left text-sm transition-colors hover:bg-yellow-400/10"
+                className="flex w-full items-center gap-2 border-t border-border/50 bg-yellow-400/5 px-4 py-2 text-left text-sm transition-colors hover:bg-yellow-400/10 min-w-0"
               >
-                <Sparkles className="size-3.5 text-yellow-400" />
-                <div className="flex-1">
-                  <div className="font-medium text-foreground">
+                <Sparkles className="size-3.5 shrink-0 text-yellow-400" />
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium text-foreground truncate">
                     {suggestedTemplate.name}
                   </div>
-                  <div className="text-xs text-muted-foreground">
+                  <div className="text-xs text-muted-foreground truncate">
                     Matches: {suggestedTemplate.pattern}
                   </div>
                 </div>
@@ -119,16 +120,16 @@ export function TemplatePickerDropdown({
                     key={template.id}
                     type="button"
                     onClick={() => handleSelect(template)}
-                    className="w-full px-4 py-2 text-left transition-colors hover:bg-secondary"
+                    className="w-full px-4 py-2 text-left transition-colors hover:bg-secondary min-w-0"
                   >
-                    <div className="font-medium text-foreground">{template.name}</div>
+                    <div className="font-medium text-foreground truncate">{template.name}</div>
                     {template.description && (
-                      <div className="text-xs text-muted-foreground">
+                      <div className="text-xs text-muted-foreground truncate">
                         {template.description}
                       </div>
                     )}
                     {template.pattern && (
-                      <div className="mt-0.5 font-mono text-xs text-muted-foreground">
+                      <div className="mt-0.5 font-mono text-xs text-muted-foreground truncate">
                         {template.pattern}
                       </div>
                     )}

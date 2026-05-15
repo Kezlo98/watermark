@@ -82,7 +82,7 @@ export function AnnotationEditorModal({
         <DialogBody className="space-y-5">
           {/* Producers */}
           <div className="space-y-2">
-            <label className="block text-xs font-semibold text-purple-300 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-purple-600 dark:text-purple-300 uppercase tracking-wider">
               Producers
             </label>
             <ServiceNameInput
@@ -96,7 +96,7 @@ export function AnnotationEditorModal({
 
           {/* Consumers */}
           <div className="space-y-2">
-            <label className="block text-xs font-semibold text-blue-300 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-blue-600 dark:text-blue-300 uppercase tracking-wider">
               Consumers
             </label>
             <ServiceNameInput

@@ -136,8 +136,20 @@ export function CreateTopicModal({ isOpen, onClose, cloneFrom }: CreateTopicModa
     <Dialog open={isOpen} onOpenChange={(v) => !v && !mutation.isPending && handleClose()}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle className="text-lg">
-            {cloneFrom ? `Clone from ${cloneFrom.name}` : "Create New Topic"}
+          <DialogTitle className="text-lg min-w-0">
+            {cloneFrom ? (
+              <span className="flex min-w-0 flex-col gap-0.5">
+                <span>Clone from</span>
+                <span
+                  className="truncate text-sm font-mono font-normal text-muted-foreground"
+                  title={cloneFrom.name}
+                >
+                  {cloneFrom.name}
+                </span>
+              </span>
+            ) : (
+              "Create New Topic"
+            )}
           </DialogTitle>
         </DialogHeader>
 
