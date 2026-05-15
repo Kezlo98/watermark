@@ -1,4 +1,4 @@
-import { RefreshCw, Timer, TimerOff, Radio, CheckSquare } from "lucide-react";
+import { RefreshCw, Timer, TimerOff, Radio, CheckSquare, ArrowUp, ArrowDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { StartPosition, MessageFormat } from "@/types/kafka";
 import {
@@ -35,6 +35,8 @@ interface MessagesFilterBarProps {
   selectMode: boolean;
   onSelectModeToggle: () => void;
   selectedCount: number;
+  sortDir: "asc" | "desc";
+  onSortDirToggle: () => void;
 }
 
 export function MessagesFilterBar({
@@ -60,6 +62,8 @@ export function MessagesFilterBar({
   selectMode,
   onSelectModeToggle,
   selectedCount,
+  sortDir,
+  onSortDirToggle,
 }: MessagesFilterBarProps) {
   return (
     <div className="flex items-center gap-3 flex-wrap">
@@ -158,6 +162,16 @@ export function MessagesFilterBar({
       >
         <RefreshCw className={cn("size-3.5", isFetching && "animate-spin")} />
         {isFetching ? "Fetching…" : "Refresh"}
+      </button>
+
+      {/* Sort direction toggle */}
+      <button
+        onClick={onSortDirToggle}
+        title="Sort by time (ASC/DESC)"
+        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border transition-colors text-muted-foreground bg-secondary border-border hover:bg-accent"
+      >
+        {sortDir === "asc" ? <ArrowUp className="size-3.5" /> : <ArrowDown className="size-3.5" />}
+        {sortDir === "asc" ? "ASC" : "DESC"}
       </button>
 
       {/* Auto-refresh toggle */}
