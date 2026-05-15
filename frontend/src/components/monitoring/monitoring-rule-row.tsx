@@ -41,7 +41,7 @@ export function MonitoringRuleRow({
         <button
           onClick={() => { const u = { ...local, enabled: !local.enabled }; setLocal(u); onUpdate(u); }}
           disabled={disabled}
-          className={`w-2 h-2 rounded-full shrink-0 ${local.enabled ? "bg-primary" : "bg-secondary0"}`}
+          className={`w-2 h-2 rounded-full shrink-0 ${local.enabled ? "bg-primary" : "bg-muted"}`}
           title={local.enabled ? "Enabled" : "Disabled"}
         />
         <input
@@ -49,7 +49,7 @@ export function MonitoringRuleRow({
           onChange={(e) => setLocal({ ...local, groupPattern: e.target.value })}
           onBlur={handleBlur}
           placeholder="Group pattern (e.g. payment-*)"
-          className="flex-1 px-2 py-1 text-xs bg-secondary border border-border rounded text-foreground placeholder-muted-foreground focus:outline-none focus:border-ring font-mono"
+          className="flex-1 px-2 py-1 text-xs bg-secondary border border-border rounded text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-ring font-mono"
         />
         <input
           type="number"

@@ -18,7 +18,7 @@ export function AnnotationJsonViewer({
   annotations,
 }: AnnotationJsonViewerProps) {
   const [copied, setCopied] = useState(false);
-  const { theme } = useSettingsStore();
+  const { resolvedTheme } = useSettingsStore();
 
   const jsonContent = JSON.stringify(annotations, null, 2);
 
@@ -63,7 +63,7 @@ export function AnnotationJsonViewer({
               height={editorHeight}
               language="json"
               value={jsonContent}
-              theme={theme === "light" ? "vs" : "vs-dark"}
+              theme={resolvedTheme === "light" ? "vs" : "vs-dark"}
               options={{
                 readOnly: true,
                 minimap: { enabled: false },

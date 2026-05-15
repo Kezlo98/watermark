@@ -39,9 +39,13 @@
     --semantic-orange: #FF8C00;
     --semantic-red: #FF0000;
     --status-healthy: #34D399;
+    --status-healthy-rgb: 52 211 153;
     --status-rebalancing: #FBBF24;
+    --status-rebalancing-rgb: 251 191 36;
     --status-dead: #EF4444;
+    --status-dead-rgb: 239 68 68;
     --status-empty: #94A3B8;
+    --status-empty-rgb: 148 163 184;
 
     /* Sidebar tokens (unused for now, but shadcn expects them) */
     --sidebar: #0A0A0A;
@@ -82,12 +86,16 @@
     --semantic-orange: #F59E0B;
     --semantic-red: #DC2626;
     --status-healthy: #059669;
+    --status-healthy-rgb: 5 150 105;
     --status-healthy-foreground: #065F46;
     --status-rebalancing: #D97706;
+    --status-rebalancing-rgb: 217 119 6;
     --status-rebalancing-foreground: #92400E;
     --status-dead: #DC2626;
+    --status-dead-rgb: 220 38 38;
     --status-dead-foreground: #991B1B;
     --status-empty: #94A3B8;
+    --status-empty-rgb: 148 163 184;
     --status-empty-foreground: #475569;
     --sidebar: #FFFFFF;
     --sidebar-foreground: #0F172A;
@@ -128,16 +136,16 @@
   }
 
   /* Custom scrollbar — dark mode only; light mode uses native OS scrollbars */
-  :not(.light) ::-webkit-scrollbar {
+  html:not(.light) ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
 
-  :not(.light) ::-webkit-scrollbar-track {
+  html:not(.light) ::-webkit-scrollbar-track {
     background: transparent;
   }
 
-  :not(.light) ::-webkit-scrollbar-thumb {
+  html:not(.light) ::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.15);
     border-radius: 3px;
   }

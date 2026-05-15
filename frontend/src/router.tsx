@@ -10,13 +10,10 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { AppHeader } from "@/components/layout/app-header";
 import { SettingsOverlay } from "@/components/settings/settings-overlay";
 import { useSettingsStore } from "@/store/settings";
-import { initTheme } from "@/store/settings";
 import { usePrefetchOnConnect } from "@/hooks/use-prefetch-on-connect";
 import { useLagAlerts } from "@/hooks/use-lag-alerts";
 import { GetClusters } from "@/lib/wails-client";
 import { waitForWails } from "@/lib/wails-ready";
-
-initTheme();
 
 /* ====== Page imports ====== */
 import { DashboardPage } from "@/pages/dashboard-page";
@@ -32,7 +29,7 @@ import { MonitoringPage } from "@/components/monitoring/monitoring-page";
 /* ========================================================================= */
 
 function AppShell() {
-  const { initializeConnection, openSettings, activeClusterId, theme } = useSettingsStore();
+  const { initializeConnection, openSettings, activeClusterId, resolvedTheme } = useSettingsStore();
   usePrefetchOnConnect();
   useLagAlerts(activeClusterId);
 
@@ -75,7 +72,7 @@ function AppShell() {
         </main>
       </div>
       <SettingsOverlay />
-      <Toaster theme={theme === "light" ? "light" : "dark"} position="bottom-right" richColors />
+      <Toaster theme={resolvedTheme} position="bottom-right" richColors />
     </div>
   );
 }

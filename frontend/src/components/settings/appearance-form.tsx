@@ -22,7 +22,7 @@ const SAMPLE_JSON = `{
 }`;
 
 export function AppearanceForm() {
-  const { theme, setTheme, density, setDensity, codeFont, setCodeFont, codeFontSize, setCodeFontSize } =
+  const { theme, setTheme, density, setDensity, codeFont, setCodeFont, codeFontSize, setCodeFontSize, resolvedTheme } =
     useSettingsStore();
 
   return (
@@ -96,7 +96,7 @@ export function AppearanceForm() {
             <MonacoEditor
               height="180px"
               language="json"
-              theme={theme === "light" ? "vs" : "vs-dark"}
+              theme={resolvedTheme === "light" ? "vs" : "vs-dark"}
               value={SAMPLE_JSON}
               options={{
                 readOnly: true,

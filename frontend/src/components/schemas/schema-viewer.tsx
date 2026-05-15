@@ -39,7 +39,7 @@ export function SchemaViewer({ subjectName }: SchemaViewerProps) {
   );
 
   const [selectedVersion, setSelectedVersion] = useState(versions[0]?.version ?? 1);
-  const { theme } = useSettingsStore();
+  const { resolvedTheme } = useSettingsStore();
 
   // Reset version selection when subject changes
   useEffect(() => {
@@ -106,7 +106,7 @@ export function SchemaViewer({ subjectName }: SchemaViewerProps) {
           <MonacoEditor
             height="100%"
             language={LANGUAGE_MAP[schemaType]}
-            theme={theme === "light" ? "vs" : "vs-dark"}
+            theme={resolvedTheme === "light" ? "vs" : "vs-dark"}
             value={currentVersion.schema}
             options={{
               readOnly: true,

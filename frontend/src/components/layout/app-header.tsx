@@ -6,12 +6,10 @@ import { ClusterDropdown } from "./cluster-dropdown";
 import { SearchCommandPalette } from "@/components/shared/search-command-palette";
 
 export function AppHeader() {
-  const { openSettings, theme, setTheme } = useSettingsStore();
+  const { openSettings, resolvedTheme, setTheme } = useSettingsStore();
   const { toggle: toggleSearch } = useSearchPaletteStore();
 
-  const isDark =
-    theme === "dark" ||
-    (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  const isDark = resolvedTheme === "dark";
 
   /* Cmd+K hotkey for search */
   useEffect(() => {
@@ -34,7 +32,7 @@ export function AppHeader() {
 
           <button
             onClick={toggleSearch}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary border border-border text-muted-foreground hover:text-foreground hover:border-border-hover transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary border border-border text-muted-foreground hover:text-foreground hover:border-ring transition-colors"
           >
             <Search className="size-4" />
             <span className="text-sm">Search...</span>

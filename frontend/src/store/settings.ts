@@ -29,6 +29,7 @@ export type ConnectionStatus = "disconnected" | "connecting" | "connected" | "er
 interface SettingsState {
   /* Theme */
   theme: ThemeMode;
+  resolvedTheme: "dark" | "light";
   setTheme: (theme: ThemeMode) => void;
 
   /* UI Density */
@@ -75,7 +76,7 @@ function resolveTheme(mode: ThemeMode): "dark" | "light" {
 function applyTheme(mode: ThemeMode) {
   const resolved = resolveTheme(mode);
   const root = document.documentElement;
-  
+
   if (resolved === "light") {
     root.classList.add("light");
     root.classList.remove("dark");
@@ -83,8 +84,9 @@ function applyTheme(mode: ThemeMode) {
     root.classList.add("dark");
     root.classList.remove("light");
   }
-  
+
   localStorage.setItem("watermark-theme", mode);
+  return resolved;
 }
 
 let systemListener: (() => void) | null = null;
@@ -92,7 +94,10 @@ let systemListener: (() => void) | null = null;
 function setupSystemListener() {
   cleanupSystemListener();
   const mq = window.matchMedia("(prefers-color-scheme: dark)");
-  const handler = () => applyTheme("system");
+  const handler = () => {
+    const resolved = applyTheme("system");
+    useSettingsStore.setState({ resolvedTheme: resolved });
+  };
   mq.addEventListener("change", handler);
   systemListener = () => mq.removeEventListener("change", handler);
 }
@@ -106,18 +111,19 @@ function cleanupSystemListener() {
 
 export function initTheme() {
   const saved = (localStorage.getItem("watermark-theme") as ThemeMode) || "dark";
-  applyTheme(saved);
+  const resolved = applyTheme(saved);
   if (saved === "system") setupSystemListener();
-  return saved;
+  return { saved, resolved };
 }
 
 export const useSettingsStore = create<SettingsState>((set, get) => ({
   theme: (localStorage.getItem("watermark-theme") as ThemeMode) || "dark",
+  resolvedTheme: resolveTheme((localStorage.getItem("watermark-theme") as ThemeMode) || "dark"),
   setTheme: (theme) => {
-    applyTheme(theme);
+    const resolved = applyTheme(theme);
     cleanupSystemListener();
     if (theme === "system") setupSystemListener();
-    set({ theme });
+    set({ theme, resolvedTheme: resolved });
   },
 
   density: "comfortable",
