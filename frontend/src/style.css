@@ -150,7 +150,7 @@
     border-radius: 3px;
   }
 
-  :not(.light) ::-webkit-scrollbar-thumb:hover {
+  html:not(.light) ::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.25);
   }
 }

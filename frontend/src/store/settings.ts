@@ -31,6 +31,7 @@ interface SettingsState {
   theme: ThemeMode;
   resolvedTheme: "dark" | "light";
   setTheme: (theme: ThemeMode) => void;
+  setResolvedTheme: (resolved: "light" | "dark") => void;
 
   /* UI Density */
   density: UIDensity;
@@ -119,6 +120,7 @@ export function initTheme() {
 export const useSettingsStore = create<SettingsState>((set, get) => ({
   theme: (localStorage.getItem("watermark-theme") as ThemeMode) || "dark",
   resolvedTheme: resolveTheme((localStorage.getItem("watermark-theme") as ThemeMode) || "dark"),
+  setResolvedTheme: (resolved) => set({ resolvedTheme: resolved }),
   setTheme: (theme) => {
     const resolved = applyTheme(theme);
     cleanupSystemListener();
