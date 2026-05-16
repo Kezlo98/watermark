@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { CheckCircle2, Circle } from "lucide-react";
 import { useLagAlertsStore } from "@/store/lag-alerts";
 import { useSettingsStore } from "@/store/settings";
 import { cn } from "@/lib/utils";
@@ -103,7 +104,12 @@ export function AlertHistoryTab() {
                   className="w-full flex items-start gap-3 px-4 py-2.5 hover:bg-secondary transition-colors text-left"
                 >
                   <span className="mt-0.5 shrink-0">
-                    {alert.resolved ? "✅" : alert.level === "critical" ? "🔴" : "🟡"}
+                    {alert.resolved
+                      ? <CheckCircle2 className="size-3.5 text-emerald-400 mt-0.5" />
+                      : alert.level === "critical"
+                        ? <Circle className="size-3 fill-red-500 text-red-500 mt-1" />
+                        : <Circle className="size-3 fill-yellow-500 text-yellow-500 mt-1" />
+                    }
                   </span>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">

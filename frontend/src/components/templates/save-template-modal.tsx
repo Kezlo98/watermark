@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Bookmark, Plus, Trash2 } from "lucide-react";
+import { Bookmark, Plus, Trash2, AlertTriangle } from "lucide-react";
 import type { TopicConfig } from "@/types/kafka";
 import { useTemplates } from "@/hooks/use-templates";
 import {
@@ -328,9 +328,8 @@ export function SaveTemplateModal({
             )}
 
             {hasDuplicateKeys && (
-              <p className="mt-1.5 text-xs text-yellow-400">
-                ⚠ Duplicate config keys detected — only the last value will be
-                used.
+              <p className="flex items-center gap-1.5 mt-1.5 text-xs text-yellow-400">
+                <AlertTriangle className="size-3 shrink-0" /> Duplicate config keys detected — only the last value will be used.
               </p>
             )}
           </div>

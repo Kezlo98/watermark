@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Loader2, CheckCircle2, XCircle, ShieldX, ShieldAlert, Zap } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, ShieldX, ShieldAlert, Zap, Sparkles } from "lucide-react";
 import { SaveCluster, TestConnection, GetCluster, UpdateReadOnly } from "@/lib/wails-client";
 import { config } from "../../../wailsjs/go/models";
 import { useQueryClient } from "@tanstack/react-query";
@@ -146,7 +146,7 @@ export function ClusterForm({ clusterId, clusterName, onClose }: ClusterFormProp
   return (
     <div className="glass-panel p-5 space-y-4">
       <h4 className="text-sm font-display font-bold text-foreground uppercase tracking-wider">
-        {isNew ? "✨ New Cluster" : `Edit Cluster: ${form.name}`}
+        {isNew ? <span className="flex items-center gap-1.5"><Sparkles className="size-3.5" />New Cluster</span> : `Edit Cluster: ${form.name}`}
       </h4>
 
       <ClusterFormFields

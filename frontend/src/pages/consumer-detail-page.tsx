@@ -3,7 +3,7 @@ import { ChevronLeft } from "lucide-react";
 import { GroupDetailHeader } from "@/components/consumers/group-detail-header";
 import { ActiveMembersTable } from "@/components/consumers/active-members-table";
 import { OffsetsLagTable } from "@/components/consumers/offsets-lag-table";
-import { SetAlertPopover } from "@/components/consumers/set-alert-popover";
+import { ConsumerActionDropdown } from "@/components/consumers/consumer-action-dropdown";
 import { RefreshButton } from "@/components/shared/refresh-button";
 import { useKafkaQuery } from "@/hooks/use-kafka-query";
 import { GetConsumerGroupDetail } from "@/lib/wails-client";
@@ -18,6 +18,10 @@ export function ConsumerDetailPage() {
     ["consumer-group-detail", groupId],
     () => GetConsumerGroupDetail(groupId),
   );
+
+  const handleDropGroup = () => {
+    // TODO: implement drop group confirmation dialog
+  };
 
   return (
     <div className="space-y-6">
@@ -34,20 +38,11 @@ export function ConsumerDetailPage() {
         </h1>
         <div className="flex gap-2">
           <RefreshButton queryKeys={[["consumer-group-detail", groupId]]} />
-          <SetAlertPopover groupId={groupId} />
           {!isReadOnly && (
-            <>
-              <button
-                disabled
-                className="px-4 py-2 text-sm text-muted-foreground bg-secondary rounded-lg border border-border opacity-50 cursor-not-allowed"
-                title="Group must be Empty or Dead to reset offsets"
-              >
-                ⏪ Reset Offsets
-              </button>
-              <button className="px-4 py-2 text-sm text-semantic-red bg-semantic-red/10 rounded-lg border border-semantic-red/20 hover:bg-semantic-red/20 transition-colors">
-                🗑️ Drop Group
-              </button>
-            </>
+            <ConsumerActionDropdown
+              groupId={groupId}
+              onDropGroup={handleDropGroup}
+            />
           )}
         </div>
       </div>

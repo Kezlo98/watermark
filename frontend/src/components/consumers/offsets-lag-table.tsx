@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, AlertTriangle } from "lucide-react";
 import { cn, formatNumber } from "@/lib/utils";
 import type { ConsumerGroupOffset } from "@/types/kafka";
 
@@ -88,7 +88,7 @@ export function OffsetsLagTable({ offsets }: OffsetsLagTableProps) {
                       <td className="px-4 py-3 text-sm font-mono">
                         <span className={cn(g.totalLag > 0 && "text-semantic-red font-bold")}>
                           {formatNumber(g.totalLag)}
-                          {g.totalLag > 0 && " ⚠️"}
+                          {g.totalLag > 0 && <AlertTriangle className="size-3 inline-block ml-1 text-semantic-red" />}
                         </span>
                       </td>
                     </tr>
@@ -128,7 +128,7 @@ export function OffsetsLagTable({ offsets }: OffsetsLagTableProps) {
                                   <td className="px-6 py-2 text-xs font-mono">
                                     <span className={cn(p.lag > 0 && "text-semantic-red font-bold")}>
                                       {formatNumber(p.lag)}
-                                      {p.lag > 0 && " ⚠️"}
+                                      {p.lag > 0 && <AlertTriangle className="size-3 inline-block ml-1 text-semantic-red" />}
                                     </span>
                                   </td>
                                 </tr>

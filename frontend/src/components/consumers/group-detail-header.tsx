@@ -1,4 +1,4 @@
-import { Server } from "lucide-react";
+import { Server, AlertTriangle } from "lucide-react";
 import { MetricCard } from "@/components/shared/metric-card";
 import { StatusBadge } from "@/components/shared/status-badge";
 import type { ConsumerGroupState } from "@/types/kafka";
@@ -37,7 +37,7 @@ export function GroupDetailHeader({ groupId, state, coordinator, totalLag }: Gro
         />
         {totalLag > 0 && (
           <span className="text-sm font-mono text-semantic-red font-bold">
-            Total Lag: ⚠️ {totalLag.toLocaleString()}
+            <AlertTriangle className="size-3.5 inline-block mr-1" />Total Lag: {totalLag.toLocaleString()}
           </span>
         )}
       </div>

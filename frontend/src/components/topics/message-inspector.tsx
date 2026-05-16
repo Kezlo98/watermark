@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, X } from "lucide-react";
 import { useSettingsStore } from "@/store/settings";
 
 const MonacoEditor = lazy(() => import("@monaco-editor/react"));
@@ -59,7 +59,7 @@ export function MessageInspector({ value, offset, format, onClose, onReplay }: M
             onClick={onClose}
             className="text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded bg-secondary hover:bg-accent transition-colors"
           >
-            ✕
+            <X className="size-3" />
           </button>
         </div>
       </div>

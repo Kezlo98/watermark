@@ -1,3 +1,4 @@
+import { Circle } from "lucide-react";
 import type { AlertEvent } from "@/types/lag-alerts";
 
 /**
@@ -21,7 +22,10 @@ export function AlertIndicator({ groupId, alerts }: AlertIndicatorProps) {
       title={`${active.level === "critical" ? "Critical" : "Warning"} lag alert: ${active.lag.toLocaleString()}`}
       className="cursor-default"
     >
-      {active.level === "critical" ? "🔴" : "🟡"}
+      {active.level === "critical"
+        ? <Circle className="size-2.5 fill-red-500 text-red-500" />
+        : <Circle className="size-2.5 fill-yellow-500 text-yellow-500" />
+      }
     </span>
   );
 }

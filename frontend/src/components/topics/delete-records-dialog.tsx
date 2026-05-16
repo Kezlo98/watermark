@@ -120,8 +120,8 @@ export function DeleteRecordsDialog({ mode, onClose, onSuccess }: DeleteRecordsD
             {description}
           </AlertDialogDescription>
           {(isPurge || isTimestamp) && (
-            <p className="text-xs text-amber-400 mt-1">
-              ⚠ This operation affects all partitions and is irreversible.
+            <p className="flex items-center gap-1.5 text-xs text-amber-400 mt-1">
+              <AlertTriangle className="size-3 shrink-0" /> This operation affects all partitions and is irreversible.
             </p>
           )}
         </AlertDialogHeader>

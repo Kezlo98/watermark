@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Pencil, Copy, Trash2, Power } from "lucide-react";
+import { Plus, Pencil, Copy, Trash2, Power, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ClusterForm } from "./cluster-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -62,8 +62,8 @@ export function ClusterList() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-display font-bold text-foreground uppercase tracking-wider">
-          🌐 Cluster Connections
+        <h3 className="flex items-center gap-2 text-sm font-display font-bold text-foreground uppercase tracking-wider">
+          <Globe className="size-4" />Cluster Connections
         </h3>
         <button
           onClick={() => setEditingClusterId("new")}

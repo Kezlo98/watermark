@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Download, Upload, Loader2, ArrowDownCircle, CheckCircle2, AlertCircle } from "lucide-react";
+import { Download, Upload, Loader2, ArrowDownCircle, CheckCircle2, AlertCircle, Info, Monitor, AlertTriangle } from "lucide-react";
 import { GetCurrentVersion, CheckForUpdate } from "@/lib/wails-client";
 import { UpdateChangelogModal } from "@/components/layout/update-changelog-modal";
 import type { UpdateInfo } from "@/components/layout/update-changelog-modal";
@@ -67,8 +67,8 @@ function AppVersionSection() {
 
   return (
     <section>
-      <h3 className="text-sm font-display font-bold text-foreground uppercase tracking-wider mb-4">
-        ℹ️ About
+      <h3 className="flex items-center gap-2 text-sm font-display font-bold text-foreground uppercase tracking-wider mb-4">
+        <Info className="size-4" /> About
       </h3>
       <div className="flex items-center justify-between">
         <div>
@@ -117,8 +117,8 @@ export function DataSystemForm() {
     <div className="space-y-8">
       {/* Data section */}
       <section>
-        <h3 className="text-sm font-display font-bold text-foreground uppercase tracking-wider mb-4">
-          💻 System & Workspace
+        <h3 className="flex items-center gap-2 text-sm font-display font-bold text-foreground uppercase tracking-wider mb-4">
+          <Monitor className="size-4" /> System & Workspace
         </h3>
 
         <div className="space-y-4">
@@ -157,7 +157,7 @@ export function DataSystemForm() {
         <div className="flex items-center gap-2 mt-3">
           <Switch id="include-passwords" />
           <Label htmlFor="include-passwords" className="text-xs text-semantic-red font-normal cursor-pointer">
-            Include passwords in export — <strong>⚠️ stored as plaintext, keep file secure</strong>
+            Include passwords in export — <strong className="inline-flex items-center gap-1"><AlertTriangle className="size-3" /> stored as plaintext, keep file secure</strong>
           </Label>
         </div>
       </section>
