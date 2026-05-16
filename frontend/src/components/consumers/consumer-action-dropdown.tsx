@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, Bell, ChevronsLeft, Trash2 } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -107,22 +107,22 @@ export function ConsumerActionDropdown({ groupId, onDropGroup, disabled }: Consu
               )}
             >
               Actions
-              <ChevronDown className="size-3.5" />
+              <Icon name="chevron-down" className="size-3.5" />
             </button>
           </DropdownMenuTrigger>
         </PopoverAnchor>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onSelect={() => handleAlertOpen(true)}>
-            <Bell className="size-3.5" />
+            <Icon name="bell" className="size-3.5" />
             Set Alert
           </DropdownMenuItem>
           <DropdownMenuItem disabled title="Group must be Empty or Dead to reset offsets">
-            <ChevronsLeft className="size-3.5" />
+            <Icon name="chevrons-left" className="size-3.5" />
             Reset Offsets
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onSelect={onDropGroup} className="text-red-400 focus:text-red-400">
-            <Trash2 className="size-3.5" />
+            <Icon name="trash" className="size-3.5" tone="danger" />
             Drop Group
           </DropdownMenuItem>
         </DropdownMenuContent>

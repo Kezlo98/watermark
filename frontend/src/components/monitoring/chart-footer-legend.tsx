@@ -4,7 +4,7 @@
  */
 
 import { cn } from "@/lib/utils";
-import { X } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import type { ChartEntity } from "./chart-entity-types";
 import { ChartColorPicker } from "./chart-color-picker";
 
@@ -54,7 +54,7 @@ function ChartEntityChip({
         className="opacity-0 group-hover:opacity-100 ml-1 text-muted-foreground hover:text-red-400 transition-all"
         title="Remove"
       >
-        <X className="size-3" />
+        <Icon name="x" className="size-3" tone="muted" />
       </button>
     </div>
   );

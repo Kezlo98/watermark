@@ -1,4 +1,4 @@
-import { Circle } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import type { AlertEvent } from "@/types/lag-alerts";
 
 /**
@@ -23,8 +23,8 @@ export function AlertIndicator({ groupId, alerts }: AlertIndicatorProps) {
       className="cursor-default"
     >
       {active.level === "critical"
-        ? <Circle className="size-2.5 fill-red-500 text-red-500" />
-        : <Circle className="size-2.5 fill-yellow-500 text-yellow-500" />
+        ? <Icon name="circle" className="size-2.5 fill-red-500" tone="danger" />
+        : <Icon name="circle" className="size-2.5 fill-yellow-500" tone="warning" />
       }
     </span>
   );

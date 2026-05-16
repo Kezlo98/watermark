@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Bookmark, Plus, Trash2, AlertTriangle } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import type { TopicConfig } from "@/types/kafka";
 import { useTemplates } from "@/hooks/use-templates";
 import {
@@ -165,7 +165,7 @@ export function SaveTemplateModal({
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <div className="flex items-center gap-2">
-            <Bookmark className="size-5 text-primary" />
+            <Icon name="bookmark" className="size-5" tone="brand" />
             <DialogTitle className="text-lg">
               {isEditMode ? "Edit Template" : "Save as Template"}
             </DialogTitle>
@@ -269,7 +269,7 @@ export function SaveTemplateModal({
                 onClick={handleAddRow}
                 className="flex items-center gap-1 rounded-md bg-secondary px-2.5 py-1 text-xs font-medium text-foreground transition-colors hover:bg-accent hover:text-foreground"
               >
-                <Plus className="size-3" />
+                <Icon name="plus" className="size-3" />
                 Add Config
               </button>
             </div>
@@ -320,7 +320,7 @@ export function SaveTemplateModal({
                       className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-red-500/10 hover:text-red-400"
                       title="Remove config"
                     >
-                      <Trash2 className="size-3.5" />
+                      <Icon name="trash" className="size-3.5" tone="danger" />
                     </button>
                   </div>
                 ))}
@@ -329,7 +329,7 @@ export function SaveTemplateModal({
 
             {hasDuplicateKeys && (
               <p className="flex items-center gap-1.5 mt-1.5 text-xs text-yellow-400">
-                <AlertTriangle className="size-3 shrink-0" /> Duplicate config keys detected — only the last value will be used.
+                <Icon name="alert-triangle" className="size-3 shrink-0" tone="warning" /> Duplicate config keys detected — only the last value will be used.
               </p>
             )}
           </div>
@@ -347,7 +347,7 @@ export function SaveTemplateModal({
             disabled={!name.trim() || isPending}
             className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <Bookmark className="size-4" />
+            <Icon name="bookmark" className="size-4" />
             {isPending
               ? "Saving..."
               : isEditMode

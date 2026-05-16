@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Download, Upload, Loader2, ArrowDownCircle, CheckCircle2, AlertCircle, Info, Monitor, AlertTriangle } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { GetCurrentVersion, CheckForUpdate } from "@/lib/wails-client";
 import { UpdateChangelogModal } from "@/components/layout/update-changelog-modal";
 import type { UpdateInfo } from "@/components/layout/update-changelog-modal";
@@ -68,7 +68,7 @@ function AppVersionSection() {
   return (
     <section>
       <h3 className="flex items-center gap-2 text-sm font-display font-bold text-foreground uppercase tracking-wider mb-4">
-        <Info className="size-4" /> About
+        <Icon name="info" className="size-4" tone="info" /> About
       </h3>
       <div className="flex items-center justify-between">
         <div>
@@ -90,10 +90,10 @@ function AppVersionSection() {
                   : "bg-secondary border-border text-foreground hover:bg-accent"
           }`}
         >
-          {isLoading && <Loader2 className="size-3 animate-spin" />}
-          {isAvailable && <ArrowDownCircle className="size-3" />}
-          {isDone && <CheckCircle2 className="size-3 text-emerald-400" />}
-          {isError && <AlertCircle className="size-3" />}
+          {isLoading && <Icon name="loader" className="size-3 animate-spin" />}
+          {isAvailable && <Icon name="arrow-down-circle" className="size-3" tone="brand" />}
+          {isDone && <Icon name="check-circle" className="size-3" tone="success" />}
+          {isError && <Icon name="alert-circle" className="size-3" tone="danger" />}
           {buttonLabel()}
         </button>
       </div>
@@ -118,7 +118,7 @@ export function DataSystemForm() {
       {/* Data section */}
       <section>
         <h3 className="flex items-center gap-2 text-sm font-display font-bold text-foreground uppercase tracking-wider mb-4">
-          <Monitor className="size-4" /> System & Workspace
+          <Icon name="monitor" className="size-4" tone="brand" /> System & Workspace
         </h3>
 
         <div className="space-y-4">
@@ -145,11 +145,11 @@ export function DataSystemForm() {
         </p>
         <div className="flex gap-3">
           <button className="flex items-center gap-2 px-4 py-2 text-sm text-foreground bg-secondary rounded-lg border border-border hover:bg-accent transition-colors">
-            <Download className="size-4" />
+            <Icon name="download" className="size-4" />
             Import Config (.json)
           </button>
           <button className="flex items-center gap-2 px-4 py-2 text-sm text-foreground bg-secondary rounded-lg border border-border hover:bg-accent transition-colors">
-            <Upload className="size-4" />
+            <Icon name="upload" className="size-4" />
             Export Config (.json)
           </button>
         </div>
@@ -157,7 +157,7 @@ export function DataSystemForm() {
         <div className="flex items-center gap-2 mt-3">
           <Switch id="include-passwords" />
           <Label htmlFor="include-passwords" className="text-xs text-semantic-red font-normal cursor-pointer">
-            Include passwords in export — <strong className="inline-flex items-center gap-1"><AlertTriangle className="size-3" /> stored as plaintext, keep file secure</strong>
+            Include passwords in export — <strong className="inline-flex items-center gap-1"><Icon name="alert-triangle" className="size-3" tone="warning" /> stored as plaintext, keep file secure</strong>
           </Label>
         </div>
       </section>

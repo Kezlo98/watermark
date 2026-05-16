@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Plus, Download, Upload } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useSettingsStore } from "@/store/settings";
@@ -117,7 +117,7 @@ export function TemplateSettingsPanel() {
             onClick={() => setShowCreateModal(true)}
             className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary/90"
           >
-            <Plus className="size-4" />
+            <Icon name="plus" className="size-4" />
             New Template
           </button>
         </div>
@@ -152,14 +152,14 @@ export function TemplateSettingsPanel() {
             disabled={templateList.length === 0}
             className="flex items-center gap-2 rounded-lg border border-border bg-secondary px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <Download className="size-3.5" />
+            <Icon name="download" className="size-3.5" />
             Export
           </button>
           <button
             onClick={handleImport}
             className="flex items-center gap-2 rounded-lg border border-border bg-secondary px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-accent"
           >
-            <Upload className="size-3.5" />
+            <Icon name="upload" className="size-3.5" />
             Import
           </button>
         </div>

@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import { Search, Settings, Sun, Moon } from "lucide-react";
 import { useSettingsStore } from "@/store/settings";
 import { useSearchPaletteStore } from "@/store/search-palette";
 import { ClusterDropdown } from "./cluster-dropdown";
 import { SearchCommandPalette } from "@/components/shared/search-command-palette";
+import { Icon } from "@/components/ui/icon";
 
 export function AppHeader() {
   const { openSettings, resolvedTheme, setTheme } = useSettingsStore();
@@ -34,7 +34,7 @@ export function AppHeader() {
             onClick={toggleSearch}
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary border border-border text-muted-foreground hover:text-foreground hover:border-ring transition-colors"
           >
-            <Search className="size-4" />
+            <Icon name="search" className="size-4" />
             <span className="text-sm">Search...</span>
             <kbd className="ml-4 text-[10px] bg-secondary px-1.5 py-0.5 rounded border border-border font-mono">
               ⌘K
@@ -49,14 +49,14 @@ export function AppHeader() {
             className="p-2 text-muted-foreground hover:text-foreground rounded-lg hover:bg-secondary transition-colors"
             title={isDark ? "Switch to light mode" : "Switch to dark mode"}
           >
-            {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}
+            {isDark ? <Icon name="sun" className="size-4" /> : <Icon name="moon" className="size-4" />}
           </button>
           <button
             id="settings-trigger"
             onClick={openSettings}
             className="p-2 text-muted-foreground hover:text-foreground rounded-lg hover:bg-secondary transition-colors"
           >
-            <Settings className="size-4" />
+            <Icon name="settings" className="size-4" />
           </button>
         </div>
       </header>

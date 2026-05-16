@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { toast } from "sonner";
 import { SearchInput } from "@/components/shared/search-input";
 import { RefreshButton } from "@/components/shared/refresh-button";
@@ -69,7 +69,7 @@ export function TopicsPage() {
             onClick={() => setCreateOpen(true)}
             className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors"
           >
-            <Plus className="size-3.5" />
+            <Icon name="plus" className="size-3.5" />
             Create Topic
           </button>
         )}

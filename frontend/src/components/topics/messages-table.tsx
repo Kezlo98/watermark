@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
 import type { Message } from "@/types/kafka";
 import { MessageContextMenu } from "./message-context-menu";
@@ -157,7 +157,7 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, onRe
               className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               title="First page"
             >
-              <ChevronsLeft className="size-3.5" />
+              <Icon name="chevrons-left" className="size-3.5" />
             </button>
             <button
               onClick={() => setCurrentPage(safePage - 1)}
@@ -165,7 +165,7 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, onRe
               className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               title="Previous page"
             >
-              <ChevronLeft className="size-3.5" />
+              <Icon name="chevron-left" className="size-3.5" />
             </button>
             <span className="px-2 text-xs font-mono text-muted-foreground">
               {safePage + 1} / {totalPages}
@@ -176,7 +176,7 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, onRe
               className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               title="Next page"
             >
-              <ChevronRight className="size-3.5" />
+              <Icon name="chevron-right" className="size-3.5" />
             </button>
             <button
               onClick={() => setCurrentPage(totalPages - 1)}
@@ -184,7 +184,7 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, onRe
               className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               title="Last page"
             >
-              <ChevronsRight className="size-3.5" />
+              <Icon name="chevrons-right" className="size-3.5" />
             </button>
           </div>
         </div>

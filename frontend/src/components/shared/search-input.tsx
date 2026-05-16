@@ -1,4 +1,4 @@
-import { Search } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
 
 interface SearchInputProps {
@@ -18,7 +18,7 @@ export function SearchInput({
 }: SearchInputProps) {
   return (
     <div className={cn("relative", className)}>
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+      <Icon name="search" tone="muted" className="absolute left-3 top-1/2 -translate-y-1/2 size-4" />
       <input
         type="text"
         value={value}

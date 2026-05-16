@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Pencil, Copy, Trash2, Power, Globe } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
 import { ClusterForm } from "./cluster-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -63,13 +63,13 @@ export function ClusterList() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="flex items-center gap-2 text-sm font-display font-bold text-foreground uppercase tracking-wider">
-          <Globe className="size-4" />Cluster Connections
+          <Icon name="globe" className="size-4" tone="brand" />Cluster Connections
         </h3>
         <button
           onClick={() => setEditingClusterId("new")}
           className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary bg-primary/10 rounded-lg border border-primary/20 hover:bg-primary/20 transition-colors"
         >
-          <Plus className="size-3" />
+          <Icon name="plus" className="size-3" tone="brand" />
           Add
         </button>
       </div>
@@ -78,7 +78,7 @@ export function ClusterList() {
       {clusters.length === 0 && !editingClusterId && (
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <div className="size-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-            <Power className="size-6 text-primary" />
+            <Icon name="power" className="size-6" tone="brand" />
           </div>
           <p className="text-sm font-medium text-foreground mb-1">No clusters configured</p>
           <p className="text-xs text-muted-foreground mb-4">Add a Kafka cluster to get started</p>
@@ -86,7 +86,7 @@ export function ClusterList() {
             onClick={() => setEditingClusterId("new")}
             className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors"
           >
-            <Plus className="size-3.5" />
+            <Icon name="plus" className="size-3.5" />
             Add Your First Cluster
           </button>
         </div>
@@ -156,25 +156,25 @@ export function ClusterList() {
                   )}
                   title={isConnected ? "Disconnect" : "Connect"}
                 >
-                  <Power className="size-3.5" />
+                  <Icon name="power" className="size-3.5" />
                 </button>
                 <button
                   onClick={() => setEditingClusterId(editingClusterId === cluster.id ? null : cluster.id)}
                   className="p-1.5 text-muted-foreground hover:text-foreground rounded hover:bg-accent transition-colors"
                 >
-                  <Pencil className="size-3.5" />
+                  <Icon name="pencil" className="size-3.5" />
                 </button>
                 <button
                   onClick={() => handleDuplicate(cluster.id)}
                   className="p-1.5 text-muted-foreground hover:text-foreground rounded hover:bg-accent transition-colors"
                 >
-                  <Copy className="size-3.5" />
+                  <Icon name="copy" className="size-3.5" />
                 </button>
                 <button
                   onClick={() => handleDelete(cluster.id)}
                   className="p-1.5 text-muted-foreground hover:text-semantic-red rounded hover:bg-semantic-red/10 transition-colors"
                 >
-                  <Trash2 className="size-3.5" />
+                  <Icon name="trash" className="size-3.5" tone="danger" />
                 </button>
               </div>
             </div>

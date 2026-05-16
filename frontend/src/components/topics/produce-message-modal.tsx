@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Loader2, CheckCircle2, XCircle, RotateCcw } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { ProduceMessage, ProduceMessages } from "@/lib/wails-client";
 import type { Message } from "@/types/kafka";
 import type { kafka } from "../../../wailsjs/go/models";
@@ -141,7 +141,7 @@ export function ProduceMessageModal({ isOpen, onClose, topicName, replaySource, 
           {isBatch ? (
             <div className="space-y-4">
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/5 border border-primary/10">
-                <RotateCcw className="size-3.5 text-primary" />
+                <Icon name="rotate-ccw" className="size-3.5" tone="brand" />
                 <span className="text-xs font-mono text-primary">
                   Replaying {batchReplaySource!.length} messages
                 </span>
@@ -162,7 +162,7 @@ export function ProduceMessageModal({ isOpen, onClose, topicName, replaySource, 
               )}
               {status === "error" && (
                 <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-semantic-red/10 text-semantic-red text-xs font-mono">
-                  <XCircle className="size-3.5" />
+                  <Icon name="x-circle" className="size-3.5" tone="danger" />
                   {statusMessage}
                 </div>
               )}
@@ -172,7 +172,7 @@ export function ProduceMessageModal({ isOpen, onClose, topicName, replaySource, 
             <>
               {isReplay && (
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/5 border border-primary/10">
-                  <RotateCcw className="size-3.5 text-primary" />
+                  <Icon name="rotate-ccw" className="size-3.5" tone="brand" />
                   <span className="text-xs font-mono text-primary">
                     Replaying from P:{replaySource!.partition} O:{replaySource!.offset}
                   </span>
@@ -207,9 +207,9 @@ export function ProduceMessageModal({ isOpen, onClose, topicName, replaySource, 
                   status === "success" ? "bg-status-healthy/10 text-status-healthy" :
                   "bg-semantic-red/10 text-semantic-red"
                 }`}>
-                  {status === "sending" && <Loader2 className="size-3.5 animate-spin" />}
-                  {status === "success" && <CheckCircle2 className="size-3.5" />}
-                  {status === "error" && <XCircle className="size-3.5" />}
+                  {status === "sending" && <Icon name="loader" className="size-3.5 animate-spin" tone="brand" />}
+                  {status === "success" && <Icon name="check-circle" className="size-3.5" tone="success" />}
+                  {status === "error" && <Icon name="x-circle" className="size-3.5" tone="danger" />}
                   <span>{status === "sending" ? "Sending message..." : statusMessage}</span>
                 </div>
               )}
@@ -227,7 +227,7 @@ export function ProduceMessageModal({ isOpen, onClose, topicName, replaySource, 
               disabled={status === "sending" || (!isBatch && !form.value.trim())}
               className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors disabled:opacity-50"
             >
-              {status === "sending" && <Loader2 className="size-3.5 animate-spin" />}
+              {status === "sending" && <Icon name="loader" className="size-3.5 animate-spin" />}
               {isBatch ? "Replay All" : isReplay ? "Replay" : "Send Message"}
             </button>
           )}

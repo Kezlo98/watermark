@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Bell } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { useSettingsStore } from "@/store/settings";
 import { useLagAlertsStore } from "@/store/lag-alerts";
 import { AddRule, DeleteRule, RestartMonitoring } from "@/lib/wails-client";
@@ -102,7 +102,7 @@ export function SetAlertPopover({ groupId, open: controlledOpen, onOpenChange: c
       {!isControlled && (
         <PopoverTrigger asChild>
           <button className="px-3 py-1.5 text-sm text-muted-foreground bg-secondary rounded-lg border border-border hover:text-foreground hover:border-border-hover transition-colors">
-            <Bell className="size-3.5" /> Set Alert
+            <Icon name="bell" className="size-3.5" /> Set Alert
           </button>
         </PopoverTrigger>
       )}

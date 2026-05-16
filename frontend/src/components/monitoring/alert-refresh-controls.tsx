@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Play, Pause, RefreshCw, Check } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -102,9 +102,9 @@ export function AlertRefreshControls({
                 )}
               >
                 {enabled ? (
-                  <Pause className="size-3" />
+                  <Icon name="pause" className="size-3" tone="success" />
                 ) : (
-                  <Play className="size-3" />
+                  <Icon name="play" className="size-3" tone="muted" />
                 )}
                 {enabled && (
                   <span className="font-mono tabular-nums text-[11px] min-w-[2ch] text-right">
@@ -141,7 +141,7 @@ export function AlertRefreshControls({
                   <span className="flex items-center justify-between w-full">
                     {opt.label}
                     {opt.value === intervalMs && (
-                      <Check className="size-3 text-primary ml-2" />
+                      <Icon name="check" className="size-3 ml-2" tone="brand" />
                     )}
                   </span>
                 </DropdownMenuRadioItem>
@@ -170,7 +170,8 @@ export function AlertRefreshControls({
                   {cooldownLeft}
                 </span>
               ) : (
-                <RefreshCw
+                <Icon
+                  name="refresh"
                   className={cn(
                     "size-3.5 transition-transform",
                     spinning && "animate-spin",

@@ -22,7 +22,7 @@ import { ChartAreaRenderer } from "./chart-area-renderer";
 import { ChartLineRenderer } from "./chart-line-renderer";
 import { ChartBarRenderer } from "./chart-bar-renderer";
 import { ChartFooterLegend } from "./chart-footer-legend";
-import { BarChart3 } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { toast } from "sonner";
 import type { TopicLagSummary } from "@/types/lag-alerts";
 import type { TimeWindow, ChartType } from "./chart-entity-types";
@@ -177,7 +177,7 @@ export function LagChartsTab() {
   if (!recordingEnabled) {
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-4">
-        <BarChart3 className="size-12 text-muted-foreground" />
+        <Icon name="bar-chart" className="size-12" tone="muted" />
         <div className="text-center space-y-1">
           <p className="text-sm text-muted-foreground">Chart recording is disabled.</p>
           <p className="text-xs text-muted-foreground">

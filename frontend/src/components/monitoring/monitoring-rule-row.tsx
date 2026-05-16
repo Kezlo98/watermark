@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { globMatch } from "@/lib/glob-match";
 import type { AlertRule } from "@/types/lag-alerts";
 
@@ -76,7 +76,7 @@ export function MonitoringRuleRow({
           className="p-1 text-muted-foreground hover:text-semantic-red transition-colors"
           title="Delete rule"
         >
-          <X className="size-3" />
+          <Icon name="x" className="size-3" tone="muted" />
         </button>
       </div>
       {error && <p className="text-xs text-semantic-red">{error}</p>}

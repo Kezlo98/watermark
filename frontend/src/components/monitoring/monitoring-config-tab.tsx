@@ -12,7 +12,7 @@ import {
   GetCluster,
 } from "@/lib/wails-client";
 import type { AlertRule, ClusterAlertConfig } from "@/types/lag-alerts";
-import { AlertTriangle, X } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { TrackedEntitiesConfig } from "./tracked-entities-config";
 import { MonitoringToggle } from "./monitoring-toggle";
 import { MonitoringRuleRow } from "./monitoring-rule-row";
@@ -240,8 +240,8 @@ export function MonitoringConfigTab() {
             <div className="flex items-center gap-2 px-3 text-[10px] text-muted-foreground uppercase tracking-wider">
               <span className="w-2 shrink-0" />
               <span className="flex-1">Pattern</span>
-              <span className="w-20 text-center text-yellow-400/60 flex items-center justify-center gap-1"><AlertTriangle className="size-3" />Warn</span>
-              <span className="w-20 text-center text-red-400/60 flex items-center justify-center gap-1"><X className="size-3" />Crit</span>
+              <span className="w-20 text-center text-yellow-400/60 flex items-center justify-center gap-1"><Icon name="alert-triangle" className="size-3" tone="warning" />Warn</span>
+              <span className="w-20 text-center text-red-400/60 flex items-center justify-center gap-1"><Icon name="x" className="size-3" tone="danger" />Crit</span>
               <span className="w-6" />
             </div>
             {cfg.rules.map((rule) => (

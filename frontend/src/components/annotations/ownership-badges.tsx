@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Pencil } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 
 interface OwnershipBadgesProps {
   producers: string[];
@@ -68,7 +68,7 @@ export function OwnershipBadges({
         </span>
       )}
       {onEdit && hasAny && (
-        <Pencil className="size-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity ml-0.5" />
+        <Icon name="pencil" className="size-3 opacity-0 group-hover:opacity-100 transition-opacity ml-0.5" tone="muted" />
       )}
     </div>
   );

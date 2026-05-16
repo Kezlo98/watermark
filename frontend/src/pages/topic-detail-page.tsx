@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useParams, useRouter } from "@tanstack/react-router";
-import { ChevronLeft } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { TopicTabs } from "@/components/topics/topic-tabs";
 import { ProduceMessageModal } from "@/components/topics/produce-message-modal";
 import { MessagesActionDropdown } from "@/components/topics/messages-action-dropdown";
@@ -34,7 +34,7 @@ export function TopicDetailPage() {
         onClick={() => router.history.back()}
         className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
-        <ChevronLeft className="size-4" />
+        <Icon name="chevron-left" className="size-4" />
         Topics
       </button>
       <div className="flex items-center justify-between">

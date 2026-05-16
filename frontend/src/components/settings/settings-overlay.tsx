@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Settings } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { useSettingsStore } from "@/store/settings";
 import { TabNavigation } from "@/components/shared/tab-navigation";
 import { ClusterList } from "./cluster-list";
@@ -31,7 +31,7 @@ export function SettingsOverlay() {
       <DialogContent className="sm:min-w-[60vw] sm:max-w-5xl h-[80vh] flex flex-col gap-0 p-0">
         {/* Header */}
         <DialogHeader className="px-6 py-4 border-b border-border">
-          <DialogTitle className="flex items-center gap-2"><Settings className="size-4" /> Preferences</DialogTitle>
+          <DialogTitle className="flex items-center gap-2"><Icon name="settings" className="size-4" tone="brand" /> Preferences</DialogTitle>
         </DialogHeader>
 
         {/* Body: left tabs + content */}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import {
   Popover,
   PopoverContent,
@@ -87,7 +87,7 @@ export function AwsRegionSelect({ value, onChange }: AwsRegionSelectProps) {
               className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground text-xs"
               title="Clear — use region from AWS config"
             >
-              <X className="size-3" />
+              <Icon name="x" className="size-3" tone="muted" />
             </button>
           )}
         </div>

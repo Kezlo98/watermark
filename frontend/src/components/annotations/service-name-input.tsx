@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from "react";
-import { X } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
 import {
   Popover,
@@ -105,7 +105,7 @@ export function ServiceNameInput({
                 className="ml-0.5 hover:text-foreground transition-colors"
                 type="button"
               >
-                <X className="size-3" />
+                <Icon name="x" className="size-3" />
               </button>
             </span>
           ))}

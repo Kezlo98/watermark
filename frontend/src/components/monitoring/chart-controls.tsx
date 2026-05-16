@@ -1,14 +1,7 @@
 import { cn } from "@/lib/utils";
 import { useState, useMemo } from "react";
-import {
-  Check,
-  ChevronsUpDown,
-  Plus,
-  AreaChart as AreaIcon,
-  LineChart as LineIcon,
-  BarChart3 as BarIcon,
-  Search,
-} from "lucide-react";
+import { Icon } from "@/components/ui/icon";
+import type { IconName } from "@/lib/icon-map";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Command,
@@ -29,10 +22,10 @@ import {
   CHART_COLORS,
 } from "./chart-entity-types";
 
-const CHART_TYPE_ICONS = [
-  { id: "area" as const, label: "Area", icon: AreaIcon },
-  { id: "line" as const, label: "Line", icon: LineIcon },
-  { id: "bar" as const, label: "Bar", icon: BarIcon },
+const CHART_TYPE_ICONS: { id: ChartType; label: string; iconName: IconName }[] = [
+  { id: "area" as const, label: "Area", iconName: "area-chart" },
+  { id: "line" as const, label: "Line", iconName: "line-chart" },
+  { id: "bar" as const, label: "Bar", iconName: "bar-chart" },
 ];
 
 interface ChartControlsProps {
@@ -143,13 +136,13 @@ export function ChartControls({
               <span className="truncate">
                 {pendingSelection || `Select ${mode}...`}
               </span>
-              <ChevronsUpDown className="ml-2 size-3 shrink-0 opacity-50" />
+              <Icon name="chevrons-up-down" className="ml-2 size-3 shrink-0 opacity-50" tone="muted" />
             </button>
           </PopoverTrigger>
           <PopoverContent className="w-[300px] p-0 border border-border bg-[#0f1115]" align="start">
             <Command className="bg-transparent text-foreground">
               <div className="flex items-center border-b border-border px-3">
-                <Search className="mr-2 size-4 shrink-0 text-muted-foreground" />
+                <Icon name="search" className="mr-2 size-4 shrink-0" tone="muted" />
                 <CommandPrimitive.Input
                   placeholder={`Search ${mode}...`}
                   className="flex flex-1 h-10 bg-transparent border-0 outline-none focus:ring-0 text-sm placeholder:text-muted-foreground text-foreground"
@@ -190,7 +183,7 @@ export function ChartControls({
                             className="mr-2 size-2 rounded-full shrink-0 inline-block"
                             style={{ backgroundColor: isExcluded ? "#4b5563" : dotColor }}
                           />
-                          {added && <Check className="mr-1 size-3 text-primary" />}
+                          {added && <Icon name="check" className="mr-1 size-3" tone="brand" />}
                           {e}
                           {isExcluded && (
                             <span className="ml-auto text-[10px] text-semantic-red">excluded</span>
@@ -224,7 +217,7 @@ export function ChartControls({
                           )}
                         >
                           <span className="mr-2 size-2 shrink-0" /> {/* spacer for alignment */}
-                          {added && <Check className="mr-1 size-3 text-primary" />}
+                          {added && <Icon name="check" className="mr-1 size-3" tone="brand" />}
                           {e}
                           {isExcluded && (
                             <span className="ml-auto text-[10px] text-semantic-red">excluded</span>
@@ -249,7 +242,7 @@ export function ChartControls({
               : "bg-primary/20 text-primary hover:bg-primary/30",
           )}
         >
-          <Plus className="size-3" />
+          <Icon name="plus" className="size-3" tone="brand" />
           Add
         </button>
 
@@ -280,24 +273,21 @@ export function ChartControls({
 
       {/* Chart type */}
       <div className="flex gap-0.5 bg-secondary rounded-lg p-0.5">
-        {CHART_TYPE_ICONS.map((ct) => {
-          const Icon = ct.icon;
-          return (
-            <button
-              key={ct.id}
-              onClick={() => onChartTypeChange(ct.id)}
-              className={cn(
-                "flex items-center gap-1.5 px-2 py-1 text-xs rounded-md transition-colors",
-                chartType === ct.id
-                  ? "bg-primary/20 text-primary"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              <Icon className="size-3" />
-              {ct.label}
-            </button>
-          );
-        })}
+        {CHART_TYPE_ICONS.map((ct) => (
+          <button
+            key={ct.id}
+            onClick={() => onChartTypeChange(ct.id)}
+            className={cn(
+              "flex items-center gap-1.5 px-2 py-1 text-xs rounded-md transition-colors",
+              chartType === ct.id
+                ? "bg-primary/20 text-primary"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            <Icon name={ct.iconName} className="size-3" />
+            {ct.label}
+          </button>
+        ))}
       </div>
     </div>
   );

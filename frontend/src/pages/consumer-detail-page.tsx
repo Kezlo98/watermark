@@ -1,5 +1,5 @@
 import { useParams, useRouter } from "@tanstack/react-router";
-import { ChevronLeft } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { GroupDetailHeader } from "@/components/consumers/group-detail-header";
 import { ActiveMembersTable } from "@/components/consumers/active-members-table";
 import { OffsetsLagTable } from "@/components/consumers/offsets-lag-table";
@@ -29,7 +29,7 @@ export function ConsumerDetailPage() {
         onClick={() => router.history.back()}
         className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
-        <ChevronLeft className="size-4" />
+        <Icon name="chevron-left" className="size-4" />
         Consumer Groups
       </button>
       <div className="flex items-center justify-between">

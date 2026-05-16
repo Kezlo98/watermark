@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Circle } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import type { CompatibilityLevel } from "@/types/kafka";
 
 const LEVEL_STYLES: Record<CompatibilityLevel, { bg: string; text: string }> = {
@@ -24,7 +24,7 @@ export function CompatibilityBadge({ level }: CompatibilityBadgeProps) {
         "border-current/20"
       )}
     >
-      <Circle className="size-2 fill-current" /> {level}
+      <Icon name="circle" className="size-2 fill-current" /> {level}
     </span>
   );
 }

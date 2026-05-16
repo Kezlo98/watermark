@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Download, Upload, FileJson } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { useAnnotations } from "@/hooks/use-annotations";
 import { ExportToFile, ExportAllToFile, ImportFromFile } from "@/lib/wails-client";
 import { useSettingsStore } from "@/store/settings";
@@ -58,7 +58,7 @@ export function ExportImportSection() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <FileJson className="size-4 text-primary" />
+        <Icon name="file-json" className="size-4" tone="brand" />
         <h3 className="text-sm font-display font-bold text-foreground">
           Topic Annotations
         </h3>
@@ -86,14 +86,14 @@ export function ExportImportSection() {
           disabled={!clusterId}
           className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-foreground bg-secondary border border-border rounded-lg hover:bg-accent transition-colors disabled:opacity-40"
         >
-          <Download className="size-3.5" />
+          <Icon name="download" className="size-3.5" />
           Export Current Cluster
         </button>
         <button
           onClick={handleExportAll}
           className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-foreground bg-secondary border border-border rounded-lg hover:bg-accent transition-colors"
         >
-          <Download className="size-3.5" />
+          <Icon name="download" className="size-3.5" />
           Export All Clusters
         </button>
       </div>
@@ -129,7 +129,7 @@ export function ExportImportSection() {
           onClick={handleImport}
           className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-foreground bg-secondary border border-border rounded-lg hover:bg-accent transition-colors"
         >
-          <Upload className="size-3.5" />
+          <Icon name="upload" className="size-3.5" />
           Import from File
         </button>
       </div>

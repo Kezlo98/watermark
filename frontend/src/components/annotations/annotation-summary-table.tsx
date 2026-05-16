@@ -1,4 +1,4 @@
-import { Pencil, Trash2 } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import type { TopicAnnotation } from "@/types/annotations";
 import { OwnershipBadges } from "./ownership-badges";
 
@@ -66,14 +66,14 @@ export function AnnotationSummaryTable({
                     className="p-1 rounded text-muted-foreground hover:text-primary hover:bg-secondary transition-colors"
                     title="Edit annotation"
                   >
-                    <Pencil className="size-3.5" />
+                    <Icon name="pencil" className="size-3.5" />
                   </button>
                   <button
                     onClick={() => onRemove?.(topic)}
                     className="p-1 rounded text-muted-foreground hover:text-semantic-red hover:bg-secondary transition-colors"
                     title="Remove annotation"
                   >
-                    <Trash2 className="size-3.5" />
+                    <Icon name="trash" className="size-3.5" tone="danger" />
                   </button>
                 </div>
               </td>

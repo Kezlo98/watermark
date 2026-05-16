@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ChevronDown, Sparkles } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
 import { useTemplates } from "@/hooks/use-templates";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
@@ -58,7 +58,7 @@ export function TemplatePickerDropdown({
       >
         <div className="flex items-center gap-2 min-w-0">
           {suggestedTemplate && !selectedTemplate && (
-            <Sparkles className="size-3.5 shrink-0 text-yellow-400" />
+            <Icon name="sparkles" className="size-3.5 shrink-0" tone="warning" />
           )}
           <span className={cn("truncate", !selectedTemplate ? "text-muted-foreground" : "")}>
             {selectedTemplate
@@ -68,8 +68,10 @@ export function TemplatePickerDropdown({
                 : "Select a template"}
           </span>
         </div>
-        <ChevronDown
-          className={`size-4 shrink-0 text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`}
+        <Icon
+          name="chevron-down"
+          tone="muted"
+          className={`size-4 shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`}
         />
       </button>
 
@@ -99,7 +101,7 @@ export function TemplatePickerDropdown({
                 onClick={() => handleSelect(suggestedTemplate)}
                 className="flex w-full items-center gap-2 border-t border-border/50 bg-yellow-400/5 px-4 py-2 text-left text-sm transition-colors hover:bg-yellow-400/10 min-w-0"
               >
-                <Sparkles className="size-3.5 shrink-0 text-yellow-400" />
+                <Icon name="sparkles" className="size-3.5 shrink-0" tone="warning" />
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-foreground truncate">
                     {suggestedTemplate.name}

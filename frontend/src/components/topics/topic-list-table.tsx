@@ -10,7 +10,7 @@ import { useAnnotationUIStore } from "@/store/annotations";
 import { OwnershipBadges } from "@/components/annotations/ownership-badges";
 import { AnnotationEditorModal } from "@/components/annotations/annotation-editor-modal";
 import { BatchTagModal } from "@/components/annotations/batch-tag-modal";
-import { Tag, Copy } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { useReadOnly } from "@/hooks/use-read-only";
 
 interface TopicListTableProps {
@@ -137,7 +137,7 @@ export function TopicListTable({ onTopicClick, onCloneTopic, searchFilter, hideI
             onClick={openBatchModal}
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-primary hover:bg-primary/90 rounded-md transition-colors"
           >
-            <Tag className="size-3" />
+            <Icon name="tag" className="size-3" />
             Tag Selected
           </button>
           <button
@@ -158,8 +158,8 @@ export function TopicListTable({ onTopicClick, onCloneTopic, searchFilter, hideI
           isReadOnly
             ? []
             : [
-                { label: "Clone Topic", icon: Copy, onSelect: () => onCloneTopic(topic.name) },
-                { label: "Edit Tags", icon: Tag, onSelect: () => openEditor(topic.name) },
+                { label: "Clone Topic", icon: "copy", onSelect: () => onCloneTopic(topic.name) },
+                { label: "Edit Tags", icon: "tag", onSelect: () => openEditor(topic.name) },
               ]
         }
       />

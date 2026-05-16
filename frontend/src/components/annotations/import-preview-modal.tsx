@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { AlertTriangle } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import {
   Dialog,
   DialogContent,
@@ -94,7 +94,7 @@ export function ImportPreviewModal({
                 </p>
                 {mode === "replace" && (
                   <p className="flex items-center gap-1.5 text-xs text-status-rebalancing mt-1">
-                    <AlertTriangle className="size-3 shrink-0" /> This will overwrite all existing annotations
+                    <Icon name="alert-triangle" className="size-3 shrink-0" tone="warning" /> This will overwrite all existing annotations
                   </p>
                 )}
               </div>

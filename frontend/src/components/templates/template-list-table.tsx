@@ -1,4 +1,3 @@
-import { Pencil, Trash2 } from "lucide-react";
 import type { TopicTemplate } from "@/types/templates";
 import { RowContextMenu } from "@/components/shared/row-context-menu";
 
@@ -48,8 +47,8 @@ export function TemplateListTable({
             <RowContextMenu
               key={template.id}
               items={[
-                { label: "Edit Template", icon: Pencil, onSelect: () => onEdit(template) },
-                { label: "Delete Template", icon: Trash2, onSelect: () => onDelete(template.id), variant: "destructive", separatorBefore: true },
+                { label: "Edit Template", icon: "pencil", onSelect: () => onEdit(template) },
+                { label: "Delete Template", icon: "trash", onSelect: () => onDelete(template.id), variant: "destructive", separatorBefore: true },
               ]}
             >
               <tr className="border-b border-border/30 transition-colors hover:bg-card/20">
