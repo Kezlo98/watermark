@@ -110,8 +110,8 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, onRe
                     <td className="px-4 py-3 text-sm font-mono text-foreground">{msg.partition}</td>
                     <td className="px-4 py-3 text-sm font-mono text-foreground">{msg.offset}</td>
                     <td className="px-4 py-3 text-sm font-mono text-muted-foreground">{msg.timestamp}</td>
-                    <td className="px-4 py-3 text-sm font-mono text-semantic-cyan">{msg.key}</td>
-                    <td className="px-4 py-3 text-sm font-mono text-foreground truncate max-w-xs">{msg.value}</td>
+                    <td className="px-4 py-3 text-sm font-mono text-semantic-purple">{msg.key}</td>
+                    <td className="px-4 py-3 text-sm font-mono text-semantic-cyan truncate max-w-xs">{msg.value}</td>
                   </tr>
                 </MessageContextMenu>
               );
