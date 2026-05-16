@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DeleteConsumerGroup } from "@/lib/wails-client";
+import { clusterQueryKey } from "@/hooks/use-kafka-query";
+import { useSettingsStore } from "@/store/settings";
 
 interface DropGroupDialogProps {
   groupId: string | null;
@@ -25,6 +27,7 @@ export function DropGroupDialog({ groupId, onClose, onSuccess }: DropGroupDialog
   const [confirmed, setConfirmed] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const queryClient = useQueryClient();
+  const { activeClusterId } = useSettingsStore();
 
   useEffect(() => {
     setConfirmed(false);
@@ -37,7 +40,9 @@ export function DropGroupDialog({ groupId, onClose, onSuccess }: DropGroupDialog
       await DeleteConsumerGroup(groupId);
       onSuccess(groupId);
     } catch (err) {
-      queryClient.invalidateQueries({ queryKey: ["consumer-group-detail", groupId] });
+      queryClient.invalidateQueries({
+        queryKey: clusterQueryKey(activeClusterId, ["consumer-group-detail", groupId]),
+      });
       toast.error(`Drop failed: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setIsPending(false);

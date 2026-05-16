@@ -9,7 +9,7 @@ import { OffsetsLagTable } from "@/components/consumers/offsets-lag-table";
 import { ConsumerActionDropdown } from "@/components/consumers/consumer-action-dropdown";
 import { DropGroupDialog } from "@/components/consumers/drop-group-dialog";
 import { RefreshButton } from "@/components/shared/refresh-button";
-import { useKafkaQuery } from "@/hooks/use-kafka-query";
+import { useKafkaQuery, clusterQueryKey } from "@/hooks/use-kafka-query";
 import { GetConsumerGroupDetail, DeleteRule, RestartMonitoring } from "@/lib/wails-client";
 import { useReadOnly } from "@/hooks/use-read-only";
 import { useSettingsStore } from "@/store/settings";
@@ -55,7 +55,7 @@ export function ConsumerDetailPage() {
     if (cascadeWarning) {
       toast.warning(`Group dropped, but lag-alert cleanup failed: ${cascadeWarning}`);
     }
-    queryClient.invalidateQueries({ queryKey: ["consumer-groups"] });
+    queryClient.invalidateQueries({ queryKey: clusterQueryKey(activeClusterId, ["consumer-groups"]) });
     router.navigate({ to: "/consumers" });
   };
 
