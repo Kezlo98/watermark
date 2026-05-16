@@ -56,6 +56,15 @@
     --sidebar-accent-foreground: #F5F5F5;
     --sidebar-border: rgba(255, 255, 255, 0.1);
     --sidebar-ring: #8B5CF6;
+
+    /* Icon tone primaries (Phosphor duotone secondary is hardcoded at 20% opacity) */
+    --icon-default-primary: #F5F5F5;
+    --icon-brand-primary: #8B5CF6;
+    --icon-success-primary: #34D399;
+    --icon-warning-primary: #FBBF24;
+    --icon-danger-primary: #EF4444;
+    --icon-info-primary: #06B6D4;
+    --icon-muted-primary: #94A3B8;
   }
 
   .light {
@@ -105,6 +114,15 @@
     --sidebar-accent-foreground: #0F172A;
     --sidebar-border: #E2E8F0;
     --sidebar-ring: #8B5CF6;
+
+    /* Icon tone primaries (light theme) */
+    --icon-default-primary: #0F172A;
+    --icon-brand-primary: #8B5CF6;
+    --icon-success-primary: #059669;
+    --icon-warning-primary: #D97706;
+    --icon-danger-primary: #DC2626;
+    --icon-info-primary: #06B6D4;
+    --icon-muted-primary: #64748B;
   }
 
   * {
