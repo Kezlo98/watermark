@@ -32,6 +32,7 @@ export {
   GetConsumerGroupDetail,
   GetAllGroupsLagDetail,
   ResetConsumerGroupOffsets,
+  DeleteConsumerGroup,
   ClearCache,
   UpdateReadOnly,
 } from "../../wailsjs/go/kafka/KafkaService";
