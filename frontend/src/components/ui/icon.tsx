@@ -13,7 +13,7 @@ export function Icon({ name, tone = "default", style, ...rest }: IconProps) {
   const Component = ICON_MAP[name];
   return (
     <Component
-      weight="duotone"
+      weight="thin"
       style={{ color: `var(--icon-${tone}-primary)`, ...style }}
       {...rest}
     />

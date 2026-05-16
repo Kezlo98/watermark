@@ -210,7 +210,7 @@ Clusters can be tagged with colors that tint the top navbar as a **visual safety
 
 ## Icons
 
-- **App UI**: `@phosphor-icons/react` Duotone, used through the `<Icon name tone />` wrapper at `frontend/src/components/ui/icon.tsx`. Names map via `frontend/src/lib/icon-map.ts`; tones (`default | brand | success | warning | danger | info | muted`) are themed via `--icon-{tone}-primary` CSS vars on `:root` (dark) and `.light`. Use `style={{ color }}` only for ad-hoc colors that don't fit the tone enum.
+- **App UI**: `@phosphor-icons/react` thin weight, used through the `<Icon name tone />` wrapper at `frontend/src/components/ui/icon.tsx`. Names map via `frontend/src/lib/icon-map.ts`; tones (`default | brand | success | warning | danger | info | muted`) are themed via `--icon-{tone}-primary` CSS vars on `:root` (dark) and `.light`. Use `style={{ color }}` only for ad-hoc colors that don't fit the tone enum.
 - **shadcn add caveat**: `npx shadcn add` re-introduces `lucide-react` imports. After running it, always `grep -rn "lucide-react" frontend/src` and manually convert the new imports to `<Icon name="..." />` (add the new name to `icon-map.ts` if missing). `lucide-react` must stay out of `frontend/package.json`.
 
 ## Responsive Behavior

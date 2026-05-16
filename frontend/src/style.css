@@ -57,7 +57,7 @@
     --sidebar-border: rgba(255, 255, 255, 0.1);
     --sidebar-ring: #8B5CF6;
 
-    /* Icon tone primaries (Phosphor duotone secondary is hardcoded at 20% opacity) */
+    /* Icon tone primaries (Phosphor thin weight: single-stroke, drives `color`) */
     --icon-default-primary: #F5F5F5;
     --icon-brand-primary: #8B5CF6;
     --icon-success-primary: #34D399;
