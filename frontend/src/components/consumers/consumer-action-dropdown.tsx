@@ -23,10 +23,11 @@ import type { AlertRule } from "@/types/lag-alerts";
 interface ConsumerActionDropdownProps {
   groupId: string;
   onDropGroup: () => void;
+  canDrop: boolean;
   disabled?: boolean;
 }
 
-export function ConsumerActionDropdown({ groupId, onDropGroup, disabled }: ConsumerActionDropdownProps) {
+export function ConsumerActionDropdown({ groupId, onDropGroup, canDrop, disabled }: ConsumerActionDropdownProps) {
   const [alertOpen, setAlertOpen] = useState(false);
   const [warningLag, setWarningLag] = useState("");
   const [criticalLag, setCriticalLag] = useState("");
@@ -121,8 +122,13 @@ export function ConsumerActionDropdown({ groupId, onDropGroup, disabled }: Consu
             Reset Offsets
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onSelect={onDropGroup} className="text-red-400 focus:text-red-400">
-            <Icon name="trash" className="size-3.5" tone="danger" />
+          <DropdownMenuItem
+            disabled={!canDrop}
+            title={canDrop ? undefined : "Group must be Empty or Dead to drop"}
+            onSelect={canDrop ? onDropGroup : undefined}
+            className={canDrop ? "text-red-400 focus:text-red-400" : undefined}
+          >
+            <Icon name="trash" className="size-3.5" tone={canDrop ? "danger" : undefined} />
             Drop Group
           </DropdownMenuItem>
         </DropdownMenuContent>
