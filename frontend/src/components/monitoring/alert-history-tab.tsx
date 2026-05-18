@@ -107,8 +107,8 @@ export function AlertHistoryTab() {
                     {alert.resolved
                       ? <Icon name="check-circle" className="size-3.5 mt-0.5" tone="success" />
                       : alert.level === "critical"
-                        ? <Icon name="circle" className="size-3 fill-red-500 mt-1" tone="danger" />
-                        : <Icon name="circle" className="size-3 fill-yellow-500 mt-1" tone="warning" />
+                        ? <Icon name="circle" className="size-3 mt-1" tone="danger" weight="fill" />
+                        : <Icon name="circle" className="size-3 mt-1" tone="warning" weight="fill" />
                     }
                   </span>
                   <div className="flex-1 min-w-0">

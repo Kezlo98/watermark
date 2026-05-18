@@ -23,8 +23,8 @@ export function AlertIndicator({ groupId, alerts }: AlertIndicatorProps) {
       className="cursor-default"
     >
       {active.level === "critical"
-        ? <Icon name="circle" className="size-2.5 fill-red-500" tone="danger" />
-        : <Icon name="circle" className="size-2.5 fill-yellow-500" tone="warning" />
+        ? <Icon name="circle" className="size-2.5" tone="danger" weight="fill" />
+        : <Icon name="circle" className="size-2.5" tone="warning" weight="fill" />
       }
     </span>
   );

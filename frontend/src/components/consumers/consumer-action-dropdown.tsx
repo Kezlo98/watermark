@@ -8,6 +8,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   Popover,
   PopoverAnchor,
   PopoverContent,
@@ -117,20 +123,33 @@ export function ConsumerActionDropdown({ groupId, onDropGroup, canDrop, disabled
             <Icon name="bell" className="size-3.5" />
             Set Alert
           </DropdownMenuItem>
-          <DropdownMenuItem disabled title="Group must be Empty or Dead to reset offsets">
-            <Icon name="chevrons-left" className="size-3.5" />
-            Reset Offsets
-          </DropdownMenuItem>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuItem disabled>
+                  <Icon name="chevrons-left" className="size-3.5" />
+                  Reset Offsets
+                </DropdownMenuItem>
+              </TooltipTrigger>
+              <TooltipContent>Group must be Empty or Dead to reset offsets</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <DropdownMenuSeparator />
-          <DropdownMenuItem
-            disabled={!canDrop}
-            title={canDrop ? undefined : "Group must be Empty or Dead to drop"}
-            onSelect={canDrop ? onDropGroup : undefined}
-            className={canDrop ? "text-red-400 focus:text-red-400" : undefined}
-          >
-            <Icon name="trash" className="size-3.5" tone={canDrop ? "danger" : undefined} />
-            Drop Group
-          </DropdownMenuItem>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuItem
+                  disabled={!canDrop}
+                  onSelect={canDrop ? onDropGroup : undefined}
+                  className={canDrop ? "text-red-400 focus:text-red-400" : undefined}
+                >
+                  <Icon name="trash" className="size-3.5" tone={canDrop ? "danger" : undefined} />
+                  Drop Group
+                </DropdownMenuItem>
+              </TooltipTrigger>
+              {!canDrop && <TooltipContent>Group must be Empty or Dead to drop</TooltipContent>}
+            </Tooltip>
+          </TooltipProvider>
         </DropdownMenuContent>
       </DropdownMenu>
 

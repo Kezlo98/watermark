@@ -24,7 +24,7 @@ export function CompatibilityBadge({ level }: CompatibilityBadgeProps) {
         "border-current/20"
       )}
     >
-      <Icon name="circle" className="size-2 fill-current" /> {level}
+      <Icon name="circle" className="size-2" weight="fill" /> {level}
     </span>
   );
 }

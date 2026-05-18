@@ -195,7 +195,7 @@ export function UpdateChangelogModal({ isOpen, onClose, updateInfo }: UpdateChan
                 "text-white bg-primary hover:bg-primary/90"
               )}
             >
-              {isUpdating && <Icon name="loader" className="size-3.5 animate-spin" style={{ color: "white" }} />}
+              {isUpdating && <Icon name="loader" className="size-3.5 animate-spin" />}
               {isUpdating ? "Updating…" : `Update to v${updateInfo.latestVersion}`}
             </button>
           </DialogFooter>
