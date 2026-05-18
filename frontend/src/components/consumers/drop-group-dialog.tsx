@@ -20,7 +20,7 @@ import { useSettingsStore } from "@/store/settings";
 interface DropGroupDialogProps {
   groupId: string | null;
   onClose: () => void;
-  onSuccess: (groupId: string) => void;
+  onSuccess: (groupId: string) => Promise<void>;
 }
 
 export function DropGroupDialog({ groupId, onClose, onSuccess }: DropGroupDialogProps) {
@@ -38,7 +38,7 @@ export function DropGroupDialog({ groupId, onClose, onSuccess }: DropGroupDialog
     setIsPending(true);
     try {
       await DeleteConsumerGroup(groupId);
-      onSuccess(groupId);
+      await onSuccess(groupId);
     } catch (err) {
       queryClient.invalidateQueries({
         queryKey: clusterQueryKey(activeClusterId, ["consumer-group-detail", groupId]),
@@ -65,7 +65,7 @@ export function DropGroupDialog({ groupId, onClose, onSuccess }: DropGroupDialog
           </AlertDialogDescription>
           <p className="flex items-center gap-1.5 text-xs text-amber-400 mt-1">
             <Icon name="alert-triangle" className="size-3 shrink-0" tone="warning" />
-            Any matching lag-alert rule will also be removed.
+            If a lag-alert rule exactly matching this group ID exists, it will also be removed (best-effort).
           </p>
         </AlertDialogHeader>
 

@@ -22,7 +22,7 @@ export function ConsumerDetailPage() {
   const queryClient = useQueryClient();
   const isReadOnly = useReadOnly();
   const { activeClusterId } = useSettingsStore();
-  const { alertConfig, loadConfig } = useLagAlertsStore();
+  const { loadConfig } = useLagAlertsStore();
 
   const [dropTarget, setDropTarget] = useState<string | null>(null);
 
@@ -36,15 +36,19 @@ export function ConsumerDetailPage() {
 
   const handleDropSuccess = async (droppedId: string) => {
     let cascadeWarning: string | null = null;
-    if (activeClusterId && alertConfig) {
-      const exact = alertConfig.rules.filter((r) => r.groupPattern === droppedId);
+    if (activeClusterId) {
       try {
-        for (const r of exact) {
-          await DeleteRule(activeClusterId, r.id);
-        }
-        if (exact.length > 0) {
-          await loadConfig(activeClusterId);
-          await RestartMonitoring(activeClusterId);
+        await loadConfig(activeClusterId);
+        const freshConfig = useLagAlertsStore.getState().alertConfig;
+        if (freshConfig) {
+          const exact = freshConfig.rules.filter((r) => r.groupPattern === droppedId);
+          for (const r of exact) {
+            await DeleteRule(activeClusterId, r.id);
+          }
+          if (exact.length > 0) {
+            await loadConfig(activeClusterId);
+            await RestartMonitoring(activeClusterId);
+          }
         }
       } catch (err) {
         cascadeWarning = err instanceof Error ? err.message : String(err);
