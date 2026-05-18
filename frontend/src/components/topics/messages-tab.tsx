@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { Square, RotateCcw, X } from "lucide-react";
 import type { Message, StartPosition, MessageFormat } from "@/types/kafka";
 import { useKafkaQuery } from "@/hooks/use-kafka-query";
@@ -72,6 +72,9 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
     refetch();
   };
 
+  // --- Sort direction ---
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+
   // --- Select mode state ---
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -129,6 +132,18 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
             m.key.toLowerCase().includes(debouncedBodyFilter.toLowerCase()),
         )
       : fetchedMessages;
+
+  const displayedMessages = useMemo(() => {
+    if (liveTailActive) return messages;
+    const dir = sortDir === "asc" ? 1 : -1;
+    return [...messages].sort((a, b) => {
+      const ta = new Date(a.timestamp).getTime();
+      const tb = new Date(b.timestamp).getTime();
+      if (ta !== tb) return (ta - tb) * dir;
+      if (a.partition !== b.partition) return (a.partition - b.partition) * dir;
+      return (a.offset - b.offset) * dir;
+    });
+  }, [messages, sortDir, liveTailActive]);
 
   const selectedMessages = fetchedMessages.filter(m => selectedIds.has(`${m.partition}-${m.offset}`));
 
@@ -263,6 +278,8 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
           selectMode={selectMode}
           onSelectModeToggle={handleSelectModeToggle}
           selectedCount={selectedIds.size}
+          sortDir={sortDir}
+          onSortDirToggle={() => setSortDir(d => d === "asc" ? "desc" : "asc")}
         />
       )}
 
@@ -288,7 +305,7 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
       )}
 
       <MessagesTable
-        messages={messages}
+        messages={displayedMessages}
         selectedMessage={selectedMessage}
         onSelectMessage={setSelectedMessage}
         onReplay={isReadOnly ? undefined : openSingleReplay}

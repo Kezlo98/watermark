@@ -10,14 +10,16 @@ import (
 )
 
 // consumeFromOffsets creates a temporary consumer with the given per-partition
-// offsets and polls up to `limit` messages. Shared by ConsumeMessages and
-// ConsumeMessagesFromTimestamp.
+// offsets and polls records. perPartition caps how many records are kept per
+// partition; totalCap is the hard ceiling across all partitions.
+// Shared by ConsumeMessages and ConsumeMessagesFromTimestamp.
 func (k *KafkaService) consumeFromOffsets(
 	ctx context.Context,
 	topicName string,
 	partOffsets map[int32]kgo.Offset,
 	partEndOffsets map[int32]int64,
-	limit int,
+	perPartition int,
+	totalCap int,
 ) ([]Message, error) {
 	offsets := map[string]map[int32]kgo.Offset{topicName: partOffsets}
 	consumerOpts := append(append([]kgo.Opt{}, k.baseOpts...), kgo.ConsumePartitions(offsets))
@@ -28,7 +30,7 @@ func (k *KafkaService) consumeFromOffsets(
 	}
 	defer consumer.Close()
 
-	messages := make([]Message, 0, limit)
+	messages := make([]Message, 0, totalCap)
 
 	// Safety timeout — should rarely be hit with end-offset tracking
 	pollCtx, pollCancel := context.WithTimeout(ctx, 5*time.Second)
@@ -39,10 +41,11 @@ func (k *KafkaService) consumeFromOffsets(
 		partitions = append(partitions, p)
 	}
 
-	// Track the highest consumed offset per partition
+	// Track highest consumed offset and per-partition fetch count
 	consumed := make(map[int32]int64, len(partitions))
+	fetchedFromPart := make(map[int32]int, len(partitions))
 
-	for len(messages) < limit {
+	for len(messages) < totalCap {
 		fetches := consumer.PollFetches(pollCtx)
 
 		if pollCtx.Err() != nil {
@@ -54,7 +57,11 @@ func (k *KafkaService) consumeFromOffsets(
 		}
 
 		fetches.EachRecord(func(r *kgo.Record) {
-			if len(messages) >= limit {
+			// Drop records from partitions that already hit their budget
+			if fetchedFromPart[r.Partition] >= perPartition {
+				return
+			}
+			if len(messages) >= totalCap {
 				return
 			}
 			headers := make(map[string]string)
@@ -69,6 +76,7 @@ func (k *KafkaService) consumeFromOffsets(
 				Value:     string(r.Value),
 				Headers:   headers,
 			})
+			fetchedFromPart[r.Partition]++
 			if r.Offset+1 > consumed[r.Partition] {
 				consumed[r.Partition] = r.Offset + 1
 			}
@@ -76,7 +84,9 @@ func (k *KafkaService) consumeFromOffsets(
 
 		allExhausted := true
 		for _, p := range partitions {
-			if consumed[p] < partEndOffsets[p] {
+			partBudgetHit := fetchedFromPart[p] >= perPartition
+			partEndReached := consumed[p] >= partEndOffsets[p]
+			if !partBudgetHit && !partEndReached {
 				allExhausted = false
 				break
 			}
@@ -109,6 +119,8 @@ func (k *KafkaService) ConsumeMessages(topicName string, partition int32, startO
 		return nil, err
 	}
 
+	perPartition, totalCap := clampedBudget(limit, len(partitions))
+
 	// Fetch end offsets once — reused for both start-offset resolution and
 	// end-of-partition tracking (eliminates N+1 redundant broker round-trips).
 	endOffsets, err := k.admin.ListEndOffsets(ctx, topicName)
@@ -122,11 +134,15 @@ func (k *KafkaService) ConsumeMessages(topicName string, partition int32, startO
 		if eo, ok := endOffsets.Lookup(topicName, p); ok {
 			partEndOffsets[p] = eo.Offset
 		}
-		offset := resolveStartOffsetFromEndOffsets(partEndOffsets[p], startOffset, limit)
+		offset := resolveStartOffsetFromEndOffsets(partEndOffsets[p], startOffset, perPartition)
 		partOffsets[p] = kgo.NewOffset().At(offset)
 	}
 
-	return k.consumeFromOffsets(ctx, topicName, partOffsets, partEndOffsets, limit)
+	msgs, err := k.consumeFromOffsets(ctx, topicName, partOffsets, partEndOffsets, perPartition, totalCap)
+	if err != nil {
+		return nil, err
+	}
+	return mergeSortTrim(msgs, limit, startOffset == -1), nil
 }
 
 // ConsumeMessagesFromTimestamp fetches N messages from a topic starting at the
@@ -149,6 +165,8 @@ func (k *KafkaService) ConsumeMessagesFromTimestamp(topicName string, partition 
 	if err != nil {
 		return nil, err
 	}
+
+	perPartition, totalCap := clampedBudget(limit, len(partitions))
 
 	// Resolve per-partition offsets from timestamp
 	timestampOffsets, err := k.admin.ListOffsetsAfterMilli(ctx, timestampMs, topicName)
@@ -175,7 +193,11 @@ func (k *KafkaService) ConsumeMessagesFromTimestamp(topicName string, partition 
 		}
 	}
 
-	return k.consumeFromOffsets(ctx, topicName, partOffsets, partEndOffsets, limit)
+	msgs, err := k.consumeFromOffsets(ctx, topicName, partOffsets, partEndOffsets, perPartition, totalCap)
+	if err != nil {
+		return nil, err
+	}
+	return mergeSortTrim(msgs, limit, false), nil
 }
 
 // resolvePartitions returns partition IDs to consume.
@@ -203,15 +225,16 @@ func (k *KafkaService) resolvePartitions(ctx context.Context, topicName string, 
 
 // resolveStartOffsetFromEndOffsets computes the actual start offset for a partition
 // using pre-fetched end offsets. No additional broker calls needed.
-func resolveStartOffsetFromEndOffsets(endOffset int64, startOffset int64, limit int) int64 {
+// perPartition is the per-partition fetch budget (used for the latest-N window).
+func resolveStartOffsetFromEndOffsets(endOffset int64, startOffset int64, perPartition int) int64 {
 	if startOffset == -2 {
 		return 0 // earliest
 	}
 	if startOffset >= 0 {
 		return startOffset // explicit offset
 	}
-	// startOffset == -1: latest → read last N messages
-	actual := endOffset - int64(limit)
+	// startOffset == -1: latest → read last perPartition messages from this partition
+	actual := endOffset - int64(perPartition)
 	if actual < 0 {
 		actual = 0
 	}
