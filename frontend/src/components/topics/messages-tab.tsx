@@ -234,7 +234,7 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
             onClick={handleStopLiveTail}
             className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg border transition-colors text-red-400 bg-red-500/10 border-red-500/20 hover:bg-red-500/20"
           >
-            <Icon name="square" className="size-3 fill-current" />
+            <Icon name="square" className="size-3" weight="fill" />
             Stop
           </button>
         </div>
