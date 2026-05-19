@@ -9,27 +9,20 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- Drop consumer group dialog with action gating and backend `DeleteConsumerGroup` binding
-- ASC/DESC sort toggle for messages filter bar with multi-partition merge-sort-trim
-- Light theme with CSS variables, toggle wiring, and full component coverage
-- Row right-click context menu for DataTable and topic list table
-- Phosphor icon wrapper foundation replacing lucide-react across the UI
+- Drop consumer group dialog with action gating
+- Light theme with full component coverage
+- ASC/DESC sort toggle for messages filter bar
+- Row right-click context menu for tables
 
 ### Changed
 
-- Phosphor icons switched from duotone to thin weight
-- Message key/value colors updated: cyan for value, purple for key
-- Template list row actions moved to right-click context menu
-- Go module dependencies updated
+- Migrate from lucide-react to Phosphor icons (thin weight)
 
 ### Fixed
 
-- Drop consumer group dialog race condition and stale config issues
-- Consumer query invalidation scoped to active cluster
-- Multi-partition latest-N fetch with per-partition budget and merge-sort-trim
-- Light theme color fixes and overflow handling in modals
+- Drop consumer group race condition and stale config
+- Multi-partition latest-N fetch with per-partition budget
 - Command+K search palette subscribe error and theme mismatch
-- CommandInput styling simplified, InputGroup dependency removed
 
 ## [1.1.2] - 2026-04-01
 
