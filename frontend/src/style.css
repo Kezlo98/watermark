@@ -39,9 +39,13 @@
     --semantic-orange: #FF8C00;
     --semantic-red: #FF0000;
     --status-healthy: #34D399;
+    --status-healthy-rgb: 52 211 153;
     --status-rebalancing: #FBBF24;
+    --status-rebalancing-rgb: 251 191 36;
     --status-dead: #EF4444;
+    --status-dead-rgb: 239 68 68;
     --status-empty: #94A3B8;
+    --status-empty-rgb: 148 163 184;
 
     /* Sidebar tokens (unused for now, but shadcn expects them) */
     --sidebar: #0A0A0A;
@@ -52,6 +56,73 @@
     --sidebar-accent-foreground: #F5F5F5;
     --sidebar-border: rgba(255, 255, 255, 0.1);
     --sidebar-ring: #8B5CF6;
+
+    /* Icon tone primaries (Phosphor thin weight: single-stroke, drives `color`) */
+    --icon-default-primary: #F5F5F5;
+    --icon-brand-primary: #8B5CF6;
+    --icon-success-primary: #34D399;
+    --icon-warning-primary: #FBBF24;
+    --icon-danger-primary: #EF4444;
+    --icon-info-primary: #06B6D4;
+    --icon-muted-primary: #94A3B8;
+  }
+
+  .light {
+    --background: #F8FAFC;
+    --foreground: #0F172A;
+    --primary: #8B5CF6;
+    --primary-foreground: #FFFFFF;
+    --card: #FFFFFF;
+    --card-foreground: #0F172A;
+    --popover: #FFFFFF;
+    --popover-foreground: #0F172A;
+    --secondary: #F1F5F9;
+    --secondary-foreground: #0F172A;
+    --muted: #F1F5F9;
+    --muted-foreground: #64748B;
+    --accent: #F1F5F9;
+    --accent-foreground: #0F172A;
+    --destructive: #EF4444;
+    --destructive-foreground: #FFFFFF;
+    --border: #E2E8F0;
+    --input: #E2E8F0;
+    --ring: #8B5CF6;
+    --glass-panel: #FFFFFF;
+    --border-subtle: #E2E8F0;
+    --border-hover: #CBD5E1;
+    --semantic-cyan: #06B6D4;
+    --semantic-purple: #8B5CF6;
+    --semantic-orange: #F59E0B;
+    --semantic-red: #DC2626;
+    --status-healthy: #059669;
+    --status-healthy-rgb: 5 150 105;
+    --status-healthy-foreground: #065F46;
+    --status-rebalancing: #D97706;
+    --status-rebalancing-rgb: 217 119 6;
+    --status-rebalancing-foreground: #92400E;
+    --status-dead: #DC2626;
+    --status-dead-rgb: 220 38 38;
+    --status-dead-foreground: #991B1B;
+    --status-empty: #94A3B8;
+    --status-empty-rgb: 148 163 184;
+    --status-empty-foreground: #475569;
+    --sidebar: #FFFFFF;
+    --sidebar-foreground: #0F172A;
+    --sidebar-primary: #8B5CF6;
+    --sidebar-primary-foreground: #FFFFFF;
+    --sidebar-accent: #F1F5F9;
+    --sidebar-accent-foreground: #0F172A;
+    --sidebar-border: #E2E8F0;
+    --sidebar-ring: #8B5CF6;
+
+    /* Icon tone primaries (light theme) */
+    --icon-default-primary: #0F172A;
+    --icon-brand-primary: #8B5CF6;
+    --icon-success-primary: #059669;
+    --icon-warning-primary: #D97706;
+    --icon-danger-primary: #DC2626;
+    --icon-info-primary: #06B6D4;
+    --icon-muted-primary: #64748B;
   }
 
   * {
@@ -67,6 +138,7 @@
     font-family: "Inter", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 300ms ease, color 300ms ease;
   }
 
   body {
@@ -81,22 +153,22 @@
     overflow: hidden;
   }
 
-  /* Custom scrollbar for dark theme */
-  ::-webkit-scrollbar {
+  /* Custom scrollbar — dark mode only; light mode uses native OS scrollbars */
+  html:not(.light) ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
 
-  ::-webkit-scrollbar-track {
+  html:not(.light) ::-webkit-scrollbar-track {
     background: transparent;
   }
 
-  ::-webkit-scrollbar-thumb {
+  html:not(.light) ::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.15);
     border-radius: 3px;
   }
 
-  ::-webkit-scrollbar-thumb:hover {
+  html:not(.light) ::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.25);
   }
 }
@@ -107,11 +179,20 @@
     border: 1px solid var(--border-subtle);
     border-radius: 16px;
   }
+  .light .glass-panel {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    border: 1px solid #E2E8F0;
+  }
 
   .glass-sidebar {
     background: rgba(10, 10, 10, 0.4);
     backdrop-filter: blur(20px);
     border-right: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  .light .glass-sidebar {
+    background: var(--sidebar);
+    backdrop-filter: none;
+    border-right: 1px solid var(--sidebar-border);
   }
 
   .text-gradient {

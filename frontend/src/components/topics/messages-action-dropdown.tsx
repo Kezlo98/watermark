@@ -1,4 +1,4 @@
-import { ChevronDown, Send, CalendarX2, Trash2 } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,21 +28,21 @@ export function MessagesActionDropdown({ onProduce, onDeleteBeforeDate, onPurgeT
           )}
         >
           Actions
-          <ChevronDown className="size-3.5" />
+          <Icon name="chevron-down" className="size-3.5" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onSelect={onProduce}>
-          <Send className="size-3.5" />
+          <Icon name="send" className="size-3.5" tone="brand" />
           Produce Message
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={onDeleteBeforeDate} className="text-red-400 focus:text-red-400">
-          <CalendarX2 className="size-3.5" />
+          <Icon name="calendar-x" className="size-3.5" tone="danger" />
           Delete Before Date…
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={onPurgeTopic} className="text-red-400 focus:text-red-400">
-          <Trash2 className="size-3.5" />
+          <Icon name="trash" className="size-3.5" tone="danger" />
           Purge Topic…
         </DropdownMenuItem>
       </DropdownMenuContent>

@@ -10,7 +10,7 @@ import { useAnnotationUIStore } from "@/store/annotations";
 import { OwnershipBadges } from "@/components/annotations/ownership-badges";
 import { AnnotationEditorModal } from "@/components/annotations/annotation-editor-modal";
 import { BatchTagModal } from "@/components/annotations/batch-tag-modal";
-import { Pencil, Tag, Copy } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { useReadOnly } from "@/hooks/use-read-only";
 
 interface TopicListTableProps {
@@ -89,10 +89,10 @@ export function TopicListTable({ onTopicClick, onCloneTopic, searchFilter, hideI
 
         return (
           <div className="flex flex-col gap-1">
-            <span className="text-white font-medium">{row.original.name}</span>
+            <span className="text-foreground font-medium">{row.original.name}</span>
             {hasOwnership && (
               <div
-                className="flex items-center gap-1 cursor-pointer group"
+                className="flex items-center gap-1 flex-wrap min-w-0 cursor-pointer"
                 onClick={(e) => {
                   e.stopPropagation();
                   openEditor(row.original.name);
@@ -103,26 +103,12 @@ export function TopicListTable({ onTopicClick, onCloneTopic, searchFilter, hideI
                   consumers={[]}
                   maxVisible={3}
                 />
-                <span className="text-[10px] text-slate-500 mx-0.5">→</span>
+                <span className="text-[10px] text-muted-foreground mx-0.5">→</span>
                 <OwnershipBadges
                   producers={[]}
                   consumers={consumers}
                   maxVisible={3}
                 />
-                <Pencil className="size-3 text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity ml-0.5" />
-              </div>
-            )}
-            {!hasOwnership && (
-              <div
-                className="cursor-pointer group"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  openEditor(row.original.name);
-                }}
-              >
-                <span className="text-[10px] text-slate-500 group-hover:text-slate-400 transition-colors italic">
-                  + tag
-                </span>
               </div>
             )}
           </div>
@@ -137,24 +123,6 @@ export function TopicListTable({ onTopicClick, onCloneTopic, searchFilter, hideI
       cell: ({ row }) => formatBytes(row.original.size),
     },
     { accessorKey: "retention", header: "Retention" },
-    {
-      id: "actions",
-      header: "",
-      cell: ({ row }) =>
-        !isReadOnly && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onCloneTopic(row.original.name);
-            }}
-            className="p-1.5 text-slate-500 hover:text-primary transition-colors rounded hover:bg-white/5"
-            title="Clone topic"
-          >
-            <Copy className="size-3.5" />
-          </button>
-        ),
-      enableSorting: false,
-    },
   ];
 
   return (
@@ -169,12 +137,12 @@ export function TopicListTable({ onTopicClick, onCloneTopic, searchFilter, hideI
             onClick={openBatchModal}
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-primary hover:bg-primary/90 rounded-md transition-colors"
           >
-            <Tag className="size-3" />
+            <Icon name="tag" className="size-3" />
             Tag Selected
           </button>
           <button
             onClick={clearSelectedTopics}
-            className="text-xs text-slate-400 hover:text-white transition-colors"
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
             Clear
           </button>
@@ -186,6 +154,14 @@ export function TopicListTable({ onTopicClick, onCloneTopic, searchFilter, hideI
         columns={columns}
         onRowClick={(row) => onTopicClick(row.name)}
         globalFilter={searchFilter}
+        getRowContextMenu={(topic) =>
+          isReadOnly
+            ? []
+            : [
+                { label: "Clone Topic", icon: "copy", onSelect: () => onCloneTopic(topic.name) },
+                { label: "Edit Tags", icon: "tag", onSelect: () => openEditor(topic.name) },
+              ]
+        }
       />
 
       {/* Editor modal */}

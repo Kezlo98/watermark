@@ -82,7 +82,7 @@ export function AnnotationEditorModal({
         <DialogBody className="space-y-5">
           {/* Producers */}
           <div className="space-y-2">
-            <label className="block text-xs font-semibold text-purple-300 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-purple-600 dark:text-purple-300 uppercase tracking-wider">
               Producers
             </label>
             <ServiceNameInput
@@ -96,7 +96,7 @@ export function AnnotationEditorModal({
 
           {/* Consumers */}
           <div className="space-y-2">
-            <label className="block text-xs font-semibold text-blue-300 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-blue-600 dark:text-blue-300 uppercase tracking-wider">
               Consumers
             </label>
             <ServiceNameInput
@@ -110,7 +110,7 @@ export function AnnotationEditorModal({
 
           {/* Notes */}
           <div className="space-y-2">
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               Notes
             </label>
             <input
@@ -118,7 +118,7 @@ export function AnnotationEditorModal({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Optional description..."
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-slate-300 font-mono placeholder:text-slate-500 outline-none focus:ring-1 focus:ring-primary/30 transition-all"
+              className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground font-mono placeholder:text-muted-foreground outline-none focus:ring-1 focus:ring-primary/30 transition-all"
             />
           </div>
         </DialogBody>
@@ -138,7 +138,7 @@ export function AnnotationEditorModal({
           <div className="flex gap-2">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-sm text-slate-400 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors"
+              className="px-4 py-2 text-sm text-muted-foreground bg-secondary rounded-lg border border-border hover:bg-accent transition-colors"
             >
               Cancel
             </button>

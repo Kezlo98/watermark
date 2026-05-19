@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Plus, Download, Upload } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useSettingsStore } from "@/store/settings";
@@ -83,8 +83,8 @@ export function TemplateSettingsPanel() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold text-white">Topic Templates</h2>
-        <p className="mt-1 text-sm text-slate-400">
+        <h2 className="text-2xl font-bold text-foreground">Topic Templates</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
           Manage reusable topic configurations with auto-match patterns
         </p>
       </div>
@@ -92,7 +92,7 @@ export function TemplateSettingsPanel() {
       {/* Cluster Selector */}
       <div className="flex items-center gap-4">
         <div className="flex-1">
-          <label className="mb-2 block text-sm font-medium text-slate-300">
+          <label className="mb-2 block text-sm font-medium text-foreground">
             Viewing Cluster
           </label>
           <Select
@@ -117,14 +117,14 @@ export function TemplateSettingsPanel() {
             onClick={() => setShowCreateModal(true)}
             className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary/90"
           >
-            <Plus className="size-4" />
+            <Icon name="plus" className="size-4" />
             New Template
           </button>
         </div>
       </div>
 
       {/* Import/Export Controls */}
-      <div className="flex items-center gap-4 rounded-lg border border-slate-700/50 bg-slate-800/30 p-4">
+      <div className="flex items-center gap-4 rounded-lg border border-border/50 bg-card/30 p-4">
         <div className="flex items-center gap-2">
           <label className="flex items-center gap-2 text-sm">
             <input
@@ -133,7 +133,7 @@ export function TemplateSettingsPanel() {
               onChange={() => setImportMode("merge")}
               className="text-primary"
             />
-            <span className="text-slate-300">Merge</span>
+            <span className="text-foreground">Merge</span>
           </label>
           <label className="flex items-center gap-2 text-sm">
             <input
@@ -142,7 +142,7 @@ export function TemplateSettingsPanel() {
               onChange={() => setImportMode("replace")}
               className="text-primary"
             />
-            <span className="text-slate-300">Replace</span>
+            <span className="text-foreground">Replace</span>
           </label>
         </div>
 
@@ -150,23 +150,23 @@ export function TemplateSettingsPanel() {
           <button
             onClick={handleExport}
             disabled={templateList.length === 0}
-            className="flex items-center gap-2 rounded-lg border border-slate-600 bg-slate-700/50 px-3 py-1.5 text-sm text-slate-200 transition-colors hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex items-center gap-2 rounded-lg border border-border bg-secondary px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <Download className="size-3.5" />
+            <Icon name="download" className="size-3.5" />
             Export
           </button>
           <button
             onClick={handleImport}
-            className="flex items-center gap-2 rounded-lg border border-slate-600 bg-slate-700/50 px-3 py-1.5 text-sm text-slate-200 transition-colors hover:bg-slate-700"
+            className="flex items-center gap-2 rounded-lg border border-border bg-secondary px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-accent"
           >
-            <Upload className="size-3.5" />
+            <Icon name="upload" className="size-3.5" />
             Import
           </button>
         </div>
       </div>
 
       {/* Template Count */}
-      <div className="text-sm text-slate-400">
+      <div className="text-sm text-muted-foreground">
         <span className="font-medium text-primary">{templateList.length}</span> templates
         in <span className="font-medium">{clusterName}</span>
       </div>

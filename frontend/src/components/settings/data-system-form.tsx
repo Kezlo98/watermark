@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Download, Upload, Loader2, ArrowDownCircle, CheckCircle2, AlertCircle } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { GetCurrentVersion, CheckForUpdate } from "@/lib/wails-client";
 import { UpdateChangelogModal } from "@/components/layout/update-changelog-modal";
 import type { UpdateInfo } from "@/components/layout/update-changelog-modal";
@@ -67,13 +67,13 @@ function AppVersionSection() {
 
   return (
     <section>
-      <h3 className="text-sm font-display font-bold text-white uppercase tracking-wider mb-4">
-        ℹ️ About
+      <h3 className="flex items-center gap-2 text-sm font-display font-bold text-foreground uppercase tracking-wider mb-4">
+        <Icon name="info" className="size-4" tone="info" /> About
       </h3>
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-white font-medium">Watermark</p>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-sm text-foreground font-medium">Watermark</p>
+          <p className="text-xs text-muted-foreground mt-0.5">
             {version ? `v${version}` : "—"}
           </p>
         </div>
@@ -84,16 +84,16 @@ function AppVersionSection() {
             isAvailable
               ? "bg-primary/20 border-primary/30 text-primary hover:bg-primary/30"
               : isSkipped
-                ? "bg-slate-500/10 border-slate-500/20 text-slate-400 hover:bg-slate-500/20"
+                ? "bg-muted border-border text-muted-foreground hover:bg-muted"
                 : isError
                   ? "bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20"
-                  : "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10"
+                  : "bg-secondary border-border text-foreground hover:bg-accent"
           }`}
         >
-          {isLoading && <Loader2 className="size-3 animate-spin" />}
-          {isAvailable && <ArrowDownCircle className="size-3" />}
-          {isDone && <CheckCircle2 className="size-3 text-emerald-400" />}
-          {isError && <AlertCircle className="size-3" />}
+          {isLoading && <Icon name="loader" className="size-3 animate-spin" />}
+          {isAvailable && <Icon name="arrow-down-circle" className="size-3" tone="brand" />}
+          {isDone && <Icon name="check-circle" className="size-3" tone="success" />}
+          {isError && <Icon name="alert-circle" className="size-3" tone="danger" />}
           {buttonLabel()}
         </button>
       </div>
@@ -117,20 +117,20 @@ export function DataSystemForm() {
     <div className="space-y-8">
       {/* Data section */}
       <section>
-        <h3 className="text-sm font-display font-bold text-white uppercase tracking-wider mb-4">
-          💻 System & Workspace
+        <h3 className="flex items-center gap-2 text-sm font-display font-bold text-foreground uppercase tracking-wider mb-4">
+          <Icon name="monitor" className="size-4" tone="brand" /> System & Workspace
         </h3>
 
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <Label htmlFor="launch-startup" className="text-sm text-slate-300 font-normal cursor-pointer">
+            <Label htmlFor="launch-startup" className="text-sm text-foreground font-normal cursor-pointer">
               Start application when computer starts
             </Label>
             <Switch id="launch-startup" defaultChecked />
           </div>
 
           <div className="flex items-center justify-between">
-            <Label htmlFor="minimize-tray" className="text-sm text-slate-300 font-normal cursor-pointer">
+            <Label htmlFor="minimize-tray" className="text-sm text-foreground font-normal cursor-pointer">
               Minimize to system tray when closed
             </Label>
             <Switch id="minimize-tray" defaultChecked />
@@ -140,16 +140,16 @@ export function DataSystemForm() {
 
       {/* Import/Export */}
       <section>
-        <p className="text-sm text-slate-400 mb-4">
+        <p className="text-sm text-muted-foreground mb-4">
           Share cluster configurations with your team.
         </p>
         <div className="flex gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 text-sm text-slate-300 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors">
-            <Download className="size-4" />
+          <button className="flex items-center gap-2 px-4 py-2 text-sm text-foreground bg-secondary rounded-lg border border-border hover:bg-accent transition-colors">
+            <Icon name="download" className="size-4" />
             Import Config (.json)
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 text-sm text-slate-300 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors">
-            <Upload className="size-4" />
+          <button className="flex items-center gap-2 px-4 py-2 text-sm text-foreground bg-secondary rounded-lg border border-border hover:bg-accent transition-colors">
+            <Icon name="upload" className="size-4" />
             Export Config (.json)
           </button>
         </div>
@@ -157,7 +157,7 @@ export function DataSystemForm() {
         <div className="flex items-center gap-2 mt-3">
           <Switch id="include-passwords" />
           <Label htmlFor="include-passwords" className="text-xs text-semantic-red font-normal cursor-pointer">
-            Include passwords in export — <strong>⚠️ stored as plaintext, keep file secure</strong>
+            Include passwords in export — <strong className="inline-flex items-center gap-1"><Icon name="alert-triangle" className="size-3" tone="warning" /> stored as plaintext, keep file secure</strong>
           </Label>
         </div>
       </section>

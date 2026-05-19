@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Loader2, CheckCircle2, XCircle, ShieldX, ShieldAlert, Zap } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { SaveCluster, TestConnection, GetCluster, UpdateReadOnly } from "@/lib/wails-client";
 import { config } from "../../../wailsjs/go/models";
 import { useQueryClient } from "@tanstack/react-query";
@@ -145,8 +145,8 @@ export function ClusterForm({ clusterId, clusterName, onClose }: ClusterFormProp
 
   return (
     <div className="glass-panel p-5 space-y-4">
-      <h4 className="text-sm font-display font-bold text-white uppercase tracking-wider">
-        {isNew ? "✨ New Cluster" : `Edit Cluster: ${form.name}`}
+      <h4 className="text-sm font-display font-bold text-foreground uppercase tracking-wider">
+        {isNew ? <span className="flex items-center gap-1.5"><Icon name="sparkles" className="size-3.5" tone="brand" />New Cluster</span> : `Edit Cluster: ${form.name}`}
       </h4>
 
       <ClusterFormFields
@@ -168,11 +168,11 @@ export function ClusterForm({ clusterId, clusterName, onClose }: ClusterFormProp
             testStatus === "unreachable" && "bg-semantic-red/10 text-semantic-red",
           )}
         >
-          {testStatus === "testing" && <Loader2 className="size-3.5 animate-spin" />}
-          {testStatus === "ok" && <CheckCircle2 className="size-3.5" />}
-          {testStatus === "auth_error" && <ShieldX className="size-3.5" />}
-          {testStatus === "forbidden" && <ShieldAlert className="size-3.5" />}
-          {testStatus === "unreachable" && <XCircle className="size-3.5" />}
+          {testStatus === "testing" && <Icon name="loader" className="size-3.5 animate-spin" tone="brand" />}
+          {testStatus === "ok" && <Icon name="check-circle" className="size-3.5" tone="success" />}
+          {testStatus === "auth_error" && <Icon name="shield-x" className="size-3.5" tone="warning" />}
+          {testStatus === "forbidden" && <Icon name="shield-alert" className="size-3.5" tone="warning" />}
+          {testStatus === "unreachable" && <Icon name="x-circle" className="size-3.5" tone="danger" />}
           <span>{testStatus === "testing" ? "Testing connection..." : testMessage}</span>
         </div>
       )}
@@ -180,22 +180,22 @@ export function ClusterForm({ clusterId, clusterName, onClose }: ClusterFormProp
       {/* Save error */}
       {saveError && (
         <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-mono bg-semantic-red/10 text-semantic-red">
-          <XCircle className="size-3.5" />
+          <Icon name="x-circle" className="size-3.5" tone="danger" />
           <span>{saveError}</span>
         </div>
       )}
 
       {/* Action buttons */}
-      <div className="flex justify-between items-center pt-4 border-t border-white/5">
+      <div className="flex justify-between items-center pt-4 border-t border-border">
         <button
           onClick={handleTestConnection}
           disabled={testStatus === "testing"}
-          className="flex items-center gap-1.5 px-4 py-2 text-sm text-slate-400 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center gap-1.5 px-4 py-2 text-sm text-muted-foreground bg-secondary rounded-lg border border-border hover:bg-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {testStatus === "testing" ? (
-            <Loader2 className="size-3.5 animate-spin" />
+            <Icon name="loader" className="size-3.5 animate-spin" tone="brand" />
           ) : (
-            <Zap className="size-3.5" />
+            <Icon name="zap" className="size-3.5" tone="warning" />
           )}
           Test Connection
         </button>
@@ -203,7 +203,7 @@ export function ClusterForm({ clusterId, clusterName, onClose }: ClusterFormProp
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm text-slate-400 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors"
+            className="px-4 py-2 text-sm text-muted-foreground bg-secondary rounded-lg border border-border hover:bg-accent transition-colors"
           >
             Cancel
           </button>
@@ -212,7 +212,7 @@ export function ClusterForm({ clusterId, clusterName, onClose }: ClusterFormProp
             disabled={saving}
             className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors disabled:opacity-50"
           >
-            {saving && <Loader2 className="size-3.5 animate-spin" />}
+            {saving && <Icon name="loader" className="size-3.5 animate-spin" />}
             {isNew ? "Create" : "Save"}
           </button>
         </div>

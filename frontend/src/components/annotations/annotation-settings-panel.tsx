@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Download, Upload, FileJson } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   GetAnnotations,
@@ -121,22 +121,22 @@ export function AnnotationSettingsPanel() {
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center gap-2">
-        <FileJson className="size-4 text-primary" />
-        <h3 className="text-sm font-display font-bold text-white">
+        <Icon name="file-json" className="size-4" tone="brand" />
+        <h3 className="text-sm font-display font-bold text-foreground">
           Topic Annotations
         </h3>
       </div>
 
-      <p className="text-xs text-slate-400 leading-relaxed">
+      <p className="text-xs text-muted-foreground leading-relaxed">
         Share topic ownership tags with your team.{" "}
-        <span className="text-slate-500">
+        <span className="text-muted-foreground">
           No credentials are included in exports.
         </span>
       </p>
 
       {/* Cluster selector */}
       <div className="flex items-center gap-3">
-        <label className="text-xs text-slate-400">Cluster:</label>
+        <label className="text-xs text-muted-foreground">Cluster:</label>
         <Select
           value={effectiveClusterId ?? ""}
           onValueChange={(v) => setViewingClusterId(v || null)}
@@ -155,7 +155,7 @@ export function AnnotationSettingsPanel() {
             ))}
           </SelectContent>
         </Select>
-        <span className="text-xs font-mono text-slate-400">
+        <span className="text-xs font-mono text-muted-foreground">
           <span className="text-primary">{annotatedCount}</span> annotated
         </span>
       </div>
@@ -172,12 +172,12 @@ export function AnnotationSettingsPanel() {
         <AnnotationJsonViewer annotations={viewingAnnotations} />
       )}
 
-      <div className="border-t border-white/5 pt-4" />
+      <div className="border-t border-border pt-4" />
 
       {/* Import section */}
       <div className="space-y-3">
         <div className="flex gap-4">
-          <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+          <label className="flex items-center gap-2 text-xs text-foreground cursor-pointer">
             <input
               type="radio"
               name="import-mode"
@@ -187,7 +187,7 @@ export function AnnotationSettingsPanel() {
             />
             Merge (keep existing)
           </label>
-          <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+          <label className="flex items-center gap-2 text-xs text-foreground cursor-pointer">
             <input
               type="radio"
               name="import-mode"
@@ -201,30 +201,30 @@ export function AnnotationSettingsPanel() {
 
         <button
           onClick={handleImport}
-          className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-300 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors"
+          className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-foreground bg-secondary border border-border rounded-lg hover:bg-accent transition-colors"
         >
-          <Upload className="size-3.5" />
+          <Icon name="upload" className="size-3.5" />
           Import into {clusterName}
         </button>
       </div>
 
-      <div className="border-t border-white/5 pt-4" />
+      <div className="border-t border-border pt-4" />
 
       {/* Export buttons */}
       <div className="flex gap-2">
         <button
           onClick={handleExportCurrent}
           disabled={!effectiveClusterId}
-          className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-300 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors disabled:opacity-40"
+          className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-foreground bg-secondary border border-border rounded-lg hover:bg-accent transition-colors disabled:opacity-40"
         >
-          <Download className="size-3.5" />
+          <Icon name="download" className="size-3.5" />
           Export {clusterName}
         </button>
         <button
           onClick={handleExportAll}
-          className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-300 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors"
+          className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-foreground bg-secondary border border-border rounded-lg hover:bg-accent transition-colors"
         >
-          <Download className="size-3.5" />
+          <Icon name="download" className="size-3.5" />
           Export All Clusters
         </button>
       </div>

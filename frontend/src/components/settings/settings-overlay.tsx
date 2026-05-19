@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Icon } from "@/components/ui/icon";
 import { useSettingsStore } from "@/store/settings";
 import { TabNavigation } from "@/components/shared/tab-navigation";
 import { ClusterList } from "./cluster-list";
@@ -14,11 +15,11 @@ import {
 } from "@/components/ui/dialog";
 
 const SETTINGS_TABS = [
-  { id: "clusters", label: "🌐 Clusters" },
-  { id: "appearance", label: "🎨 Appearance" },
-  { id: "annotations", label: "🏷️ Annotations" },
-  { id: "templates", label: "📋 Templates" },
-  { id: "system", label: "💻 System" },
+  { id: "clusters", label: "Clusters" },
+  { id: "appearance", label: "Appearance" },
+  { id: "annotations", label: "Annotations" },
+  { id: "templates", label: "Templates" },
+  { id: "system", label: "System" },
 ];
 
 export function SettingsOverlay() {
@@ -29,13 +30,13 @@ export function SettingsOverlay() {
     <Dialog open={isSettingsOpen} onOpenChange={(open) => !open && closeSettings()}>
       <DialogContent className="sm:min-w-[60vw] sm:max-w-5xl h-[80vh] flex flex-col gap-0 p-0">
         {/* Header */}
-        <DialogHeader className="px-6 py-4 border-b border-white/5">
-          <DialogTitle>⚙️ Preferences</DialogTitle>
+        <DialogHeader className="px-6 py-4 border-b border-border">
+          <DialogTitle className="flex items-center gap-2"><Icon name="settings" className="size-4" tone="brand" /> Preferences</DialogTitle>
         </DialogHeader>
 
         {/* Body: left tabs + content */}
         <div className="flex flex-1 overflow-hidden">
-          <div className="w-48 border-r border-white/5 p-3">
+          <div className="w-48 border-r border-border p-3">
             <TabNavigation
               tabs={SETTINGS_TABS}
               activeTab={activeTab}

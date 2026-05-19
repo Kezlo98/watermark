@@ -20,8 +20,8 @@ export function MonitoringToggle({
   return (
     <div className="flex items-center justify-between py-2">
       <div>
-        <Label htmlFor={id} className="text-sm text-white font-normal cursor-pointer">{label}</Label>
-        <div className="text-xs text-slate-500">{description}</div>
+        <Label htmlFor={id} className="text-sm text-foreground font-normal cursor-pointer">{label}</Label>
+        <div className="text-xs text-muted-foreground">{description}</div>
       </div>
       <Switch id={id} checked={checked} onCheckedChange={onChange} disabled={disabled} />
     </div>

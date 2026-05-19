@@ -3,7 +3,7 @@ import { Dialog as DialogPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { XIcon } from "lucide-react"
+import { Icon } from "@/components/ui/icon"
 
 function Dialog({
   ...props
@@ -71,8 +71,7 @@ const DialogContent = React.forwardRef<
             className="absolute top-2 right-2"
             size="icon-sm"
           >
-            <XIcon
-            />
+            <Icon name="x" />
             <span className="sr-only">Close</span>
           </Button>
         </DialogPrimitive.Close>
@@ -86,7 +85,7 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="dialog-header"
-      className={cn("flex flex-col gap-2", className)}
+      className={cn("flex flex-col gap-2 min-w-0", className)}
       {...props}
     />
   )
@@ -126,7 +125,7 @@ function DialogTitle({
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn("text-base leading-none font-medium", className)}
+      className={cn("text-base leading-none font-medium min-w-0", className)}
       {...props}
     />
   )

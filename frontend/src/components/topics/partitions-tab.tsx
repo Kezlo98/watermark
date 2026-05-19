@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
-import { Trash2 } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { DataTable } from "@/components/shared/data-table";
 import { cn, formatNumber } from "@/lib/utils";
 import type { Partition } from "@/types/kafka";
@@ -56,11 +56,11 @@ function buildColumns(onPurge?: (partition: Partition) => void): ColumnDef<Parti
             className={cn(
               "flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md border transition-colors",
               isEmpty
-                ? "text-slate-600 border-white/5 cursor-not-allowed"
+                ? "text-muted-foreground border-border cursor-not-allowed"
                 : "text-red-400 border-red-500/20 bg-red-500/5 hover:bg-red-500/15",
             )}
           >
-            <Trash2 className="size-3" />
+            <Icon name="trash" className="size-3" tone="danger" />
             Purge
           </button>
         );

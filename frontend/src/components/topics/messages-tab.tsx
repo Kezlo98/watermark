@@ -1,5 +1,5 @@
-import { useState, useCallback, useRef, useEffect } from "react";
-import { Square, RotateCcw, X } from "lucide-react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
+import { Icon } from "@/components/ui/icon";
 import type { Message, StartPosition, MessageFormat } from "@/types/kafka";
 import { useKafkaQuery } from "@/hooks/use-kafka-query";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -72,6 +72,9 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
     refetch();
   };
 
+  // --- Sort direction ---
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+
   // --- Select mode state ---
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -129,6 +132,18 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
             m.key.toLowerCase().includes(debouncedBodyFilter.toLowerCase()),
         )
       : fetchedMessages;
+
+  const displayedMessages = useMemo(() => {
+    if (liveTailActive) return messages;
+    const dir = sortDir === "asc" ? 1 : -1;
+    return [...messages].sort((a, b) => {
+      const ta = new Date(a.timestamp).getTime();
+      const tb = new Date(b.timestamp).getTime();
+      if (ta !== tb) return (ta - tb) * dir;
+      if (a.partition !== b.partition) return (a.partition - b.partition) * dir;
+      return (a.offset - b.offset) * dir;
+    });
+  }, [messages, sortDir, liveTailActive]);
 
   const selectedMessages = fetchedMessages.filter(m => selectedIds.has(`${m.partition}-${m.offset}`));
 
@@ -225,8 +240,8 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
 
           <div className="h-4 w-px bg-emerald-500/20" />
 
-          <span className="text-xs font-mono text-slate-400">{topicName}</span>
-          <span className="text-xs font-mono text-slate-500">· {liveTailMessages.length} messages</span>
+          <span className="text-xs font-mono text-muted-foreground">{topicName}</span>
+          <span className="text-xs font-mono text-muted-foreground">· {liveTailMessages.length} messages</span>
 
           <div className="flex-1" />
 
@@ -234,7 +249,7 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
             onClick={handleStopLiveTail}
             className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg border transition-colors text-red-400 bg-red-500/10 border-red-500/20 hover:bg-red-500/20"
           >
-            <Square className="size-3 fill-current" />
+            <Icon name="square" className="size-3" weight="fill" />
             Stop
           </button>
         </div>
@@ -263,6 +278,8 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
           selectMode={selectMode}
           onSelectModeToggle={handleSelectModeToggle}
           selectedCount={selectedIds.size}
+          sortDir={sortDir}
+          onSortDirToggle={() => setSortDir(d => d === "asc" ? "desc" : "asc")}
         />
       )}
 
@@ -274,21 +291,21 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
             onClick={() => openBatchReplay(selectedMessages)}
             className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border text-primary bg-primary/10 border-primary/20 hover:bg-primary/20 transition-colors"
           >
-            <RotateCcw className="size-3.5" />
+            <Icon name="rotate-ccw" className="size-3.5" tone="brand" />
             Replay Selected
           </button>
           <button
             onClick={() => setSelectedIds(new Set())}
-            className="flex items-center gap-1 px-2 py-1.5 text-sm text-slate-400 hover:text-white transition-colors"
+            className="flex items-center gap-1 px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            <X className="size-3.5" />
+            <Icon name="x" className="size-3.5" />
             Clear
           </button>
         </div>
       )}
 
       <MessagesTable
-        messages={messages}
+        messages={displayedMessages}
         selectedMessage={selectedMessage}
         onSelectMessage={setSelectedMessage}
         onReplay={isReadOnly ? undefined : openSingleReplay}

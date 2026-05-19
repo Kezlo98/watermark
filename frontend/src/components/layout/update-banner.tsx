@@ -1,11 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
-import { ArrowDownCircle, X, CheckCircle2 } from "lucide-react";
 import { EventsOn } from "../../../wailsjs/runtime/runtime";
 import { CheckForUpdate } from "@/lib/wails-client";
 import { UpdateChangelogModal } from "@/components/layout/update-changelog-modal";
 import type { UpdateInfo } from "@/components/layout/update-changelog-modal";
 import { cn } from "@/lib/utils";
 import { waitForWails } from "@/lib/wails-ready";
+import { Icon } from "@/components/ui/icon";
 
 /**
  * Sidebar update banner — shows when a new version is available.
@@ -60,7 +60,7 @@ export function UpdateBanner() {
       <div className="mx-3 mb-3">
         <div className="relative rounded-xl border px-3.5 py-3 bg-emerald-500/10 border-emerald-500/20">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="size-3.5 text-emerald-400" />
+            <Icon name="check-circle" tone="success" className="size-3.5" />
             <span className="text-[11px] font-semibold text-emerald-400">
               Updated to {updateInfo?.latestVersion}
             </span>
@@ -80,13 +80,13 @@ export function UpdateBanner() {
         )}>
           <button
             onClick={() => setDismissed(true)}
-            className="absolute top-2 right-2 p-0.5 rounded-md text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-colors"
+            className="absolute top-2 right-2 p-0.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
             aria-label="Dismiss update"
           >
-            <X className="size-3" />
+            <Icon name="x" className="size-3" />
           </button>
           <div className="flex items-center gap-2 mb-1">
-            <ArrowDownCircle className="size-3.5 text-primary" />
+            <Icon name="arrow-down-circle" tone="brand" className="size-3.5" />
             <span className="text-[11px] font-semibold text-primary">
               {updateInfo!.latestVersion} Available
             </span>

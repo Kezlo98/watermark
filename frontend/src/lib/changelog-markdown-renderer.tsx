@@ -5,9 +5,9 @@ function renderInline(text: string): ReactNode {
   const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
   return parts.map((part, i) => {
     if (part.startsWith("**") && part.endsWith("**"))
-      return <strong key={i} className="text-white font-medium">{part.slice(2, -2)}</strong>;
+      return <strong key={i} className="text-foreground font-semibold">{part.slice(2, -2)}</strong>;
     if (part.startsWith("`") && part.endsWith("`"))
-      return <code key={i} className="text-primary/90 bg-white/5 px-1 rounded text-[10px] font-mono">{part.slice(1, -1)}</code>;
+      return <code key={i} className="text-primary bg-secondary px-1 rounded text-[10px] font-mono">{part.slice(1, -1)}</code>;
     return part;
   });
 }
@@ -32,20 +32,20 @@ export function renderChangelogMarkdown(md: string): ReactNode {
     if (line.startsWith("### ")) {
       flushList();
       nodes.push(
-        <h4 key={i} className="text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wider mt-2 mb-1">
+        <h4 key={i} className="text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wider mt-2 mb-1">
           {line.slice(4)}
         </h4>
       );
     } else if (line.startsWith("- ")) {
       listItems.push(
-        <li key={i} className="flex gap-1.5 text-[11px] text-slate-300">
-          <span className="text-slate-500 mt-0.5 shrink-0">•</span>
+        <li key={i} className="flex gap-1.5 text-[11px] text-foreground">
+          <span className="text-muted-foreground mt-0.5 shrink-0">•</span>
           <span>{renderInline(line.slice(2))}</span>
         </li>
       );
     } else if (line.trim() !== "") {
       flushList();
-      nodes.push(<p key={i} className="text-[11px] text-slate-300">{renderInline(line)}</p>);
+      nodes.push(<p key={i} className="text-[11px] text-foreground">{renderInline(line)}</p>);
     }
   });
 

@@ -1,4 +1,4 @@
-import { RefreshCw, Timer, TimerOff, Radio, CheckSquare } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
 import type { StartPosition, MessageFormat } from "@/types/kafka";
 import {
@@ -35,6 +35,8 @@ interface MessagesFilterBarProps {
   selectMode: boolean;
   onSelectModeToggle: () => void;
   selectedCount: number;
+  sortDir: "asc" | "desc";
+  onSortDirToggle: () => void;
 }
 
 export function MessagesFilterBar({
@@ -60,12 +62,14 @@ export function MessagesFilterBar({
   selectMode,
   onSelectModeToggle,
   selectedCount,
+  sortDir,
+  onSortDirToggle,
 }: MessagesFilterBarProps) {
   return (
     <div className="flex items-center gap-3 flex-wrap">
       {/* Start position */}
       <div className="flex items-center gap-2">
-        <span className="text-xs font-mono text-slate-500">Start:</span>
+        <span className="text-xs font-mono text-muted-foreground">Start:</span>
         <Select value={startPosition} onValueChange={(v) => onStartPositionChange(v as StartPosition)}>
           <SelectTrigger className="h-8 w-auto">
             <SelectValue />
@@ -87,7 +91,7 @@ export function MessagesFilterBar({
           value={customOffset}
           onChange={(e) => onCustomOffsetChange(Math.max(0, Number(e.target.value)))}
           placeholder="Offset"
-          className="h-8 w-28 px-2 bg-white/5 border border-white/10 rounded text-xs text-white font-mono focus:outline-none focus:ring-1 focus:ring-primary/50"
+          className="h-8 w-28 px-2 bg-secondary border border-border rounded text-xs text-foreground font-mono focus:outline-none focus:ring-1 focus:ring-primary/50"
         />
       )}
 
@@ -97,13 +101,13 @@ export function MessagesFilterBar({
           type="datetime-local"
           value={fromDate}
           onChange={(e) => onFromDateChange(e.target.value)}
-          className="h-8 px-2 bg-white/5 border border-white/10 rounded text-xs text-white font-mono focus:outline-none focus:ring-1 focus:ring-primary/50"
+          className="h-8 px-2 bg-secondary border border-border rounded text-xs text-foreground font-mono focus:outline-none focus:ring-1 focus:ring-primary/50"
         />
       )}
 
       {/* Format */}
       <div className="flex items-center gap-2">
-        <span className="text-xs font-mono text-slate-500">Format:</span>
+        <span className="text-xs font-mono text-muted-foreground">Format:</span>
         <Select value={format} onValueChange={(v) => onFormatChange(v as MessageFormat)}>
           <SelectTrigger className="h-8 w-auto">
             <SelectValue />
@@ -118,7 +122,7 @@ export function MessagesFilterBar({
 
       {/* Fetch limit */}
       <div className="flex items-center gap-2">
-        <span className="text-xs font-mono text-slate-500">Limit:</span>
+        <span className="text-xs font-mono text-muted-foreground">Limit:</span>
         <Select value={String(fetchLimit)} onValueChange={(v) => onFetchLimitChange(Number(v))}>
           <SelectTrigger className="h-8 w-auto">
             <SelectValue />
@@ -133,13 +137,13 @@ export function MessagesFilterBar({
 
       {/* Body contains filter */}
       <div className="flex items-center gap-2">
-        <span className="text-xs font-mono text-slate-500">Contains:</span>
+        <span className="text-xs font-mono text-muted-foreground">Contains:</span>
         <input
           type="text"
           value={bodyFilter}
           onChange={(e) => onBodyFilterChange(e.target.value)}
           placeholder="key or value…"
-          className="h-8 w-36 px-2 bg-white/5 border border-white/10 rounded text-xs text-white font-mono focus:outline-none focus:ring-1 focus:ring-primary/50"
+          className="h-8 w-36 px-2 bg-secondary border border-border rounded text-xs text-foreground font-mono focus:outline-none focus:ring-1 focus:ring-primary/50"
         />
       </div>
 
@@ -156,8 +160,18 @@ export function MessagesFilterBar({
           isFetching && "opacity-60 cursor-wait",
         )}
       >
-        <RefreshCw className={cn("size-3.5", isFetching && "animate-spin")} />
+        <Icon name="refresh" tone="brand" className={cn("size-3.5", isFetching && "animate-spin")} />
         {isFetching ? "Fetching…" : "Refresh"}
+      </button>
+
+      {/* Sort direction toggle */}
+      <button
+        onClick={onSortDirToggle}
+        title="Sort by time (ASC/DESC)"
+        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border transition-colors text-muted-foreground bg-secondary border-border hover:bg-accent"
+      >
+        {sortDir === "asc" ? <Icon name="arrow-up" className="size-3.5" /> : <Icon name="arrow-down" className="size-3.5" />}
+        {sortDir === "asc" ? "ASC" : "DESC"}
       </button>
 
       {/* Auto-refresh toggle */}
@@ -167,10 +181,10 @@ export function MessagesFilterBar({
           "flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg border transition-colors",
           autoRefresh
             ? "text-status-healthy bg-status-healthy/10 border-status-healthy/20"
-            : "text-slate-400 bg-white/5 border-white/10 hover:bg-white/10",
+            : "text-muted-foreground bg-secondary border-border hover:bg-accent",
         )}
       >
-        {autoRefresh ? <TimerOff className="size-3.5" /> : <Timer className="size-3.5" />}
+        {autoRefresh ? <Icon name="timer-off" className="size-3.5" tone="success" /> : <Icon name="timer" className="size-3.5" />}
         {autoRefresh ? (
           <>
             Stop
@@ -188,10 +202,10 @@ export function MessagesFilterBar({
           "flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg border transition-colors",
           selectMode
             ? "text-primary bg-primary/10 border-primary/20"
-            : "text-slate-400 bg-white/5 border-white/10 hover:bg-white/10",
+            : "text-muted-foreground bg-secondary border-border hover:bg-accent",
         )}
       >
-        <CheckSquare className="size-3.5" />
+        <Icon name="check-square" className="size-3.5" tone="brand" />
         Select{selectedCount > 0 && ` (${selectedCount})`}
       </button>
 
@@ -200,12 +214,12 @@ export function MessagesFilterBar({
         onClick={onStartLiveTail}
         className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg border transition-colors text-emerald-400 bg-emerald-500/10 border-emerald-500/20 hover:bg-emerald-500/20"
       >
-        <Radio className="size-3.5" />
+        <Icon name="radio" className="size-3.5" tone="success" />
         Live Tail
       </button>
 
       {/* Message count */}
-      <span className="ml-auto text-xs font-mono text-slate-500">
+      <span className="ml-auto text-xs font-mono text-muted-foreground">
         {messageCount} messages shown
       </span>
     </div>

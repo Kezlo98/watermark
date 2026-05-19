@@ -4,7 +4,7 @@
  */
 
 import { cn } from "@/lib/utils";
-import { X } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import type { ChartEntity } from "./chart-entity-types";
 import { ChartColorPicker } from "./chart-color-picker";
 
@@ -44,17 +44,17 @@ function ChartEntityChip({
 
       <button
         onClick={() => onToggleVisibility(entity.name)}
-        className="text-slate-300 hover:text-white transition-colors truncate max-w-[150px]"
+        className="text-foreground hover:text-foreground transition-colors truncate max-w-[150px]"
         title={entity.visible ? "Click to hide" : "Click to show"}
       >
         {entity.name}
       </button>
       <button
         onClick={() => onRemove(entity.name)}
-        className="opacity-0 group-hover:opacity-100 ml-1 text-slate-500 hover:text-red-400 transition-all"
+        className="opacity-0 group-hover:opacity-100 ml-1 text-muted-foreground hover:text-red-400 transition-all"
         title="Remove"
       >
-        <X className="size-3" />
+        <Icon name="x" className="size-3" tone="muted" />
       </button>
     </div>
   );
@@ -69,7 +69,7 @@ export function ChartFooterLegend({
   if (entities.length === 0) return null;
 
   return (
-    <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-white/5">
+    <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-border">
       {entities.map((entity) => (
         <ChartEntityChip
           key={entity.name}

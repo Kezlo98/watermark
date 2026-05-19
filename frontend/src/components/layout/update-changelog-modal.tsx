@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
-import { Loader2, CheckCircle2, AlertCircle, ChevronDown } from "lucide-react";
 import { GetChangelog, ApplyUpdate, SkipVersion } from "@/lib/wails-client";
 import { renderChangelogMarkdown } from "@/lib/changelog-markdown-renderer";
 import { cn } from "@/lib/utils";
+import { Icon } from "@/components/ui/icon";
 import {
   Dialog,
   DialogContent,
@@ -105,8 +105,8 @@ export function UpdateChangelogModal({ isOpen, onClose, updateInfo }: UpdateChan
         <DialogBody>
           {/* Loading */}
           {state === "loading" && (
-            <div className="flex items-center justify-center py-8 gap-2 text-slate-400">
-              <Loader2 className="size-4 animate-spin" />
+            <div className="flex items-center justify-center py-8 gap-2 text-muted-foreground">
+              <Icon name="loader" tone="muted" className="size-4 animate-spin" />
               <span className="text-sm">Loading changelog…</span>
             </div>
           )}
@@ -114,7 +114,7 @@ export function UpdateChangelogModal({ isOpen, onClose, updateInfo }: UpdateChan
           {/* Fetch error */}
           {state === "fetch-error" && (
             <div className="flex items-start gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
-              <AlertCircle className="size-4 text-red-400 shrink-0 mt-0.5" />
+              <Icon name="alert-circle" tone="danger" className="size-4 shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-medium text-red-400">Could not load changelog</p>
                 <p className="text-xs text-red-400/70 mt-0.5">{fetchError}</p>
@@ -125,7 +125,7 @@ export function UpdateChangelogModal({ isOpen, onClose, updateInfo }: UpdateChan
           {/* Success */}
           {state === "success" && (
             <div className="flex items-center gap-2 py-6 justify-center">
-              <CheckCircle2 className="size-5 text-emerald-400" />
+              <Icon name="check-circle" tone="success" className="size-5" />
               <span className="text-sm font-medium text-emerald-400">
                 Updated to v{updateInfo.latestVersion} — Restart to apply
               </span>
@@ -135,7 +135,7 @@ export function UpdateChangelogModal({ isOpen, onClose, updateInfo }: UpdateChan
           {/* Update error */}
           {state === "update-error" && (
             <div className="flex items-start gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 mb-3">
-              <AlertCircle className="size-4 text-red-400 shrink-0 mt-0.5" />
+              <Icon name="alert-circle" tone="danger" className="size-4 shrink-0 mt-0.5" />
               <p className="text-xs text-red-400">{updateError}</p>
             </div>
           )}
@@ -143,7 +143,7 @@ export function UpdateChangelogModal({ isOpen, onClose, updateInfo }: UpdateChan
           {/* Updating progress */}
           {state === "updating" && (
             <div className="flex items-center justify-center py-6 gap-2 text-primary">
-              <Loader2 className="size-4 animate-spin" />
+              <Icon name="loader" tone="brand" className="size-4 animate-spin" />
               <span className="text-sm">Downloading update…</span>
             </div>
           )}
@@ -157,7 +157,7 @@ export function UpdateChangelogModal({ isOpen, onClose, updateInfo }: UpdateChan
                     <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/30">
                       v{note.version}
                     </span>
-                    <span className="text-[10px] text-slate-500">{note.date}</span>
+                    <span className="text-[10px] text-muted-foreground">{note.date}</span>
                   </div>
                   <div className="pl-1">{renderChangelogMarkdown(note.notes)}</div>
                 </div>
@@ -165,9 +165,9 @@ export function UpdateChangelogModal({ isOpen, onClose, updateInfo }: UpdateChan
               {!showAll && hiddenCount > 0 && (
                 <button
                   onClick={() => setShowAll(true)}
-                  className="flex items-center gap-1 text-xs text-slate-400 hover:text-slate-200 transition-colors"
+                  className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  <ChevronDown className="size-3" />
+                  <Icon name="chevron-down" tone="muted" className="size-3" />
                   Show {hiddenCount} more version{hiddenCount !== 1 ? "s" : ""}
                 </button>
               )}
@@ -182,7 +182,7 @@ export function UpdateChangelogModal({ isOpen, onClose, updateInfo }: UpdateChan
               <button
                 onClick={handleSkip}
                 disabled={isUpdating}
-                className="px-4 py-2 text-sm text-slate-400 hover:text-white bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors disabled:opacity-50"
+                className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground bg-secondary rounded-lg border border-border hover:bg-accent transition-colors disabled:opacity-50"
               >
                 Skip This Version
               </button>
@@ -195,7 +195,7 @@ export function UpdateChangelogModal({ isOpen, onClose, updateInfo }: UpdateChan
                 "text-white bg-primary hover:bg-primary/90"
               )}
             >
-              {isUpdating && <Loader2 className="size-3.5 animate-spin" />}
+              {isUpdating && <Icon name="loader" className="size-3.5 animate-spin" />}
               {isUpdating ? "Updating…" : `Update to v${updateInfo.latestVersion}`}
             </button>
           </DialogFooter>

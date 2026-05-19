@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
-import { Filter } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { useKafkaQuery } from "@/hooks/use-kafka-query";
-import { Trophy } from "lucide-react";
 import { useRankingConfig } from "@/hooks/use-ranking-config";
 import { useSettingsStore } from "@/store/settings";
 import { GetAllGroupsLagDetail } from "@/lib/wails-client";
@@ -50,34 +49,34 @@ export function LagRankingTab() {
   return (
     <div className="flex flex-col gap-3 h-[256px]">
       <div className="flex justify-between items-center text-xs shrink-0">
-        <h2 className="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-          <Trophy className="size-4 text-amber-400" />
+        <h2 className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
+          <Icon name="trophy" className="size-4" tone="warning" />
           Topic Lag Ranking
         </h2>
         <Popover open={showFilters} onOpenChange={setShowFilters}>
           <PopoverTrigger asChild>
             <button
               className={cn(
-                "flex items-center gap-1.5 px-2.5 py-1 text-slate-400 hover:text-white rounded border border-transparent hover:border-white/10 hover:bg-white/5 transition-all outline-none",
-                showFilters && "bg-white/5 border-white/10 text-white"
+                "flex items-center gap-1.5 px-2.5 py-1 text-muted-foreground hover:text-foreground rounded border border-transparent hover:border-border hover:bg-secondary transition-all outline-none",
+                showFilters && "bg-secondary border-border text-foreground"
               )}
             >
-              <Filter className="size-3" />
+              <Icon name="filter" className="size-3" />
               Filter Config
             </button>
           </PopoverTrigger>
-          <PopoverContent align="end" className="w-[400px] p-0 border-white/10 bg-[#0c0c0c]">
+          <PopoverContent align="end" className="w-[400px] p-0 border-border bg-[#0c0c0c]">
             <RankingConfigPanel config={config} onUpdate={updateConfig} />
           </PopoverContent>
         </Popover>
       </div>
 
       {!topicLags ? (
-        <div className="flex-1 flex items-center justify-center text-slate-500 text-sm glass-panel py-8">
+        <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm glass-panel py-8">
           Connect to a cluster to view topic lag ranking.
         </div>
       ) : filtered.length === 0 ? (
-        <div className="flex-1 flex items-center justify-center text-slate-500 text-sm glass-panel py-8">
+        <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm glass-panel py-8">
           No topics match current filters.
         </div>
       ) : (
@@ -85,7 +84,7 @@ export function LagRankingTab() {
           <div className="overflow-auto flex-1 min-h-0">
             <table className="w-full text-sm">
               <thead>
-              <tr className="border-b border-white/5 text-xs text-slate-500 uppercase tracking-wider">
+              <tr className="border-b border-border text-xs text-muted-foreground uppercase tracking-wider">
                 <th className="px-3 py-2 text-center font-medium w-12">#</th>
                 <th className="px-3 py-2 text-left font-medium">Topic</th>
                 <th className="px-3 py-2 text-right font-medium">Total Lag</th>
@@ -96,12 +95,12 @@ export function LagRankingTab() {
               {filtered.slice(0, 5).map((t, idx) => (
                 <tr
                   key={t.topic}
-                  className="border-b border-white/5 hover:bg-white/3 transition-colors"
+                  className="border-b border-border hover:bg-secondary transition-colors"
                 >
-                  <td className="px-3 py-2 text-center text-slate-500 font-mono text-xs">
+                  <td className="px-3 py-2 text-center text-muted-foreground font-mono text-xs">
                     {idx + 1}
                   </td>
-                  <td className="px-3 py-2 font-mono text-white truncate max-w-[300px]" title={t.topic}>
+                  <td className="px-3 py-2 font-mono text-foreground truncate max-w-[300px]" title={t.topic}>
                     {t.topic}
                   </td>
                   <td className="px-3 py-2 text-right font-mono">
@@ -111,13 +110,13 @@ export function LagRankingTab() {
                           ? "text-semantic-red"
                           : t.totalLag > 1000
                             ? "text-amber-400"
-                            : "text-slate-300",
+                            : "text-foreground",
                       )}
                     >
                       {t.totalLag.toLocaleString()}
                     </span>
                   </td>
-                  <td className="px-3 py-2 text-right text-slate-400 font-mono">
+                  <td className="px-3 py-2 text-right text-muted-foreground font-mono">
                     {t.groups}
                   </td>
                 </tr>
@@ -125,7 +124,7 @@ export function LagRankingTab() {
             </tbody>
           </table>
           </div>
-          <div className="px-4 py-2 text-xs text-slate-500 border-t border-white/5 shrink-0 bg-black/20">
+          <div className="px-4 py-2 text-xs text-muted-foreground border-t border-border shrink-0 bg-black/20">
             Showing top {Math.min(filtered.length, 5)} of {topicLags?.length ?? 0} topics
           </div>
         </div>

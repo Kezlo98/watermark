@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from "react";
-import { X } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
 import {
   Popover,
@@ -17,12 +17,12 @@ interface ServiceNameInputProps {
 
 const VARIANT_STYLES = {
   producer: {
-    badge: "bg-purple-500/15 text-purple-300 border-purple-500/30",
+    badge: "bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/30",
     ring: "focus-within:ring-purple-500/30",
     dot: "bg-purple-400",
   },
   consumer: {
-    badge: "bg-blue-500/15 text-blue-300 border-blue-500/30",
+    badge: "bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30",
     ring: "focus-within:ring-blue-500/30",
     dot: "bg-blue-400",
   },
@@ -79,7 +79,7 @@ export function ServiceNameInput({
         <div
           className={cn(
             "flex flex-wrap gap-1.5 items-center min-h-[38px] px-2.5 py-1.5",
-            "bg-white/5 border border-white/10 rounded-lg",
+            "bg-secondary border border-border rounded-lg",
             "transition-all duration-200",
             "focus-within:ring-1",
             styles.ring
@@ -102,10 +102,10 @@ export function ServiceNameInput({
                   e.stopPropagation();
                   removeName(name);
                 }}
-                className="ml-0.5 hover:text-white transition-colors"
+                className="ml-0.5 hover:text-foreground transition-colors"
                 type="button"
               >
-                <X className="size-3" />
+                <Icon name="x" className="size-3" />
               </button>
             </span>
           ))}
@@ -120,7 +120,7 @@ export function ServiceNameInput({
             onFocus={() => setShowSuggestions(true)}
             onKeyDown={handleKeyDown}
             placeholder={value.length === 0 ? placeholder : "Add..."}
-            className="flex-1 min-w-[120px] bg-transparent text-sm text-slate-300 placeholder:text-slate-500 outline-none font-mono"
+            className="flex-1 min-w-[120px] bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none font-mono"
           />
         </div>
       </PopoverAnchor>
@@ -138,7 +138,7 @@ export function ServiceNameInput({
             key={suggestion}
             type="button"
             onClick={() => addName(suggestion)}
-            className="w-full px-3 py-1.5 text-left text-sm text-slate-300 font-mono hover:bg-white/10 rounded transition-colors"
+            className="w-full px-3 py-1.5 text-left text-sm text-foreground font-mono hover:bg-accent rounded transition-colors"
           >
             {suggestion}
           </button>

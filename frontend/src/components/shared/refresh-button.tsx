@@ -10,7 +10,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { RefreshCw, Check } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { ClearCache } from "@/lib/wails-client";
@@ -140,20 +140,21 @@ export function RefreshButton({
           className={cn(
             "relative flex items-center justify-center size-9 rounded-lg border transition-all duration-200",
             state === "idle" &&
-              "border-white/10 bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 hover:border-white/20 cursor-pointer",
+              "border-border bg-secondary text-muted-foreground hover:text-foreground hover:bg-accent hover:border-border-hover cursor-pointer",
             state === "refreshing" &&
               "border-primary/30 bg-primary/10 text-primary cursor-wait",
             state === "success" &&
               "border-emerald-500/30 bg-emerald-500/10 text-emerald-400",
             state === "cooldown" &&
-              "border-white/5 bg-white/[0.02] text-slate-600 cursor-not-allowed",
+              "border-border bg-secondary text-muted-foreground cursor-not-allowed",
             className
           )}
         >
           {state === "success" ? (
-            <Check className="size-4" />
+            <Icon name="check" className="size-4" />
           ) : (
-            <RefreshCw
+            <Icon
+              name="refresh"
               className={cn(
                 "size-4 transition-transform",
                 state === "refreshing" && "animate-spin"
@@ -163,7 +164,7 @@ export function RefreshButton({
 
           {/* Countdown badge */}
           {state === "cooldown" && countdown > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-mono font-semibold text-slate-500 bg-slate-800 border border-white/10 rounded-full px-1">
+            <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-mono font-semibold text-muted-foreground bg-card border border-border rounded-full px-1">
               {countdown}
             </span>
           )}

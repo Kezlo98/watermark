@@ -12,6 +12,7 @@ import {
   GetCluster,
 } from "@/lib/wails-client";
 import type { AlertRule, ClusterAlertConfig } from "@/types/lag-alerts";
+import { Icon } from "@/components/ui/icon";
 import { TrackedEntitiesConfig } from "./tracked-entities-config";
 import { MonitoringToggle } from "./monitoring-toggle";
 import { MonitoringRuleRow } from "./monitoring-rule-row";
@@ -126,7 +127,7 @@ export function MonitoringConfigTab() {
 
   if (!connected) {
     return (
-      <div className="flex items-center justify-center h-40 text-slate-500 text-sm">
+      <div className="flex items-center justify-center h-40 text-muted-foreground text-sm">
         Connect to a cluster to configure monitoring.
       </div>
     );
@@ -135,10 +136,10 @@ export function MonitoringConfigTab() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-sm font-semibold text-white mb-1">
+        <h3 className="text-sm font-semibold text-foreground mb-1">
           Monitoring for: <span className="text-primary">{clusterName}</span>
         </h3>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-muted-foreground">
           Fully opt-in — no polling until you enable monitoring and add rules.
         </p>
       </div>
@@ -178,7 +179,7 @@ export function MonitoringConfigTab() {
       {/* Poll interval (only when monitoring enabled) */}
       {cfg.enabled && (
         <div>
-          <label className="block text-xs text-slate-400 mb-2">Poll Interval</label>
+          <label className="block text-xs text-muted-foreground mb-2">Poll Interval</label>
           <div className="flex gap-2">
             {[
               { label: "15s", value: 15 },
@@ -193,7 +194,7 @@ export function MonitoringConfigTab() {
                 className={`px-3 py-1.5 text-xs rounded border transition-colors ${
                   cfg.pollIntervalSec === opt.value
                     ? "bg-primary/20 text-primary border-primary/40"
-                    : "bg-white/5 text-slate-400 border-white/10 hover:border-white/20"
+                    : "bg-secondary text-muted-foreground border-border hover:border-border-hover"
                 }`}
               >
                 {opt.label}
@@ -218,7 +219,7 @@ export function MonitoringConfigTab() {
       {/* Rules table */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <span className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+          <span className="text-xs font-semibold text-foreground uppercase tracking-wider">
             Alert Rules
           </span>
           <button
@@ -231,16 +232,16 @@ export function MonitoringConfigTab() {
         </div>
 
         {cfg.rules.length === 0 ? (
-          <p className="text-xs text-slate-500 py-4 text-center border border-white/5 rounded-lg">
+          <p className="text-xs text-muted-foreground py-4 text-center border border-border rounded-lg">
             No rules yet. Add a rule to start monitoring.
           </p>
         ) : (
           <div className="space-y-3">
-            <div className="flex items-center gap-2 px-3 text-[10px] text-slate-500 uppercase tracking-wider">
+            <div className="flex items-center gap-2 px-3 text-[10px] text-muted-foreground uppercase tracking-wider">
               <span className="w-2 shrink-0" />
               <span className="flex-1">Pattern</span>
-              <span className="w-20 text-center text-yellow-400/60">⚠ Warn</span>
-              <span className="w-20 text-center text-red-400/60">✖ Crit</span>
+              <span className="w-20 text-center text-yellow-400/60 flex items-center justify-center gap-1"><Icon name="alert-triangle" className="size-3" tone="warning" />Warn</span>
+              <span className="w-20 text-center text-red-400/60 flex items-center justify-center gap-1"><Icon name="x" className="size-3" tone="danger" />Crit</span>
               <span className="w-6" />
             </div>
             {cfg.rules.map((rule) => (

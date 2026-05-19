@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Download, Upload, FileJson } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { useAnnotations } from "@/hooks/use-annotations";
 import { ExportToFile, ExportAllToFile, ImportFromFile } from "@/lib/wails-client";
 import { useSettingsStore } from "@/store/settings";
@@ -58,22 +58,22 @@ export function ExportImportSection() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <FileJson className="size-4 text-primary" />
-        <h3 className="text-sm font-display font-bold text-white">
+        <Icon name="file-json" className="size-4" tone="brand" />
+        <h3 className="text-sm font-display font-bold text-foreground">
           Topic Annotations
         </h3>
       </div>
 
-      <p className="text-xs text-slate-400 leading-relaxed">
+      <p className="text-xs text-muted-foreground leading-relaxed">
         Share topic ownership tags with your team.{" "}
-        <span className="text-slate-500">
+        <span className="text-muted-foreground">
           No credentials are included in exports.
         </span>
       </p>
 
       {/* Stats */}
       <div className="flex gap-4 text-xs font-mono">
-        <span className="text-slate-400">
+        <span className="text-muted-foreground">
           Current cluster:{" "}
           <span className="text-primary">{annotatedCount}</span> annotated
         </span>
@@ -84,26 +84,26 @@ export function ExportImportSection() {
         <button
           onClick={handleExportCurrent}
           disabled={!clusterId}
-          className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-300 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors disabled:opacity-40"
+          className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-foreground bg-secondary border border-border rounded-lg hover:bg-accent transition-colors disabled:opacity-40"
         >
-          <Download className="size-3.5" />
+          <Icon name="download" className="size-3.5" />
           Export Current Cluster
         </button>
         <button
           onClick={handleExportAll}
-          className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-300 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors"
+          className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-foreground bg-secondary border border-border rounded-lg hover:bg-accent transition-colors"
         >
-          <Download className="size-3.5" />
+          <Icon name="download" className="size-3.5" />
           Export All Clusters
         </button>
       </div>
 
-      <div className="border-t border-white/5 pt-4" />
+      <div className="border-t border-border pt-4" />
 
       {/* Import */}
       <div className="space-y-3">
         <div className="flex gap-4">
-          <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+          <label className="flex items-center gap-2 text-xs text-foreground cursor-pointer">
             <input
               type="radio"
               name="import-mode"
@@ -113,7 +113,7 @@ export function ExportImportSection() {
             />
             Merge (keep existing)
           </label>
-          <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+          <label className="flex items-center gap-2 text-xs text-foreground cursor-pointer">
             <input
               type="radio"
               name="import-mode"
@@ -127,9 +127,9 @@ export function ExportImportSection() {
 
         <button
           onClick={handleImport}
-          className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-300 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors"
+          className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-foreground bg-secondary border border-border rounded-lg hover:bg-accent transition-colors"
         >
-          <Upload className="size-3.5" />
+          <Icon name="upload" className="size-3.5" />
           Import from File
         </button>
       </div>

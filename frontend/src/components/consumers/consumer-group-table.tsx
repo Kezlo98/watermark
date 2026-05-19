@@ -31,7 +31,7 @@ export function ConsumerGroupTable({ onGroupClick, searchFilter }: ConsumerGroup
     {
       accessorKey: "groupId",
       header: "Group ID",
-      cell: ({ row }) => <span className="text-white font-medium">{row.original.groupId}</span>,
+      cell: ({ row }) => <span className="text-foreground font-medium">{row.original.groupId}</span>,
     },
     {
       accessorKey: "state",

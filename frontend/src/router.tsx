@@ -29,7 +29,7 @@ import { MonitoringPage } from "@/components/monitoring/monitoring-page";
 /* ========================================================================= */
 
 function AppShell() {
-  const { initializeConnection, openSettings, activeClusterId } = useSettingsStore();
+  const { initializeConnection, openSettings, activeClusterId, resolvedTheme } = useSettingsStore();
   usePrefetchOnConnect();
   useLagAlerts(activeClusterId);
 
@@ -72,7 +72,7 @@ function AppShell() {
         </main>
       </div>
       <SettingsOverlay />
-      <Toaster theme="dark" position="bottom-right" richColors />
+      <Toaster theme={resolvedTheme} position="bottom-right" richColors />
     </div>
   );
 }

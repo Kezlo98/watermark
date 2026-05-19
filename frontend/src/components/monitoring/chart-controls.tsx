@@ -1,14 +1,7 @@
 import { cn } from "@/lib/utils";
 import { useState, useMemo } from "react";
-import {
-  Check,
-  ChevronsUpDown,
-  Plus,
-  AreaChart as AreaIcon,
-  LineChart as LineIcon,
-  BarChart3 as BarIcon,
-  Search,
-} from "lucide-react";
+import { Icon } from "@/components/ui/icon";
+import type { IconName } from "@/lib/icon-map";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Command,
@@ -29,10 +22,10 @@ import {
   CHART_COLORS,
 } from "./chart-entity-types";
 
-const CHART_TYPE_ICONS = [
-  { id: "area" as const, label: "Area", icon: AreaIcon },
-  { id: "line" as const, label: "Line", icon: LineIcon },
-  { id: "bar" as const, label: "Bar", icon: BarIcon },
+const CHART_TYPE_ICONS: { id: ChartType; label: string; iconName: IconName }[] = [
+  { id: "area" as const, label: "Area", iconName: "area-chart" },
+  { id: "line" as const, label: "Line", iconName: "line-chart" },
+  { id: "bar" as const, label: "Bar", iconName: "bar-chart" },
 ];
 
 interface ChartControlsProps {
@@ -114,7 +107,7 @@ export function ChartControls({
   return (
     <div className="flex flex-wrap items-center gap-3">
       {/* Mode toggle */}
-      <div className="flex gap-0.5 bg-white/5 rounded-lg p-0.5">
+      <div className="flex gap-0.5 bg-secondary rounded-lg p-0.5">
         {(["topic", "group"] as ViewMode[]).map((m) => (
           <button
             key={m}
@@ -123,7 +116,7 @@ export function ChartControls({
               "px-3 py-1.5 text-xs rounded-md transition-colors capitalize",
               mode === m
                 ? "bg-primary/20 text-primary"
-                : "text-slate-400 hover:text-white",
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             {m === "topic" ? "Topics" : "Groups"}
@@ -138,25 +131,25 @@ export function ChartControls({
             <button
               role="combobox"
               aria-expanded={open}
-              className="flex items-center justify-between px-3 py-1.5 text-xs bg-white/5 border border-white/10 rounded-lg text-white hover:border-white/20 focus:outline-none focus:border-white/30 truncate min-w-[200px] max-w-[300px] font-mono"
+              className="flex items-center justify-between px-3 py-1.5 text-xs bg-secondary border border-border rounded-lg text-foreground hover:border-border-hover focus:outline-none focus:border-ring truncate min-w-[200px] max-w-[300px] font-mono"
             >
               <span className="truncate">
                 {pendingSelection || `Select ${mode}...`}
               </span>
-              <ChevronsUpDown className="ml-2 size-3 shrink-0 opacity-50" />
+              <Icon name="chevrons-up-down" className="ml-2 size-3 shrink-0 opacity-50" tone="muted" />
             </button>
           </PopoverTrigger>
-          <PopoverContent className="w-[300px] p-0 border border-white/10 bg-[#0f1115]" align="start">
-            <Command className="bg-transparent text-white">
-              <div className="flex items-center border-b border-white/10 px-3">
-                <Search className="mr-2 size-4 shrink-0 text-slate-400" />
+          <PopoverContent className="w-[300px] p-0 border border-border bg-[#0f1115]" align="start">
+            <Command className="bg-transparent text-foreground">
+              <div className="flex items-center border-b border-border px-3">
+                <Icon name="search" className="mr-2 size-4 shrink-0" tone="muted" />
                 <CommandPrimitive.Input
                   placeholder={`Search ${mode}...`}
-                  className="flex flex-1 h-10 bg-transparent border-0 outline-none focus:ring-0 text-sm placeholder:text-slate-500 text-white"
+                  className="flex flex-1 h-10 bg-transparent border-0 outline-none focus:ring-0 text-sm placeholder:text-muted-foreground text-foreground"
                 />
               </div>
               <CommandList>
-                <CommandEmpty className="text-xs text-slate-500 py-6 text-center">No {mode} found.</CommandEmpty>
+                <CommandEmpty className="text-xs text-muted-foreground py-6 text-center">No {mode} found.</CommandEmpty>
 
                 {/* Tracked section */}
                 {tracked.length > 0 && (
@@ -180,7 +173,7 @@ export function ChartControls({
                           }}
                           className={cn(
                             "text-xs font-mono cursor-pointer",
-                            "data-[selected=true]:bg-white/10 data-[selected=true]:text-white",
+                            "data-[selected=true]:bg-accent data-[selected=true]:text-foreground",
                             added && "opacity-40 cursor-not-allowed",
                             isExcluded && "opacity-30 line-through cursor-not-allowed",
                             !isExcluded && "bg-primary/5", // subtle bg tint for tracked
@@ -190,7 +183,7 @@ export function ChartControls({
                             className="mr-2 size-2 rounded-full shrink-0 inline-block"
                             style={{ backgroundColor: isExcluded ? "#4b5563" : dotColor }}
                           />
-                          {added && <Check className="mr-1 size-3 text-primary" />}
+                          {added && <Icon name="check" className="mr-1 size-3" tone="brand" />}
                           {e}
                           {isExcluded && (
                             <span className="ml-auto text-[10px] text-semantic-red">excluded</span>
@@ -218,13 +211,13 @@ export function ChartControls({
                           }}
                           className={cn(
                             "text-xs font-mono cursor-pointer",
-                            "data-[selected=true]:bg-white/10 data-[selected=true]:text-white",
+                            "data-[selected=true]:bg-accent data-[selected=true]:text-foreground",
                             added && "opacity-40 cursor-not-allowed",
                             isExcluded && "opacity-30 line-through cursor-not-allowed",
                           )}
                         >
                           <span className="mr-2 size-2 shrink-0" /> {/* spacer for alignment */}
-                          {added && <Check className="mr-1 size-3 text-primary" />}
+                          {added && <Icon name="check" className="mr-1 size-3" tone="brand" />}
                           {e}
                           {isExcluded && (
                             <span className="ml-auto text-[10px] text-semantic-red">excluded</span>
@@ -245,23 +238,23 @@ export function ChartControls({
           className={cn(
             "flex items-center gap-1 px-3 py-1.5 text-xs rounded-lg transition-colors",
             addDisabled
-              ? "bg-white/5 text-slate-600 cursor-not-allowed"
+              ? "bg-secondary text-muted-foreground cursor-not-allowed"
               : "bg-primary/20 text-primary hover:bg-primary/30",
           )}
         >
-          <Plus className="size-3" />
+          <Icon name="plus" className="size-3" tone="brand" />
           Add
         </button>
 
         {selectedEntities.length > 0 && (
-          <span className="text-xs text-slate-500">
+          <span className="text-xs text-muted-foreground">
             {selectedEntities.length}/{MAX_CHART_ENTITIES}
           </span>
         )}
       </div>
 
       {/* Time window */}
-      <div className="flex gap-0.5 bg-white/5 rounded-lg p-0.5">
+      <div className="flex gap-0.5 bg-secondary rounded-lg p-0.5">
         {TIME_WINDOWS.map((w) => (
           <button
             key={w}
@@ -270,7 +263,7 @@ export function ChartControls({
               "px-2 py-1 text-xs rounded-md transition-colors",
               timeWindow === w
                 ? "bg-primary/20 text-primary"
-                : "text-slate-400 hover:text-white",
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             {w}
@@ -279,25 +272,22 @@ export function ChartControls({
       </div>
 
       {/* Chart type */}
-      <div className="flex gap-0.5 bg-white/5 rounded-lg p-0.5">
-        {CHART_TYPE_ICONS.map((ct) => {
-          const Icon = ct.icon;
-          return (
-            <button
-              key={ct.id}
-              onClick={() => onChartTypeChange(ct.id)}
-              className={cn(
-                "flex items-center gap-1.5 px-2 py-1 text-xs rounded-md transition-colors",
-                chartType === ct.id
-                  ? "bg-primary/20 text-primary"
-                  : "text-slate-400 hover:text-white",
-              )}
-            >
-              <Icon className="size-3" />
-              {ct.label}
-            </button>
-          );
-        })}
+      <div className="flex gap-0.5 bg-secondary rounded-lg p-0.5">
+        {CHART_TYPE_ICONS.map((ct) => (
+          <button
+            key={ct.id}
+            onClick={() => onChartTypeChange(ct.id)}
+            className={cn(
+              "flex items-center gap-1.5 px-2 py-1 text-xs rounded-md transition-colors",
+              chartType === ct.id
+                ? "bg-primary/20 text-primary"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            <Icon name={ct.iconName} className="size-3" />
+            {ct.label}
+          </button>
+        ))}
       </div>
     </div>
   );

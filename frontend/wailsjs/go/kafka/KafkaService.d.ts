@@ -13,6 +13,8 @@ export function ConsumeMessagesFromTimestamp(arg1:string,arg2:number,arg3:number
 
 export function CreateTopic(arg1:string,arg2:number,arg3:number,arg4:Record<string, string>):Promise<void>;
 
+export function DeleteConsumerGroup(arg1:string):Promise<void>;
+
 export function DeleteRecordsBefore(arg1:string,arg2:number,arg3:number):Promise<Array<kafka.DeleteRecordsResult>>;
 
 export function DeleteRecordsBeforeTimestamp(arg1:string,arg2:number):Promise<Array<kafka.DeleteRecordsResult>>;

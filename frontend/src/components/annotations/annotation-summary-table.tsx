@@ -1,4 +1,4 @@
-import { Pencil, Trash2 } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import type { TopicAnnotation } from "@/types/annotations";
 import { OwnershipBadges } from "./ownership-badges";
 
@@ -19,17 +19,17 @@ export function AnnotationSummaryTable({
 
   if (entries.length === 0) {
     return (
-      <p className="text-xs text-slate-500 italic py-3">
+      <p className="text-xs text-muted-foreground italic py-3">
         No annotations for this cluster
       </p>
     );
   }
 
   return (
-    <div className="max-h-64 overflow-y-auto rounded-lg border border-white/10">
+    <div className="max-h-64 overflow-y-auto rounded-lg border border-border">
       <table className="w-full text-xs">
         <thead className="sticky top-0 bg-[hsl(var(--surface-secondary))]">
-          <tr className="text-left text-slate-400 uppercase tracking-wider text-[10px]">
+          <tr className="text-left text-muted-foreground uppercase tracking-wider text-[10px]">
             <th className="px-3 py-2">Topic</th>
             <th className="px-3 py-2">Producers</th>
             <th className="px-3 py-2">Consumers</th>
@@ -40,9 +40,9 @@ export function AnnotationSummaryTable({
           {entries.map(([topic, ann]) => (
             <tr
               key={topic}
-              className="border-t border-white/5 hover:bg-white/[0.03] transition-colors"
+              className="border-t border-border hover:bg-secondary transition-colors"
             >
-              <td className="px-3 py-2 font-mono text-white truncate max-w-[200px]">
+              <td className="px-3 py-2 font-mono text-foreground truncate max-w-[200px]">
                 {topic}
               </td>
               <td className="px-3 py-2">
@@ -63,17 +63,17 @@ export function AnnotationSummaryTable({
                 <div className="flex items-center justify-end gap-1">
                   <button
                     onClick={() => onEdit?.(topic)}
-                    className="p-1 rounded text-slate-400 hover:text-primary hover:bg-white/5 transition-colors"
+                    className="p-1 rounded text-muted-foreground hover:text-primary hover:bg-secondary transition-colors"
                     title="Edit annotation"
                   >
-                    <Pencil className="size-3.5" />
+                    <Icon name="pencil" className="size-3.5" />
                   </button>
                   <button
                     onClick={() => onRemove?.(topic)}
-                    className="p-1 rounded text-slate-400 hover:text-semantic-red hover:bg-white/5 transition-colors"
+                    className="p-1 rounded text-muted-foreground hover:text-semantic-red hover:bg-secondary transition-colors"
                     title="Remove annotation"
                   >
-                    <Trash2 className="size-3.5" />
+                    <Icon name="trash" className="size-3.5" tone="danger" />
                   </button>
                 </div>
               </td>

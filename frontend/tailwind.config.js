@@ -51,10 +51,14 @@ export default {
           red: "var(--semantic-red)",
         },
         status: {
-          healthy: "var(--status-healthy)",
-          rebalancing: "var(--status-rebalancing)",
-          dead: "var(--status-dead)",
-          empty: "var(--status-empty)",
+          healthy: "rgb(var(--status-healthy-rgb) / <alpha-value>)",
+          "healthy-foreground": "var(--status-healthy-foreground)",
+          rebalancing: "rgb(var(--status-rebalancing-rgb) / <alpha-value>)",
+          "rebalancing-foreground": "var(--status-rebalancing-foreground)",
+          dead: "rgb(var(--status-dead-rgb) / <alpha-value>)",
+          "dead-foreground": "var(--status-dead-foreground)",
+          empty: "rgb(var(--status-empty-rgb) / <alpha-value>)",
+          "empty-foreground": "var(--status-empty-foreground)",
         },
       },
       fontFamily: {

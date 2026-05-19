@@ -1,11 +1,13 @@
-import { type LucideIcon } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
+import type { IconName } from "@/lib/icon-map";
+import type { Tone } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
 
 interface MetricCardProps {
   label: string;
   value: string | number;
-  icon: LucideIcon;
-  iconColor?: string;
+  icon: IconName;
+  tone?: Tone;
   trend?: { value: string; positive: boolean };
   className?: string;
 }
@@ -13,15 +15,15 @@ interface MetricCardProps {
 export function MetricCard({
   label,
   value,
-  icon: Icon,
-  iconColor = "text-primary",
+  icon,
+  tone = "brand",
   trend,
   className,
 }: MetricCardProps) {
   return (
     <div className={cn("glass-panel p-5", className)}>
       <div className="flex items-start justify-between mb-3">
-        <span className="text-xs font-mono font-medium text-slate-400 uppercase tracking-wider">
+        <span className="text-xs font-mono font-medium text-muted-foreground uppercase tracking-wider">
           {label}
         </span>
         <div
@@ -30,10 +32,10 @@ export function MetricCard({
             "bg-primary/10"
           )}
         >
-          <Icon className={cn("size-4", iconColor)} />
+          <Icon name={icon} tone={tone} className="size-4" />
         </div>
       </div>
-      <div className="font-mono text-2xl font-bold text-white">{value}</div>
+      <div className="font-mono text-2xl font-bold text-foreground">{value}</div>
       {trend && (
         <div
           className={cn(

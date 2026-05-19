@@ -24,8 +24,8 @@ export function SubjectList({ selectedSubject, onSelect }: SubjectListProps) {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="p-3 border-b border-white/5">
-        <h3 className="text-xs font-mono font-semibold text-slate-400 uppercase tracking-wider mb-2">
+      <div className="p-3 border-b border-border">
+        <h3 className="text-xs font-mono font-semibold text-muted-foreground uppercase tracking-wider mb-2">
           Subjects ({filtered.length})
         </h3>
         <SearchInput
@@ -44,7 +44,7 @@ export function SubjectList({ selectedSubject, onSelect }: SubjectListProps) {
               "w-full text-left px-4 py-2.5 text-sm font-mono transition-colors",
               selectedSubject === subject.name
                 ? "bg-primary/10 text-primary border-l-2 border-primary"
-                : "text-slate-400 hover:text-white hover:bg-white/5"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary"
             )}
           >
             {subject.name}

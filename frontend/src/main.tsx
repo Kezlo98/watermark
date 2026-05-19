@@ -4,7 +4,11 @@ import { RouterProvider } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { router } from "./router";
+import { initTheme } from "@/store/settings";
 import "./style.css";
+
+// Initialize theme from localStorage before rendering
+initTheme();
 
 const queryClient = new QueryClient({
   defaultOptions: {

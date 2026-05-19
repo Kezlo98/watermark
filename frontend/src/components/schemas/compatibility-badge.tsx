@@ -1,11 +1,12 @@
 import { cn } from "@/lib/utils";
+import { Icon } from "@/components/ui/icon";
 import type { CompatibilityLevel } from "@/types/kafka";
 
 const LEVEL_STYLES: Record<CompatibilityLevel, { bg: string; text: string }> = {
   BACKWARD: { bg: "bg-status-healthy/10", text: "text-status-healthy" },
   FORWARD: { bg: "bg-blue-500/10", text: "text-blue-400" },
   FULL: { bg: "bg-primary/10", text: "text-primary" },
-  NONE: { bg: "bg-slate-500/10", text: "text-slate-400" },
+  NONE: { bg: "bg-muted", text: "text-muted-foreground" },
 };
 
 interface CompatibilityBadgeProps {
@@ -23,7 +24,7 @@ export function CompatibilityBadge({ level }: CompatibilityBadgeProps) {
         "border-current/20"
       )}
     >
-      🟢 {level}
+      <Icon name="circle" className="size-2" weight="fill" /> {level}
     </span>
   );
 }

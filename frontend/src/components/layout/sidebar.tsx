@@ -1,31 +1,26 @@
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import {
-  BarChart3,
-  Layers,
-  Users,
-  FileCode2,
-  AlertTriangle,
-} from "lucide-react";
 import logoImg from "@/assets/logo.svg";
 import { cn } from "@/lib/utils";
 import { GetCurrentVersion } from "@/lib/wails-client";
 import { UpdateBanner } from "./update-banner";
 import { useLagAlertsStore } from "@/store/lag-alerts";
+import { Icon } from "@/components/ui/icon";
+import type { IconName } from "@/lib/icon-map";
 
 interface NavItem {
   id: string;
   label: string;
-  icon: typeof BarChart3;
+  icon: IconName;
   path: string;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { id: "overview", label: "Overview", icon: BarChart3, path: "/" },
-  { id: "topics", label: "Topics", icon: Layers, path: "/topics" },
-  { id: "consumers", label: "Consumers", icon: Users, path: "/consumers" },
-  { id: "monitoring", label: "Monitoring", icon: AlertTriangle, path: "/monitoring" },
-  { id: "schemas", label: "Schemas", icon: FileCode2, path: "/schemas" },
+  { id: "overview", label: "Overview", icon: "bar-chart", path: "/" },
+  { id: "topics", label: "Topics", icon: "layers", path: "/topics" },
+  { id: "consumers", label: "Consumers", icon: "users", path: "/consumers" },
+  { id: "monitoring", label: "Monitoring", icon: "alert-triangle", path: "/monitoring" },
+  { id: "schemas", label: "Schemas", icon: "file-code", path: "/schemas" },
 ];
 
 export function Sidebar() {
@@ -51,12 +46,12 @@ export function Sidebar() {
   return (
     <aside className="glass-sidebar w-[264px] h-screen flex flex-col shrink-0">
       {/* Logo */}
-      <div className="flex items-center gap-3 px-6 py-5 border-b border-white/5">
+      <div className="flex items-center gap-3 px-6 py-5 border-b border-border">
         <div className="flex items-center justify-center shrink-0">
           <img src={logoImg} alt="Watermark" className="size-10" />
         </div>
         <div>
-          <h1 className="text-base font-display font-bold text-white tracking-tight">
+          <h1 className="text-base font-display font-bold text-foreground tracking-tight">
             Watermark
           </h1>
         </div>
@@ -64,12 +59,16 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4">
-        <span className="px-3 mb-2 block text-[10px] font-mono font-semibold text-slate-500 uppercase tracking-widest">
+        <span className="px-3 mb-2 block text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-widest">
           Menu
         </span>
         <div className="flex flex-col gap-0.5">
           {NAV_ITEMS.map((item) => {
             const active = isActive(item.path);
+            const isMonitoringCritical = item.id === "monitoring" && hasCritical;
+            let tone: "brand" | "danger" | "default" = "default";
+            if (active) tone = "brand";
+            else if (isMonitoringCritical) tone = "danger";
             return (
               <button
                 key={item.id}
@@ -78,10 +77,10 @@ export function Sidebar() {
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 w-full text-left",
                   active
                     ? "bg-primary/10 text-primary"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                 )}
               >
-                <item.icon className={cn("size-4", active && "text-primary")} />
+                <Icon name={item.icon} tone={tone} className="size-4" />
                 {item.label}
                 {item.id === "monitoring" && unreadCount > 0 && (
                   <span className={cn(
@@ -104,8 +103,8 @@ export function Sidebar() {
       <UpdateBanner />
 
       {/* Version footer */}
-      <div className="px-6 py-4 border-t border-white/5 text-center">
-        <span className="text-[10px] font-mono text-slate-600">{version}</span>
+      <div className="px-6 py-4 border-t border-border text-center">
+        <span className="text-[10px] font-mono text-muted-foreground">{version}</span>
       </div>
     </aside>
   );

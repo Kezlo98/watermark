@@ -29,7 +29,7 @@ export function SchemasPage() {
             {selectedSubject ? (
               <SchemaViewer subjectName={selectedSubject} />
             ) : (
-              <div className="flex items-center justify-center h-full text-slate-500 text-sm">
+              <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
                 Select a subject to view its schema
               </div>
             )}

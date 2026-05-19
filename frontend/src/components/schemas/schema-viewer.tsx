@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState, useEffect } from "react";
-import { Copy } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { CompatibilityBadge } from "./compatibility-badge";
 import type { SchemaType, CompatibilityLevel } from "@/types/kafka";
 import { useKafkaQuery } from "@/hooks/use-kafka-query";
@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useSettingsStore } from "@/store/settings";
 
 const MonacoEditor = lazy(() => import("@monaco-editor/react"));
 
@@ -38,6 +39,7 @@ export function SchemaViewer({ subjectName }: SchemaViewerProps) {
   );
 
   const [selectedVersion, setSelectedVersion] = useState(versions[0]?.version ?? 1);
+  const { resolvedTheme } = useSettingsStore();
 
   // Reset version selection when subject changes
   useEffect(() => {
@@ -48,7 +50,7 @@ export function SchemaViewer({ subjectName }: SchemaViewerProps) {
 
   if (versions.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full text-slate-500 text-sm">
+      <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
         Select a subject to view its schema
       </div>
     );
@@ -64,9 +66,9 @@ export function SchemaViewer({ subjectName }: SchemaViewerProps) {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border">
         <div className="flex items-center gap-4">
-          <h3 className="text-sm font-display font-bold text-white uppercase tracking-wider">
+          <h3 className="text-sm font-display font-bold text-foreground uppercase tracking-wider">
             {subjectName}
           </h3>
           <Select value={String(selectedVersion)} onValueChange={(v) => setSelectedVersion(Number(v))}>
@@ -86,25 +88,25 @@ export function SchemaViewer({ subjectName }: SchemaViewerProps) {
           )}
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-xs font-mono text-slate-500">
+          <span className="text-xs font-mono text-muted-foreground">
             {schemaType} | ID: {currentVersion.id}
           </span>
           <button
             onClick={copySchema}
-            className="flex items-center gap-1 px-2 py-1 text-xs text-slate-400 hover:text-white bg-white/5 rounded border border-white/10 hover:bg-white/10 transition-colors"
+            className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground bg-secondary rounded border border-border hover:bg-accent transition-colors"
           >
-            <Copy className="size-3" /> Copy
+            <Icon name="copy" className="size-3" /> Copy
           </button>
         </div>
       </div>
 
       {/* Monaco editor */}
       <div className="flex-1 min-h-[300px]">
-        <Suspense fallback={<div className="p-4 text-sm text-slate-500">Loading editor...</div>}>
+        <Suspense fallback={<div className="p-4 text-sm text-muted-foreground">Loading editor...</div>}>
           <MonacoEditor
             height="100%"
             language={LANGUAGE_MAP[schemaType]}
-            theme="vs-dark"
+            theme={resolvedTheme === "light" ? "vs" : "vs-dark"}
             value={currentVersion.schema}
             options={{
               readOnly: true,

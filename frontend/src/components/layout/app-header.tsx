@@ -1,13 +1,15 @@
 import { useEffect } from "react";
-import { Search, Settings } from "lucide-react";
 import { useSettingsStore } from "@/store/settings";
 import { useSearchPaletteStore } from "@/store/search-palette";
 import { ClusterDropdown } from "./cluster-dropdown";
 import { SearchCommandPalette } from "@/components/shared/search-command-palette";
+import { Icon } from "@/components/ui/icon";
 
 export function AppHeader() {
-  const { openSettings } = useSettingsStore();
+  const { openSettings, resolvedTheme, setTheme } = useSettingsStore();
   const { toggle: toggleSearch } = useSearchPaletteStore();
+
+  const isDark = resolvedTheme === "dark";
 
   /* Cmd+K hotkey for search */
   useEffect(() => {
@@ -23,20 +25,18 @@ export function AppHeader() {
 
   return (
     <>
-      <header className="h-16 flex items-center justify-between px-6 border-b border-white/5 bg-background/80 backdrop-blur-sm sticky top-0 z-40">
+      <header className="h-16 flex items-center justify-between px-6 border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-40">
         {/* Left: Cluster selector + search */}
         <div className="flex items-center gap-4">
-          {/* Cluster selector dropdown */}
           <ClusterDropdown />
 
-          {/* Search trigger */}
           <button
             onClick={toggleSearch}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-slate-400 hover:text-slate-200 hover:border-white/20 transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary border border-border text-muted-foreground hover:text-foreground hover:border-ring transition-colors"
           >
-            <Search className="size-4" />
+            <Icon name="search" className="size-4" />
             <span className="text-sm">Search...</span>
-            <kbd className="ml-4 text-[10px] bg-white/5 px-1.5 py-0.5 rounded border border-white/10 font-mono">
+            <kbd className="ml-4 text-[10px] bg-secondary px-1.5 py-0.5 rounded border border-border font-mono">
               ⌘K
             </kbd>
           </button>
@@ -45,16 +45,22 @@ export function AppHeader() {
         {/* Right: Actions */}
         <div className="flex items-center gap-2">
           <button
+            onClick={() => setTheme(isDark ? "light" : "dark")}
+            className="p-2 text-muted-foreground hover:text-foreground rounded-lg hover:bg-secondary transition-colors"
+            title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            {isDark ? <Icon name="sun" className="size-4" /> : <Icon name="moon" className="size-4" />}
+          </button>
+          <button
             id="settings-trigger"
             onClick={openSettings}
-            className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
+            className="p-2 text-muted-foreground hover:text-foreground rounded-lg hover:bg-secondary transition-colors"
           >
-            <Settings className="size-4" />
+            <Icon name="settings" className="size-4" />
           </button>
         </div>
       </header>
 
-      {/* ⌘K Command Palette */}
       <SearchCommandPalette />
     </>
   );

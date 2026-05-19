@@ -1,4 +1,5 @@
-import { Server } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
+import type { Tone } from "@/components/ui/icon";
 import { MetricCard } from "@/components/shared/metric-card";
 import { StatusBadge } from "@/components/shared/status-badge";
 import type { ConsumerGroupState } from "@/types/kafka";
@@ -11,13 +12,12 @@ const STATE_MAP = {
   Unknown: "empty",
 } as const;
 
-/** Pre-declared static classes so Tailwind JIT can scan and include them in production bundle */
-const ICON_COLOR_MAP: Record<keyof typeof STATE_MAP, string> = {
-  Stable: "text-status-healthy",
-  Rebalancing: "text-status-rebalancing",
-  Dead: "text-status-dead",
-  Empty: "text-status-empty",
-  Unknown: "text-status-empty",
+const STATE_TONE_MAP: Record<keyof typeof STATE_MAP, Tone> = {
+  Stable: "success",
+  Rebalancing: "warning",
+  Dead: "danger",
+  Empty: "muted",
+  Unknown: "muted",
 };
 
 interface GroupDetailHeaderProps {
@@ -37,7 +37,7 @@ export function GroupDetailHeader({ groupId, state, coordinator, totalLag }: Gro
         />
         {totalLag > 0 && (
           <span className="text-sm font-mono text-semantic-red font-bold">
-            Total Lag: ⚠️ {totalLag.toLocaleString()}
+            <Icon name="alert-triangle" tone="danger" className="size-3.5 inline-block mr-1" />Total Lag: {totalLag.toLocaleString()}
           </span>
         )}
       </div>
@@ -46,14 +46,14 @@ export function GroupDetailHeader({ groupId, state, coordinator, totalLag }: Gro
         <MetricCard
           label="State"
           value={state}
-          icon={Server}
-          iconColor={ICON_COLOR_MAP[state]}
+          icon="server"
+          tone={STATE_TONE_MAP[state]}
         />
         <MetricCard
           label="Coordinator"
           value={`Broker ${coordinator}`}
-          icon={Server}
-          iconColor="text-primary"
+          icon="server"
+          tone="brand"
         />
       </div>
     </div>

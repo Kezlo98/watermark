@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { AlertTriangle } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -113,15 +113,15 @@ export function DeleteRecordsDialog({ mode, onClose, onSuccess }: DeleteRecordsD
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-2 text-red-400">
-            <AlertTriangle className="size-4" />
+            <Icon name="alert-triangle" className="size-4" tone="danger" />
             {title}
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-slate-300">
+          <AlertDialogDescription className="text-foreground">
             {description}
           </AlertDialogDescription>
           {(isPurge || isTimestamp) && (
-            <p className="text-xs text-amber-400 mt-1">
-              ⚠ This operation affects all partitions and is irreversible.
+            <p className="flex items-center gap-1.5 text-xs text-amber-400 mt-1">
+              <Icon name="alert-triangle" className="size-3 shrink-0" tone="warning" /> This operation affects all partitions and is irreversible.
             </p>
           )}
         </AlertDialogHeader>
@@ -129,12 +129,12 @@ export function DeleteRecordsDialog({ mode, onClose, onSuccess }: DeleteRecordsD
         {/* Date picker — shown when opened from Actions dropdown */}
         {needsDatePicker && (
           <div className="py-2">
-            <label className="text-xs font-mono text-slate-400 block mb-1">Delete all messages before:</label>
+            <label className="text-xs font-mono text-muted-foreground block mb-1">Delete all messages before:</label>
             <input
               type="datetime-local"
               value={pickedDate}
               onChange={(e) => setPickedDate(e.target.value)}
-              className="h-8 px-2 w-full bg-white/5 border border-white/10 rounded text-xs text-white font-mono focus:outline-none focus:ring-1 focus:ring-primary/50"
+              className="h-8 px-2 w-full bg-secondary border border-border rounded text-xs text-foreground font-mono focus:outline-none focus:ring-1 focus:ring-primary/50"
             />
           </div>
         )}
@@ -147,7 +147,7 @@ export function DeleteRecordsDialog({ mode, onClose, onSuccess }: DeleteRecordsD
               checked={confirmed}
               onCheckedChange={(v) => setConfirmed(!!v)}
             />
-            <label htmlFor="purge-confirm" className="text-sm text-slate-300 cursor-pointer select-none">
+            <label htmlFor="purge-confirm" className="text-sm text-foreground cursor-pointer select-none">
               I understand this is irreversible
             </label>
           </div>

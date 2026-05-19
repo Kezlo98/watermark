@@ -1,4 +1,3 @@
-import { CheckCircle, Server, Layers, HardDrive } from "lucide-react";
 import { MetricCard } from "@/components/shared/metric-card";
 import { type ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/shared/data-table";
@@ -29,27 +28,27 @@ export function DashboardMetricCards() {
     {
       label: "Cluster Status",
       value: health ? `${health.brokersOnline}/${health.brokersTotal} Online` : "—",
-      icon: CheckCircle,
-      iconColor: "text-status-healthy",
+      icon: "check-circle" as const,
+      tone: "success" as const,
       trend: health?.status === "healthy" ? { value: "All Healthy", positive: true } : undefined,
     },
     {
       label: "Brokers",
       value: health?.brokersOnline.toString() ?? "—",
-      icon: Server,
-      iconColor: "text-primary",
+      icon: "server" as const,
+      tone: "brand" as const,
     },
     {
       label: "Topics",
       value: health?.topicCount.toString() ?? "—",
-      icon: Layers,
-      iconColor: "text-semantic-cyan",
+      icon: "layers" as const,
+      tone: "info" as const,
     },
     {
       label: "Total Size",
       value: health ? formatBytes(health.totalSize) : "—",
-      icon: HardDrive,
-      iconColor: "text-semantic-orange",
+      icon: "hard-drive" as const,
+      tone: "warning" as const,
     },
   ];
 
@@ -106,7 +105,7 @@ export function BrokerTable() {
 
   return (
     <div>
-      <h2 className="text-lg font-display font-bold text-white mb-4 uppercase tracking-wider">
+      <h2 className="text-lg font-display font-bold text-foreground mb-4 uppercase tracking-wider">
         Brokers
       </h2>
       <DataTable
