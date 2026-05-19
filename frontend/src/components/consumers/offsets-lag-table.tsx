@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { ChevronRight } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { cn, formatNumber } from "@/lib/utils";
 import type { ConsumerGroupOffset } from "@/types/kafka";
 
@@ -73,9 +73,11 @@ export function OffsetsLagTable({ offsets }: OffsetsLagTableProps) {
                     >
                       <td className="px-4 py-3 text-sm font-mono text-foreground">
                         <div className="flex items-center gap-2">
-                          <ChevronRight
+                          <Icon
+                            name="chevron-right"
+                            tone="muted"
                             className={cn(
-                              "size-4 text-muted-foreground transition-transform duration-150 shrink-0",
+                              "size-4 transition-transform duration-150 shrink-0",
                               isOpen && "rotate-90"
                             )}
                           />
@@ -88,7 +90,7 @@ export function OffsetsLagTable({ offsets }: OffsetsLagTableProps) {
                       <td className="px-4 py-3 text-sm font-mono">
                         <span className={cn(g.totalLag > 0 && "text-semantic-red font-bold")}>
                           {formatNumber(g.totalLag)}
-                          {g.totalLag > 0 && " ⚠️"}
+                          {g.totalLag > 0 && <Icon name="alert-triangle" className="size-3 inline-block ml-1" tone="danger" />}
                         </span>
                       </td>
                     </tr>
@@ -128,7 +130,7 @@ export function OffsetsLagTable({ offsets }: OffsetsLagTableProps) {
                                   <td className="px-6 py-2 text-xs font-mono">
                                     <span className={cn(p.lag > 0 && "text-semantic-red font-bold")}>
                                       {formatNumber(p.lag)}
-                                      {p.lag > 0 && " ⚠️"}
+                                      {p.lag > 0 && <Icon name="alert-triangle" className="size-3 inline-block ml-1" tone="danger" />}
                                     </span>
                                   </td>
                                 </tr>

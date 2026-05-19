@@ -9,7 +9,7 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import { useState } from "react";
-import { ArrowUpDown } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
 import { RowContextMenu, type RowContextMenuItem } from "@/components/shared/row-context-menu";
 
@@ -70,7 +70,7 @@ export function DataTable<T>({
                     <div className="flex items-center gap-1">
                       {flexRender(header.column.columnDef.header, header.getContext())}
                       {header.column.getCanSort() && (
-                        <ArrowUpDown className="size-3 text-muted-foreground" />
+                        <Icon name="arrow-up-down" tone="muted" className="size-3" />
                       )}
                     </div>
                   </th>

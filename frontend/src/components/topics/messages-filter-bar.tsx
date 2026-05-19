@@ -1,4 +1,4 @@
-import { RefreshCw, Timer, TimerOff, Radio, CheckSquare, ArrowUp, ArrowDown } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
 import type { StartPosition, MessageFormat } from "@/types/kafka";
 import {
@@ -160,7 +160,7 @@ export function MessagesFilterBar({
           isFetching && "opacity-60 cursor-wait",
         )}
       >
-        <RefreshCw className={cn("size-3.5", isFetching && "animate-spin")} />
+        <Icon name="refresh" tone="brand" className={cn("size-3.5", isFetching && "animate-spin")} />
         {isFetching ? "Fetching…" : "Refresh"}
       </button>
 
@@ -170,7 +170,7 @@ export function MessagesFilterBar({
         title="Sort by time (ASC/DESC)"
         className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border transition-colors text-muted-foreground bg-secondary border-border hover:bg-accent"
       >
-        {sortDir === "asc" ? <ArrowUp className="size-3.5" /> : <ArrowDown className="size-3.5" />}
+        {sortDir === "asc" ? <Icon name="arrow-up" className="size-3.5" /> : <Icon name="arrow-down" className="size-3.5" />}
         {sortDir === "asc" ? "ASC" : "DESC"}
       </button>
 
@@ -184,7 +184,7 @@ export function MessagesFilterBar({
             : "text-muted-foreground bg-secondary border-border hover:bg-accent",
         )}
       >
-        {autoRefresh ? <TimerOff className="size-3.5" /> : <Timer className="size-3.5" />}
+        {autoRefresh ? <Icon name="timer-off" className="size-3.5" tone="success" /> : <Icon name="timer" className="size-3.5" />}
         {autoRefresh ? (
           <>
             Stop
@@ -205,7 +205,7 @@ export function MessagesFilterBar({
             : "text-muted-foreground bg-secondary border-border hover:bg-accent",
         )}
       >
-        <CheckSquare className="size-3.5" />
+        <Icon name="check-square" className="size-3.5" tone="brand" />
         Select{selectedCount > 0 && ` (${selectedCount})`}
       </button>
 
@@ -214,7 +214,7 @@ export function MessagesFilterBar({
         onClick={onStartLiveTail}
         className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg border transition-colors text-emerald-400 bg-emerald-500/10 border-emerald-500/20 hover:bg-emerald-500/20"
       >
-        <Radio className="size-3.5" />
+        <Icon name="radio" className="size-3.5" tone="success" />
         Live Tail
       </button>
 

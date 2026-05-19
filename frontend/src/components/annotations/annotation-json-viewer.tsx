@@ -1,5 +1,5 @@
 import { useState, lazy, Suspense } from "react";
-import { ChevronRight, Code2, Copy, Check, Loader2 } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 import { useSettingsStore } from "@/store/settings";
@@ -35,13 +35,15 @@ export function AnnotationJsonViewer({
   return (
     <Collapsible className="space-y-2">
       <CollapsibleTrigger className="group flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors">
-        <ChevronRight
+        <Icon
+          name="chevron-right"
+          tone="muted"
           className={cn(
             "size-3 transition-transform",
             "group-data-[state=open]:rotate-90"
           )}
         />
-        <Code2 className="size-3.5" />
+        <Icon name="code" className="size-3.5" tone="brand" />
         Raw Config
       </CollapsibleTrigger>
 
@@ -53,12 +55,12 @@ export function AnnotationJsonViewer({
             title="Copy to clipboard"
           >
             {copied ? (
-              <Check className="size-3" />
+              <Icon name="check" className="size-3" tone="success" />
             ) : (
-              <Copy className="size-3" />
+              <Icon name="copy" className="size-3" />
             )}
           </button>
-          <Suspense fallback={<div className="flex justify-center items-center h-full p-4"><Loader2 className="w-4 h-4 animate-spin text-muted-foreground" /></div>}>
+          <Suspense fallback={<div className="flex justify-center items-center h-full p-4"><Icon name="loader" className="w-4 h-4 animate-spin" tone="muted" /></div>}>
             <Editor
               height={editorHeight}
               language="json"

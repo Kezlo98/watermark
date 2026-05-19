@@ -1,10 +1,11 @@
-import type { LucideIcon } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
+import type { IconName } from "@/lib/icon-map";
 import { cn } from "@/lib/utils";
 
 interface Tab {
   id: string;
   label: string;
-  icon?: LucideIcon;
+  icon?: IconName;
   count?: number;
 }
 
@@ -37,7 +38,7 @@ export function TabNavigation({
                 : "text-muted-foreground hover:text-foreground hover:bg-secondary"
             )}
           >
-            {tab.icon && <tab.icon className="size-3.5 shrink-0" />}
+            {tab.icon && <Icon name={tab.icon} className="size-3.5 shrink-0" />}
             {tab.label}
             {tab.count !== undefined && (
               <span className="text-xs text-muted-foreground font-mono">({tab.count})</span>
@@ -61,7 +62,7 @@ export function TabNavigation({
               : "text-muted-foreground hover:text-foreground"
           )}
         >
-          {tab.icon && <tab.icon className="size-3.5 shrink-0" />}
+          {tab.icon && <Icon name={tab.icon} className="size-3.5 shrink-0" />}
           {tab.label}
           {tab.count !== undefined && (
             <span className="ml-1 text-xs text-muted-foreground font-mono">({tab.count})</span>

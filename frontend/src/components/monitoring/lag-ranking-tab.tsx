@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
-import { Filter } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { useKafkaQuery } from "@/hooks/use-kafka-query";
-import { Trophy } from "lucide-react";
 import { useRankingConfig } from "@/hooks/use-ranking-config";
 import { useSettingsStore } from "@/store/settings";
 import { GetAllGroupsLagDetail } from "@/lib/wails-client";
@@ -51,7 +50,7 @@ export function LagRankingTab() {
     <div className="flex flex-col gap-3 h-[256px]">
       <div className="flex justify-between items-center text-xs shrink-0">
         <h2 className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
-          <Trophy className="size-4 text-amber-400" />
+          <Icon name="trophy" className="size-4" tone="warning" />
           Topic Lag Ranking
         </h2>
         <Popover open={showFilters} onOpenChange={setShowFilters}>
@@ -62,7 +61,7 @@ export function LagRankingTab() {
                 showFilters && "bg-secondary border-border text-foreground"
               )}
             >
-              <Filter className="size-3" />
+              <Icon name="filter" className="size-3" />
               Filter Config
             </button>
           </PopoverTrigger>

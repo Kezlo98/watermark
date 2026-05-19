@@ -1,11 +1,13 @@
-import { type LucideIcon } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
+import type { IconName } from "@/lib/icon-map";
+import type { Tone } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
 
 interface MetricCardProps {
   label: string;
   value: string | number;
-  icon: LucideIcon;
-  iconColor?: string;
+  icon: IconName;
+  tone?: Tone;
   trend?: { value: string; positive: boolean };
   className?: string;
 }
@@ -13,8 +15,8 @@ interface MetricCardProps {
 export function MetricCard({
   label,
   value,
-  icon: Icon,
-  iconColor = "text-primary",
+  icon,
+  tone = "brand",
   trend,
   className,
 }: MetricCardProps) {
@@ -30,7 +32,7 @@ export function MetricCard({
             "bg-primary/10"
           )}
         >
-          <Icon className={cn("size-4", iconColor)} />
+          <Icon name={icon} tone={tone} className="size-4" />
         </div>
       </div>
       <div className="font-mono text-2xl font-bold text-foreground">{value}</div>

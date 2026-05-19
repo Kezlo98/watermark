@@ -1,31 +1,26 @@
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import {
-  BarChart3,
-  Layers,
-  Users,
-  FileCode2,
-  AlertTriangle,
-} from "lucide-react";
 import logoImg from "@/assets/logo.svg";
 import { cn } from "@/lib/utils";
 import { GetCurrentVersion } from "@/lib/wails-client";
 import { UpdateBanner } from "./update-banner";
 import { useLagAlertsStore } from "@/store/lag-alerts";
+import { Icon } from "@/components/ui/icon";
+import type { IconName } from "@/lib/icon-map";
 
 interface NavItem {
   id: string;
   label: string;
-  icon: typeof BarChart3;
+  icon: IconName;
   path: string;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { id: "overview", label: "Overview", icon: BarChart3, path: "/" },
-  { id: "topics", label: "Topics", icon: Layers, path: "/topics" },
-  { id: "consumers", label: "Consumers", icon: Users, path: "/consumers" },
-  { id: "monitoring", label: "Monitoring", icon: AlertTriangle, path: "/monitoring" },
-  { id: "schemas", label: "Schemas", icon: FileCode2, path: "/schemas" },
+  { id: "overview", label: "Overview", icon: "bar-chart", path: "/" },
+  { id: "topics", label: "Topics", icon: "layers", path: "/topics" },
+  { id: "consumers", label: "Consumers", icon: "users", path: "/consumers" },
+  { id: "monitoring", label: "Monitoring", icon: "alert-triangle", path: "/monitoring" },
+  { id: "schemas", label: "Schemas", icon: "file-code", path: "/schemas" },
 ];
 
 export function Sidebar() {
@@ -70,6 +65,10 @@ export function Sidebar() {
         <div className="flex flex-col gap-0.5">
           {NAV_ITEMS.map((item) => {
             const active = isActive(item.path);
+            const isMonitoringCritical = item.id === "monitoring" && hasCritical;
+            let tone: "brand" | "danger" | "default" = "default";
+            if (active) tone = "brand";
+            else if (isMonitoringCritical) tone = "danger";
             return (
               <button
                 key={item.id}
@@ -81,7 +80,7 @@ export function Sidebar() {
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                 )}
               >
-                <item.icon className={cn("size-4", active && "text-primary")} />
+                <Icon name={item.icon} tone={tone} className="size-4" />
                 {item.label}
                 {item.id === "monitoring" && unreadCount > 0 && (
                   <span className={cn(

@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
-import { Square, RotateCcw, X } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import type { Message, StartPosition, MessageFormat } from "@/types/kafka";
 import { useKafkaQuery } from "@/hooks/use-kafka-query";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -249,7 +249,7 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
             onClick={handleStopLiveTail}
             className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg border transition-colors text-red-400 bg-red-500/10 border-red-500/20 hover:bg-red-500/20"
           >
-            <Square className="size-3 fill-current" />
+            <Icon name="square" className="size-3" weight="fill" />
             Stop
           </button>
         </div>
@@ -291,14 +291,14 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
             onClick={() => openBatchReplay(selectedMessages)}
             className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border text-primary bg-primary/10 border-primary/20 hover:bg-primary/20 transition-colors"
           >
-            <RotateCcw className="size-3.5" />
+            <Icon name="rotate-ccw" className="size-3.5" tone="brand" />
             Replay Selected
           </button>
           <button
             onClick={() => setSelectedIds(new Set())}
             className="flex items-center gap-1 px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            <X className="size-3.5" />
+            <Icon name="x" className="size-3.5" />
             Clear
           </button>
         </div>

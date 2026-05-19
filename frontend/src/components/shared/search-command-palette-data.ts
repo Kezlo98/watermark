@@ -6,15 +6,7 @@
 
 import { useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  Clock,
-  LayoutDashboard,
-  List,
-  Users,
-  FileCode,
-  Tag,
-  Search,
-} from "lucide-react";
+import type { IconName } from "@/lib/icon-map";
 import {
   type SearchResultItem,
   type SearchResultCategory,
@@ -34,13 +26,13 @@ export const PAGES: SearchResultItem[] = [
 
 /* ── Category config ─────────────────────────────────────────────────── */
 
-export const CATEGORY_META: Record<SearchResultCategory, { icon: typeof Search; label: string }> = {
-  recent: { icon: Clock, label: "Recent" },
-  page: { icon: LayoutDashboard, label: "Pages" },
-  topic: { icon: List, label: "Topics" },
-  consumer: { icon: Users, label: "Consumer Groups" },
-  schema: { icon: FileCode, label: "Schema Subjects" },
-  annotation: { icon: Tag, label: "Annotations" },
+export const CATEGORY_META: Record<SearchResultCategory, { icon: IconName; label: string }> = {
+  recent: { icon: "clock", label: "Recent" },
+  page: { icon: "layout-dashboard", label: "Pages" },
+  topic: { icon: "list", label: "Topics" },
+  consumer: { icon: "users", label: "Consumer Groups" },
+  schema: { icon: "file-code", label: "Schema Subjects" },
+  annotation: { icon: "tag", label: "Annotations" },
 };
 
 export const CATEGORY_ORDER: SearchResultCategory[] = [

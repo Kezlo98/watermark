@@ -6,7 +6,7 @@
  */
 
 import { useState, useMemo } from "react";
-import { X, Plus, AlertTriangle } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { useKafkaQuery } from "@/hooks/use-kafka-query";
 import { GetAllGroupsLagDetail, GetConsumerGroups } from "@/lib/wails-client";
 import { globMatch } from "@/lib/glob-match";
@@ -150,7 +150,7 @@ export function TrackedEntitiesConfig({
         </span>
         {totalMatched > WARN_THRESHOLD && (
           <span className="flex items-center gap-1 text-[10px] text-amber-400">
-            <AlertTriangle className="size-3" />
+            <Icon name="alert-triangle" className="size-3" tone="warning" />
             {totalMatched} entities tracked — may increase disk usage
           </span>
         )}
@@ -195,7 +195,7 @@ export function TrackedEntitiesConfig({
             disabled={disabled || !newPattern.trim()}
             className="flex items-center gap-1 px-3 py-1.5 text-xs bg-primary/20 text-primary border border-primary/30 rounded hover:bg-primary/30 transition-colors disabled:opacity-50"
           >
-            <Plus className="size-3" />
+            <Icon name="plus" className="size-3" tone="brand" />
             Add
           </button>
         </div>
@@ -228,7 +228,7 @@ export function TrackedEntitiesConfig({
                       className="text-muted-foreground hover:text-semantic-red transition-colors opacity-0 group-hover:opacity-100"
                       title="Remove pattern"
                     >
-                      <X className="size-3" />
+                      <Icon name="x" className="size-3" tone="muted" />
                     </button>
                   </div>
                 </div>
@@ -258,7 +258,7 @@ export function TrackedEntitiesConfig({
             disabled={disabled || !newExcludePattern.trim()}
             className="flex items-center gap-1 px-3 py-1.5 text-xs bg-semantic-red/20 text-semantic-red border border-semantic-red/30 rounded hover:bg-semantic-red/30 transition-colors disabled:opacity-50"
           >
-            <Plus className="size-3" />
+            <Icon name="plus" className="size-3" tone="danger" />
             Exclude
           </button>
         </div>
@@ -287,7 +287,7 @@ export function TrackedEntitiesConfig({
                       disabled={disabled}
                       className="text-muted-foreground hover:text-semantic-red transition-colors opacity-0 group-hover:opacity-100"
                     >
-                      <X className="size-3" />
+                      <Icon name="x" className="size-3" tone="danger" />
                     </button>
                   </div>
                 </div>

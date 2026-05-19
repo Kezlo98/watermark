@@ -1,8 +1,8 @@
-import { ChevronDown, Power, Settings, Plus, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSettingsStore } from "@/store/settings";
 import { useQuery } from "@tanstack/react-query";
 import { GetClusters } from "@/lib/wails-client";
+import { Icon } from "@/components/ui/icon";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -101,7 +101,7 @@ export function ClusterDropdown() {
           )}
         >
           {connectionStatus === "connecting" ? (
-            <Loader2 className="size-3 text-primary animate-spin" />
+            <Icon name="loader" tone="brand" className="size-3 animate-spin" />
           ) : (
             <span className={cn("size-2 rounded-full", statusDot())} />
           )}
@@ -117,7 +117,7 @@ export function ClusterDropdown() {
           )}>
             {statusLabel()}
           </span>
-          <ChevronDown className="size-3 text-muted-foreground" />
+          <Icon name="chevron-down" tone="muted" className="size-3" />
         </button>
       </DropdownMenuTrigger>
 
@@ -194,7 +194,7 @@ export function ClusterDropdown() {
               onSelect={handleDisconnect}
               className="flex-1 justify-center text-semantic-red focus:text-semantic-red"
             >
-              <Power className="size-3" />
+              <Icon name="power" tone="danger" className="size-3" />
               Disconnect
             </DropdownMenuItem>
           )}
@@ -202,14 +202,14 @@ export function ClusterDropdown() {
             onSelect={openSettings}
             className="flex-1 justify-center"
           >
-            <Settings className="size-3" />
+            <Icon name="settings" className="size-3" />
             Manage
           </DropdownMenuItem>
           <DropdownMenuItem
             onSelect={openSettings}
             className="justify-center text-primary focus:text-primary"
           >
-            <Plus className="size-3" />
+            <Icon name="plus" tone="brand" className="size-3" />
           </DropdownMenuItem>
         </div>
       </DropdownMenuContent>

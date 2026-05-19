@@ -10,7 +10,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { RefreshCw, Check } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { ClearCache } from "@/lib/wails-client";
@@ -151,9 +151,10 @@ export function RefreshButton({
           )}
         >
           {state === "success" ? (
-            <Check className="size-4" />
+            <Icon name="check" className="size-4" />
           ) : (
-            <RefreshCw
+            <Icon
+              name="refresh"
               className={cn(
                 "size-4 transition-transform",
                 state === "refreshing" && "animate-spin"

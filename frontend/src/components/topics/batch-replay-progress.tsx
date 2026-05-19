@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { Progress } from "@/components/ui/progress";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 import type { kafka } from "../../../wailsjs/go/models";
@@ -33,16 +33,16 @@ export function BatchReplayProgress({ total, completed, failed, results, isSendi
       {completed > 0 && (
         <div className="flex items-center gap-4 text-xs font-mono">
           <span className="flex items-center gap-1 text-status-healthy">
-            <CheckCircle2 className="size-3.5" />
+            <Icon name="check-circle" className="size-3.5" tone="success" />
             {succeeded} sent
           </span>
           {failed > 0 && (
             <span className="flex items-center gap-1 text-semantic-red">
-              <XCircle className="size-3.5" />
+              <Icon name="x-circle" className="size-3.5" tone="danger" />
               {failed} failed
             </span>
           )}
-          {isSending && <Loader2 className="size-3.5 animate-spin text-primary" />}
+          {isSending && <Icon name="loader" className="size-3.5 animate-spin" tone="brand" />}
         </div>
       )}
 
@@ -50,7 +50,7 @@ export function BatchReplayProgress({ total, completed, failed, results, isSendi
       {hasFailures && (
         <Collapsible>
           <CollapsibleTrigger className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
-            <ChevronDown className="size-3.5 transition-transform data-[state=open]:rotate-180" />
+            <Icon name="chevron-down" className="size-3.5 transition-transform data-[state=open]:rotate-180" />
             Show failures
           </CollapsibleTrigger>
           <CollapsibleContent>

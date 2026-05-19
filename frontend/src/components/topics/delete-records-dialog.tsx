@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { AlertTriangle } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -113,15 +113,15 @@ export function DeleteRecordsDialog({ mode, onClose, onSuccess }: DeleteRecordsD
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-2 text-red-400">
-            <AlertTriangle className="size-4" />
+            <Icon name="alert-triangle" className="size-4" tone="danger" />
             {title}
           </AlertDialogTitle>
           <AlertDialogDescription className="text-foreground">
             {description}
           </AlertDialogDescription>
           {(isPurge || isTimestamp) && (
-            <p className="text-xs text-amber-400 mt-1">
-              ⚠ This operation affects all partitions and is irreversible.
+            <p className="flex items-center gap-1.5 text-xs text-amber-400 mt-1">
+              <Icon name="alert-triangle" className="size-3 shrink-0" tone="warning" /> This operation affects all partitions and is irreversible.
             </p>
           )}
         </AlertDialogHeader>

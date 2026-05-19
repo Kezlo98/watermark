@@ -1,3 +1,4 @@
+import { Icon } from "@/components/ui/icon";
 import type { AlertEvent } from "@/types/lag-alerts";
 
 /**
@@ -21,7 +22,10 @@ export function AlertIndicator({ groupId, alerts }: AlertIndicatorProps) {
       title={`${active.level === "critical" ? "Critical" : "Warning"} lag alert: ${active.lag.toLocaleString()}`}
       className="cursor-default"
     >
-      {active.level === "critical" ? "🔴" : "🟡"}
+      {active.level === "critical"
+        ? <Icon name="circle" className="size-2.5" tone="danger" weight="fill" />
+        : <Icon name="circle" className="size-2.5" tone="warning" weight="fill" />
+      }
     </span>
   );
 }

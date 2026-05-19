@@ -32,7 +32,7 @@ export function useLagAlerts(clusterID: string | null) {
         // Only toast for critical alerts (warning toasts removed per validation)
         for (const alert of payload.alerts) {
           if (alert.level === "critical") {
-            toast.error(`🔴 Critical lag alert: ${alert.groupId}`, {
+            toast.error(`Critical lag alert: ${alert.groupId}`, {
               description: `Lag ${alert.lag.toLocaleString()} ≥ threshold ${alert.threshold.toLocaleString()}`,
               duration: 5000,
             });

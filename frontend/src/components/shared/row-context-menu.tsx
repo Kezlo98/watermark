@@ -1,5 +1,6 @@
 import { Fragment, type ReactNode } from "react";
-import type { LucideIcon } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
+import type { IconName } from "@/lib/icon-map";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -10,7 +11,7 @@ import {
 
 export interface RowContextMenuItem {
   label: string;
-  icon: LucideIcon;
+  icon: IconName;
   onSelect: () => void;
   variant?: "default" | "destructive";
   separatorBefore?: boolean;
@@ -32,7 +33,7 @@ export function RowContextMenu({ children, items }: RowContextMenuProps) {
           <Fragment key={item.label}>
             {item.separatorBefore && <ContextMenuSeparator />}
             <ContextMenuItem onSelect={item.onSelect} variant={item.variant}>
-              <item.icon className="size-3.5" />
+              <Icon name={item.icon} className="size-3.5" />
               {item.label}
             </ContextMenuItem>
           </Fragment>

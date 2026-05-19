@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { Icon } from "@/components/ui/icon";
 import { useLagAlertsStore } from "@/store/lag-alerts";
 import { useSettingsStore } from "@/store/settings";
 import { cn } from "@/lib/utils";
@@ -103,7 +104,12 @@ export function AlertHistoryTab() {
                   className="w-full flex items-start gap-3 px-4 py-2.5 hover:bg-secondary transition-colors text-left"
                 >
                   <span className="mt-0.5 shrink-0">
-                    {alert.resolved ? "✅" : alert.level === "critical" ? "🔴" : "🟡"}
+                    {alert.resolved
+                      ? <Icon name="check-circle" className="size-3.5 mt-0.5" tone="success" />
+                      : alert.level === "critical"
+                        ? <Icon name="circle" className="size-3 mt-1" tone="danger" weight="fill" />
+                        : <Icon name="circle" className="size-3 mt-1" tone="warning" weight="fill" />
+                    }
                   </span>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">

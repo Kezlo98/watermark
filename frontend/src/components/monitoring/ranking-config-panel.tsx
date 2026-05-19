@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Plus } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import type { RankingConfig } from "@/types/ranking-config";
 
 interface RankingConfigPanelProps {
@@ -60,7 +60,7 @@ export function RankingConfigPanel({ config, onUpdate }: RankingConfigPanelProps
             <span key={g} className="flex items-center gap-1 px-2 py-0.5 text-xs bg-semantic-red/10 text-semantic-red border border-semantic-red/20 rounded font-mono">
               {g}
               <button onClick={() => removeExclude(i)} className="hover:text-foreground">
-                <X className="size-3" />
+                <Icon name="x" className="size-3" tone="danger" />
               </button>
             </span>
           ))}
@@ -77,7 +77,7 @@ export function RankingConfigPanel({ config, onUpdate }: RankingConfigPanelProps
             onClick={addExclude}
             className="px-2 py-1 text-xs bg-secondary border border-border rounded text-muted-foreground hover:text-foreground hover:border-border-hover transition-colors"
           >
-            <Plus className="size-3" />
+            <Icon name="plus" className="size-3" />
           </button>
         </div>
       </div>
@@ -90,7 +90,7 @@ export function RankingConfigPanel({ config, onUpdate }: RankingConfigPanelProps
             <span key={name} className="flex items-center gap-1 px-2 py-0.5 text-xs bg-emerald-400/10 text-emerald-400 border border-emerald-400/20 rounded font-mono">
               {name}
               <button onClick={() => removeInclude(i)} className="hover:text-foreground">
-                <X className="size-3" />
+                <Icon name="x" className="size-3" tone="success" />
               </button>
             </span>
           ))}
@@ -107,7 +107,7 @@ export function RankingConfigPanel({ config, onUpdate }: RankingConfigPanelProps
             onClick={addInclude}
             className="px-2 py-1 text-xs bg-secondary border border-border rounded text-muted-foreground hover:text-foreground hover:border-border-hover transition-colors"
           >
-            <Plus className="size-3" />
+            <Icon name="plus" className="size-3" />
           </button>
         </div>
       </div>

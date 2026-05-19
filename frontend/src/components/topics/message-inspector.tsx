@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { RotateCcw } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { useSettingsStore } from "@/store/settings";
 
 const MonacoEditor = lazy(() => import("@monaco-editor/react"));
@@ -45,7 +45,7 @@ export function MessageInspector({ value, offset, format, onClose, onReplay }: M
               onClick={onReplay}
               className="text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded bg-secondary hover:bg-accent transition-colors flex items-center gap-1"
             >
-              <RotateCcw className="size-3" />
+              <Icon name="rotate-ccw" className="size-3" tone="brand" />
               Replay
             </button>
           )}
@@ -59,7 +59,7 @@ export function MessageInspector({ value, offset, format, onClose, onReplay }: M
             onClick={onClose}
             className="text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded bg-secondary hover:bg-accent transition-colors"
           >
-            ✕
+            <Icon name="x" className="size-3" />
           </button>
         </div>
       </div>

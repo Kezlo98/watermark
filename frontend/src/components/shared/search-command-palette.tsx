@@ -8,6 +8,7 @@
 
 import { useCallback, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { Icon } from "@/components/ui/icon";
 import {
   CommandDialog,
   CommandInput,
@@ -82,13 +83,12 @@ export function SearchCommandPalette() {
           <CommandEmpty>No results found.</CommandEmpty>
           {visibleGroups.map(({ category, items }) => {
             const meta = CATEGORY_META[category];
-            const CategoryIcon = meta.icon;
             return (
               <CommandGroup
                 key={category}
                 heading={
                   <span className="flex items-center gap-1.5">
-                    <CategoryIcon className="size-3" />
+                    <Icon name={meta.icon} className="size-3" />
                     {meta.label}
                   </span>
                 }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Download, Upload, FileJson } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   GetAnnotations,
@@ -121,7 +121,7 @@ export function AnnotationSettingsPanel() {
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center gap-2">
-        <FileJson className="size-4 text-primary" />
+        <Icon name="file-json" className="size-4" tone="brand" />
         <h3 className="text-sm font-display font-bold text-foreground">
           Topic Annotations
         </h3>
@@ -203,7 +203,7 @@ export function AnnotationSettingsPanel() {
           onClick={handleImport}
           className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-foreground bg-secondary border border-border rounded-lg hover:bg-accent transition-colors"
         >
-          <Upload className="size-3.5" />
+          <Icon name="upload" className="size-3.5" />
           Import into {clusterName}
         </button>
       </div>
@@ -217,14 +217,14 @@ export function AnnotationSettingsPanel() {
           disabled={!effectiveClusterId}
           className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-foreground bg-secondary border border-border rounded-lg hover:bg-accent transition-colors disabled:opacity-40"
         >
-          <Download className="size-3.5" />
+          <Icon name="download" className="size-3.5" />
           Export {clusterName}
         </button>
         <button
           onClick={handleExportAll}
           className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-foreground bg-secondary border border-border rounded-lg hover:bg-accent transition-colors"
         >
-          <Download className="size-3.5" />
+          <Icon name="download" className="size-3.5" />
           Export All Clusters
         </button>
       </div>

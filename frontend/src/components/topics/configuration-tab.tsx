@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
-import { Bookmark } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { DataTable } from "@/components/shared/data-table";
 import { cn } from "@/lib/utils";
 import type { TopicConfig } from "@/types/kafka";
@@ -77,7 +77,7 @@ export function ConfigurationTab({ topicName }: ConfigurationTabProps) {
           disabled={overriddenCount === 0}
           className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-primary/90 hover:bg-primary rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <Bookmark className="size-3" />
+          <Icon name="bookmark" className="size-3" />
           Save as Template
         </button>
       </div>

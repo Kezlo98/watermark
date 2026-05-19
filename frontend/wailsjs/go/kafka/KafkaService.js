@@ -22,6 +22,10 @@ export function CreateTopic(arg1, arg2, arg3, arg4) {
   return window['go']['kafka']['KafkaService']['CreateTopic'](arg1, arg2, arg3, arg4);
 }
 
+export function DeleteConsumerGroup(arg1) {
+  return window['go']['kafka']['KafkaService']['DeleteConsumerGroup'](arg1);
+}
+
 export function DeleteRecordsBefore(arg1, arg2, arg3) {
   return window['go']['kafka']['KafkaService']['DeleteRecordsBefore'](arg1, arg2, arg3);
 }

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { CreateTopic } from "@/lib/wails-client";
 import { TemplatePickerDropdown } from "@/components/templates/template-picker-dropdown";
 import type { TopicTemplate } from "@/types/templates";
@@ -260,7 +260,7 @@ export function CreateTopicModal({ isOpen, onClose, cloneFrom }: CreateTopicModa
             disabled={mutation.isPending}
             className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {mutation.isPending && <Loader2 className="size-3.5 animate-spin" />}
+            {mutation.isPending && <Icon name="loader" className="size-3.5 animate-spin" />}
             {mutation.isPending ? "Creating..." : "Create Topic"}
           </button>
         </DialogFooter>

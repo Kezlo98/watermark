@@ -57,10 +57,10 @@ export function ClusterFormFields({ form, onChange, clusterId, isNew }: ClusterF
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="red">🔴 Red (Production)</SelectItem>
-                <SelectItem value="orange">🟡 Yellow (Staging)</SelectItem>
-                <SelectItem value="green">🟢 Green (Dev)</SelectItem>
-                <SelectItem value="purple">🟣 Purple (Default)</SelectItem>
+                <SelectItem value="red"><span className="inline-flex items-center gap-1.5"><span className="size-2 rounded-full bg-red-500 inline-block" />Red (Production)</span></SelectItem>
+                <SelectItem value="orange"><span className="inline-flex items-center gap-1.5"><span className="size-2 rounded-full bg-orange-500 inline-block" />Orange (Staging)</span></SelectItem>
+                <SelectItem value="green"><span className="inline-flex items-center gap-1.5"><span className="size-2 rounded-full bg-green-500 inline-block" />Green (Dev)</span></SelectItem>
+                <SelectItem value="purple"><span className="inline-flex items-center gap-1.5"><span className="size-2 rounded-full bg-violet-500 inline-block" />Purple (Default)</span></SelectItem>
               </SelectContent>
             </Select>
         </div>

@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { Icon } from "@/components/ui/icon";
 import type { CompatibilityLevel } from "@/types/kafka";
 
 const LEVEL_STYLES: Record<CompatibilityLevel, { bg: string; text: string }> = {
@@ -23,7 +24,7 @@ export function CompatibilityBadge({ level }: CompatibilityBadgeProps) {
         "border-current/20"
       )}
     >
-      🟢 {level}
+      <Icon name="circle" className="size-2" weight="fill" /> {level}
     </span>
   );
 }

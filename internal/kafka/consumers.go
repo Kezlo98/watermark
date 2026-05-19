@@ -195,6 +195,27 @@ func (k *KafkaService) GetConsumerGroupDetail(groupID string) (*ConsumerGroupDet
 	}, nil
 }
 
+// DeleteConsumerGroup removes a consumer group. Kafka requires the group to be
+// Empty or Dead — otherwise the broker returns NON_EMPTY_GROUP.
+func (k *KafkaService) DeleteConsumerGroup(groupID string) error {
+	k.mu.RLock()
+	defer k.mu.RUnlock()
+
+	if err := k.ensureWritable(); err != nil {
+		return err
+	}
+
+	ctx := k.getCtx()
+	resp, err := k.admin.DeleteGroups(ctx, groupID)
+	if err != nil {
+		return fmt.Errorf("delete consumer group: %w", err)
+	}
+	if r, ok := resp[groupID]; ok && r.Err != nil {
+		return fmt.Errorf("delete consumer group %s: %w", groupID, r.Err)
+	}
+	return nil
+}
+
 // mapGroupState normalizes Kafka group state strings for frontend display.
 func mapGroupState(state string) string {
 	switch state {

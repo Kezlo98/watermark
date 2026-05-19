@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { Icon } from "@/components/ui/icon";
 import {
   Dialog,
   DialogContent,
@@ -92,8 +93,8 @@ export function ImportPreviewModal({
                   </span>
                 </p>
                 {mode === "replace" && (
-                  <p className="text-xs text-status-rebalancing mt-1">
-                    ⚠️ This will overwrite all existing annotations
+                  <p className="flex items-center gap-1.5 text-xs text-status-rebalancing mt-1">
+                    <Icon name="alert-triangle" className="size-3 shrink-0" tone="warning" /> This will overwrite all existing annotations
                   </p>
                 )}
               </div>

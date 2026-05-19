@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState, useEffect } from "react";
-import { Copy } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { CompatibilityBadge } from "./compatibility-badge";
 import type { SchemaType, CompatibilityLevel } from "@/types/kafka";
 import { useKafkaQuery } from "@/hooks/use-kafka-query";
@@ -95,7 +95,7 @@ export function SchemaViewer({ subjectName }: SchemaViewerProps) {
             onClick={copySchema}
             className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground bg-secondary rounded border border-border hover:bg-accent transition-colors"
           >
-            <Copy className="size-3" /> Copy
+            <Icon name="copy" className="size-3" /> Copy
           </button>
         </div>
       </div>

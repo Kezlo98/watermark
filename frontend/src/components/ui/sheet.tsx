@@ -3,7 +3,7 @@ import * as React from "react"
 import { Dialog as SheetPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
-import { XIcon } from "lucide-react"
+import { Icon } from "@/components/ui/icon"
 
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />
@@ -75,7 +75,7 @@ function SheetContent({
             data-slot="sheet-close"
             className="absolute top-4 right-4 rounded p-1 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus:outline-none"
           >
-            <XIcon className="size-5" />
+            <Icon name="x" className="size-5" />
             <span className="sr-only">Close</span>
           </SheetPrimitive.Close>
         )}

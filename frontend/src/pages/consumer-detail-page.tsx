@@ -1,23 +1,67 @@
+import { useState } from "react";
 import { useParams, useRouter } from "@tanstack/react-router";
-import { ChevronLeft } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { Icon } from "@/components/ui/icon";
 import { GroupDetailHeader } from "@/components/consumers/group-detail-header";
 import { ActiveMembersTable } from "@/components/consumers/active-members-table";
 import { OffsetsLagTable } from "@/components/consumers/offsets-lag-table";
-import { SetAlertPopover } from "@/components/consumers/set-alert-popover";
+import { ConsumerActionDropdown } from "@/components/consumers/consumer-action-dropdown";
+import { DropGroupDialog } from "@/components/consumers/drop-group-dialog";
 import { RefreshButton } from "@/components/shared/refresh-button";
-import { useKafkaQuery } from "@/hooks/use-kafka-query";
-import { GetConsumerGroupDetail } from "@/lib/wails-client";
+import { useKafkaQuery, clusterQueryKey } from "@/hooks/use-kafka-query";
+import { GetConsumerGroupDetail, DeleteRule, RestartMonitoring } from "@/lib/wails-client";
 import { useReadOnly } from "@/hooks/use-read-only";
+import { useSettingsStore } from "@/store/settings";
+import { useLagAlertsStore } from "@/store/lag-alerts";
 import type { ConsumerGroupState } from "@/types/kafka";
 
 export function ConsumerDetailPage() {
   const { groupId } = useParams({ from: "/consumers/$groupId" });
   const router = useRouter();
+  const queryClient = useQueryClient();
   const isReadOnly = useReadOnly();
+  const { activeClusterId } = useSettingsStore();
+  const { loadConfig } = useLagAlertsStore();
+
+  const [dropTarget, setDropTarget] = useState<string | null>(null);
+
   const { data: detail } = useKafkaQuery(
     ["consumer-group-detail", groupId],
     () => GetConsumerGroupDetail(groupId),
   );
+
+  const groupState = (detail?.state ?? "Unknown") as ConsumerGroupState;
+  const canDrop = groupState === "Empty" || groupState === "Dead";
+
+  const handleDropSuccess = async (droppedId: string) => {
+    let cascadeWarning: string | null = null;
+    if (activeClusterId) {
+      try {
+        await loadConfig(activeClusterId);
+        const freshConfig = useLagAlertsStore.getState().alertConfig;
+        if (freshConfig) {
+          const exact = freshConfig.rules.filter((r) => r.groupPattern === droppedId);
+          for (const r of exact) {
+            await DeleteRule(activeClusterId, r.id);
+          }
+          if (exact.length > 0) {
+            await loadConfig(activeClusterId);
+            await RestartMonitoring(activeClusterId);
+          }
+        }
+      } catch (err) {
+        cascadeWarning = err instanceof Error ? err.message : String(err);
+      }
+    }
+    setDropTarget(null);
+    toast.success(`Consumer group "${droppedId}" dropped`);
+    if (cascadeWarning) {
+      toast.warning(`Group dropped, but lag-alert cleanup failed: ${cascadeWarning}`);
+    }
+    queryClient.invalidateQueries({ queryKey: clusterQueryKey(activeClusterId, ["consumer-groups"]) });
+    router.navigate({ to: "/consumers" });
+  };
 
   return (
     <div className="space-y-6">
@@ -25,7 +69,7 @@ export function ConsumerDetailPage() {
         onClick={() => router.history.back()}
         className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
-        <ChevronLeft className="size-4" />
+        <Icon name="chevron-left" className="size-4" />
         Consumer Groups
       </button>
       <div className="flex items-center justify-between">
@@ -34,27 +78,19 @@ export function ConsumerDetailPage() {
         </h1>
         <div className="flex gap-2">
           <RefreshButton queryKeys={[["consumer-group-detail", groupId]]} />
-          <SetAlertPopover groupId={groupId} />
           {!isReadOnly && (
-            <>
-              <button
-                disabled
-                className="px-4 py-2 text-sm text-muted-foreground bg-secondary rounded-lg border border-border opacity-50 cursor-not-allowed"
-                title="Group must be Empty or Dead to reset offsets"
-              >
-                ⏪ Reset Offsets
-              </button>
-              <button className="px-4 py-2 text-sm text-semantic-red bg-semantic-red/10 rounded-lg border border-semantic-red/20 hover:bg-semantic-red/20 transition-colors">
-                🗑️ Drop Group
-              </button>
-            </>
+            <ConsumerActionDropdown
+              groupId={groupId}
+              canDrop={canDrop}
+              onDropGroup={() => setDropTarget(groupId)}
+            />
           )}
         </div>
       </div>
 
       <GroupDetailHeader
         groupId={groupId}
-        state={(detail?.state ?? "Unknown") as ConsumerGroupState}
+        state={groupState}
         coordinator={detail?.coordinator ?? 0}
         totalLag={detail?.offsets.reduce((sum, o) => sum + o.lag, 0) ?? 0}
       />
@@ -63,6 +99,12 @@ export function ConsumerDetailPage() {
         <OffsetsLagTable offsets={detail?.offsets ?? []} />
         <ActiveMembersTable members={detail?.members ?? []} />
       </div>
+
+      <DropGroupDialog
+        groupId={dropTarget}
+        onClose={() => setDropTarget(null)}
+        onSuccess={handleDropSuccess}
+      />
     </div>
   );
 }

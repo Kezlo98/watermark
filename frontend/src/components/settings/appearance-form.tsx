@@ -1,4 +1,5 @@
 import { lazy, Suspense } from "react";
+import { Icon } from "@/components/ui/icon";
 import { Slider } from "@/components/ui/slider";
 import { useSettingsStore } from "@/store/settings";
 import {
@@ -29,8 +30,8 @@ export function AppearanceForm() {
     <div className="space-y-8">
       {/* Theme */}
       <section>
-        <h3 className="text-sm font-display font-bold text-foreground uppercase tracking-wider mb-4">
-          🎨 Appearance
+        <h3 className="flex items-center gap-2 text-sm font-display font-bold text-foreground uppercase tracking-wider mb-4">
+          <Icon name="palette" className="size-4" tone="brand" /> Appearance
         </h3>
 
         <div className="space-y-4">
