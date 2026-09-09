@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Icon } from "@/components/ui/icon";
-import { cn } from "@/lib/utils";
+import { cn, formatLocalTimestamp } from "@/lib/utils";
 import type { Message } from "@/types/kafka";
 import { MessageContextMenu } from "./message-context-menu";
 
@@ -109,7 +109,7 @@ export function MessagesTable({ messages, selectedMessage, onSelectMessage, onRe
                     )}
                     <td className="px-4 py-3 text-sm font-mono text-foreground">{msg.partition}</td>
                     <td className="px-4 py-3 text-sm font-mono text-foreground">{msg.offset}</td>
-                    <td className="px-4 py-3 text-sm font-mono text-muted-foreground">{msg.timestamp}</td>
+                    <td className="px-4 py-3 text-sm font-mono text-muted-foreground">{formatLocalTimestamp(msg.timestamp)}</td>
                     <td className="px-4 py-3 text-sm font-mono text-semantic-purple">{msg.key}</td>
                     <td className="px-4 py-3 text-sm font-mono text-semantic-cyan truncate max-w-xs">{msg.value}</td>
                   </tr>

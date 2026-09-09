@@ -11,6 +11,7 @@ import { MessagesFilterBar } from "./messages-filter-bar";
 import { ProduceMessageModal } from "./produce-message-modal";
 import { DeleteRecordsDialog, type DeleteMode } from "./delete-records-dialog";
 import { useReadOnly } from "@/hooks/use-read-only";
+import { formatLocalTimestamp } from "@/lib/utils";
 
 const LIVE_TAIL_MAX_MESSAGES = 500;
 const AUTO_REFRESH_SECONDS = 10;
@@ -59,7 +60,7 @@ export function MessagesTab({ topicName }: MessagesTabProps) {
     setDeleteMode({ type: "beforeOffset", topicName, partition: msg.partition, offset: msg.offset });
   };
   const handleDeleteBeforeTimestamp = (msg: Message) => {
-    setDeleteMode({ type: "beforeTimestamp", topicName, timestampMs: new Date(msg.timestamp).getTime(), timestampLabel: msg.timestamp });
+    setDeleteMode({ type: "beforeTimestamp", topicName, timestampMs: new Date(msg.timestamp).getTime(), timestampLabel: formatLocalTimestamp(msg.timestamp) });
   };
   const handleDeleteBeforeDate = () => {
     setDeleteMode({ type: "beforeTimestamp", topicName, timestampMs: 0, timestampLabel: "" });
