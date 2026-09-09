@@ -3,7 +3,11 @@
 All notable changes to Watermark are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## [1.1.4] - 2026-09-09
+
+### Changed
+
+- Message timestamps display in the machine's local timezone (compact `YYYY-MM-DD HH:mm:ss`) instead of UTC `Z`; the raw UTC form is kept when the timestamp cannot be parsed or no local timezone can be resolved
 
 ## [1.1.3] - 2026-05-19
 

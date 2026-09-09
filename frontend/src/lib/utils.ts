@@ -28,3 +28,23 @@ export function formatCompact(num: number): string {
   const val = num / Math.pow(1000, i);
   return `${val.toFixed(1).replace(/\.0$/, "")}${units[i]}`;
 }
+
+/** Format an ISO timestamp as local wall-clock time; returns the raw input (UTC "Z" form) when unparseable or no local timezone can be resolved. */
+let timezoneResolved: boolean | null = null;
+export function formatLocalTimestamp(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso;
+  if (timezoneResolved === null) {
+    try {
+      timezoneResolved = Boolean(Intl.DateTimeFormat().resolvedOptions().timeZone);
+    } catch {
+      timezoneResolved = false;
+    }
+  }
+  if (!timezoneResolved) return iso;
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return (
+    `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}` +
+    ` ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
+  );
+}
